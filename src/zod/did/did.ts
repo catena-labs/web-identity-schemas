@@ -14,6 +14,7 @@ import type {
   DidMethod
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
+import { didMethodRegex, didRegex, didUrlRegex } from "../../constants/did"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.
@@ -21,10 +22,7 @@ import type { Shape } from "../shared/shape"
  */
 export const DidSchema = z
   .string()
-  .regex(
-    /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_]$/,
-    "Must be a valid DID"
-  )
+  .regex(didRegex, "Must be a valid DID")
   .pipe(z.custom<Did>())
 
 /**
@@ -35,10 +33,8 @@ export const DidSchema = z
 export const createDidSchema = <T extends DidMethod>(method: T) => {
   return z
     .string()
-    .regex(
-      new RegExp(`^did:${method}:[a-zA-Z0-9.\\-_:]*[a-zA-Z0-9.\\-_]$`),
-      "Must be a valid DID"
-    )
+    .regex(didRegex, "Must be a valid DID")
+    .startsWith(`did:${method}:`)
     .pipe(z.custom<Did<T>>())
 }
 
@@ -48,17 +44,17 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
  */
 export const DidUrlSchema = z
   .string()
-  .regex(
-    /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_](\/[^?#]*)?(\?[^#]*)?(#.*)?$/,
-    "Must be a valid DID URL"
-  )
+  .regex(didUrlRegex, "Must be a valid DID URL")
   .pipe(z.custom<DidUrl>())
 
 /**
  * DID method names. Must follow format rules: lowercase letters and numbers only.
  * @see {@link https://www.w3.org/TR/did-core/#method-syntax}
  */
-export const DidMethodSchema = z.string().regex(/^[a-z0-9]+$/)
+export const DidMethodSchema = z
+  .string()
+  .regex(didMethodRegex)
+  .pipe(z.custom<DidMethod>())
 
 /**
  * Verification method type.

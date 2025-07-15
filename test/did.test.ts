@@ -69,6 +69,11 @@ describe("did", () => {
           "did:example:123456789abcdefghi#service-1",
           "did:web:example.com#key-1",
 
+          // DIDs with ports
+          "did:web:example.com%3A8080",
+          "did:web:localhost%3A8080",
+          "did:web:localhost%3A8080:user:alice",
+
           // DID URLs with paths
           "did:web:example.com/user/alice",
           "did:web:example.com/users/alice",

@@ -13,7 +13,12 @@ import type {
   DidDocument
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
-import { verificationMethodTypes } from "../../constants/did"
+import {
+  verificationMethodTypes,
+  didRegex,
+  didUrlRegex,
+  didMethodRegex
+} from "../../constants/did"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.
@@ -22,21 +27,14 @@ import { verificationMethodTypes } from "../../constants/did"
 export const DidSchema = v.pipe(
   UriSchema,
   v.startsWith("did:"),
-  v.regex(
-    /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_]$/,
-    "Must be a valid DID"
-  ),
+  v.regex(didRegex, "Must be a valid DID"),
   v.custom<Did>(() => true)
 )
 
 export const createDidSchema = <T extends DidMethod>(method: T) => {
   return v.pipe(
-    UriSchema,
-    v.startsWith("did:"),
-    v.regex(
-      new RegExp(`^did:${method}:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_]$`),
-      "Must be a valid DID"
-    ),
+    DidSchema,
+    v.startsWith(`did:${method}:`),
     v.custom<Did<T>>(() => true)
   )
 }
@@ -47,10 +45,7 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
  */
 export const DidUrlSchema = v.pipe(
   v.string(),
-  v.regex(
-    /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_](\/[^?#]*)?(\?[^#]*)?(#.*)?$/,
-    "Must be a valid DID URL"
-  ),
+  v.regex(didUrlRegex, "Must be a valid DID URL"),
   v.custom<DidUrl>(() => true)
 )
 
@@ -60,7 +55,7 @@ export const DidUrlSchema = v.pipe(
  */
 export const DidMethodSchema = v.pipe(
   v.string(),
-  v.regex(/^[a-z0-9]+$/),
+  v.regex(didMethodRegex, "Must be a valid DID method"),
   v.custom<DidMethod>(() => true)
 )
 

@@ -10,3 +10,10 @@ export const verificationMethodTypes: VerificationMethodType[] = [
   "EcdsaSecp256r1VerificationKey2019",
   "RsaVerificationKey2018"
 ]
+
+export const didRegex = /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]$/
+
+export const didUrlRegex =
+  /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]([/?#][^]*)?$/
+
+export const didMethodRegex = /^[a-z0-9]+$/
