@@ -29,6 +29,18 @@ export const DidSchema = v.pipe(
   v.custom<Did>(() => true)
 )
 
+export const createDidSchema = <T extends DidMethod>(method: T) => {
+  return v.pipe(
+    UriSchema,
+    v.startsWith("did:"),
+    v.regex(
+      new RegExp(`^did:${method}:[a-zA-Z0-9.\-_:]*[a-zA-Z0-9.\-_]$`),
+      "Must be a valid DID"
+    ),
+    v.custom<Did<T>>(() => true)
+  )
+}
+
 /**
  * DID URL with optional path, query, and fragment.
  * @see {@link https://www.w3.org/TR/did-core/#did-url-syntax}

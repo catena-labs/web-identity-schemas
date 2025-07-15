@@ -10,7 +10,8 @@ import type {
   DidUrl,
   Did,
   VerificationMethodType,
-  ServiceEndpointMap
+  ServiceEndpointMap,
+  DidMethod
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
 
@@ -25,6 +26,21 @@ export const DidSchema = z
     "Must be a valid DID"
   )
   .pipe(z.custom<Did>())
+
+/**
+ * Create a DID schema for a specific method.
+ * @param method - The method name.
+ * @returns The DID schema.
+ */
+export const createDidSchema = <T extends DidMethod>(method: T) => {
+  return z
+    .string()
+    .regex(
+      new RegExp(`^did:${method}:[a-zA-Z0-9.\\-_:]*[a-zA-Z0-9.\\-_]$`),
+      "Must be a valid DID"
+    )
+    .pipe(z.custom<Did<T>>())
+}
 
 /**
  * DID URL with optional path, query, and fragment.
