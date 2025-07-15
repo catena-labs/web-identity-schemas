@@ -1,0 +1,8 @@
+{
+  "protected": {
+    "alg": "RS256",
+    "kid": "rsa-key-1"
+  },
+  "payload": "eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0",
+  "signature": "EhkiHkoESI_cG3NPigFrxEBSasmG8EwZR3aKHLOz1-f7DKl9R4OVSgz9jTXnSTASLrOa1FKR8XOKgQ5V1KvHLA"
+}

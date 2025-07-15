@@ -1,0 +1,9 @@
+{
+  "header": {
+    "alg": "none"
+  },
+  "payload": {
+    "sub": "1234567890"
+  },
+  "signature": "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+}

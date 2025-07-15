@@ -1,0 +1,7 @@
+{
+  "kty": "RSA",
+  "use": "sig",
+  "kid": "2011-04-29",
+  "n": "0vx7agoebGcQSuuPiLJXZptN9nndrQmbPFRP_gdHPfETjxbgYLvK8Q3YN1xdg9VY0VKJ2kqGKvYGSrE3qvOvtpEqpASKJL1-tU5vGdUIzfPF8sC3T",
+  "e": "AQAB"
+}

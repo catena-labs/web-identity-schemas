@@ -1,0 +1,106 @@
+{
+  "name": "web-identity-schemas",
+  "version": "0.1.0",
+  "keywords": [
+    "web-identity",
+    "web-crypto",
+    "schemas",
+    "valibot",
+    "zod",
+    "jwt",
+    "jose",
+    "jwe",
+    "jws",
+    "jwk",
+    "jwks",
+    "did",
+    "did-document",
+    "vc",
+    "vp",
+    "verifiable-credential",
+    "verifiable-presentation",
+    "status-list",
+    "status-list-2021",
+    "bistring",
+    "bitstring-status",
+    "bitstring-status-list"
+  ],
+  "homepage": "https://github.com/catena-labs/web-identity-schemas#readme",
+  "bugs": "https://github.com/catena-labs/web-identity-schemas/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/catena-labs/web-identity-schemas.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Catena Labs",
+    "url": "https://catenalabs.com"
+  },
+  "type": "module",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./zod": {
+      "types": "./dist/zod.d.ts",
+      "default": "./dist/zod.js"
+    },
+    "./valibot": {
+      "types": "./dist/valibot.d.ts",
+      "default": "./dist/valibot.js"
+    }
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "check": "bun run format:check && bun run lint && bun run typecheck && bun test",
+    "clean": "git clean -fdX dist node_modules/.cache",
+    "fix": "bun run format && bun run lint:fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "nuke": "bun run clean && git clean -xdf node_modules",
+    "outdated": "npx npm-check-updates --interactive --format group",
+    "prepublishOnly": "bun run build",
+    "publint": "npx publint@latest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@types/bun": "latest",
+    "eslint": "^9.31.0",
+    "eslint-config-flat-gitignore": "^2.1.0",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.6.2",
+    "prettier-plugin-packagejson": "^2.5.18",
+    "standard-parse": "^0.2.0",
+    "tsdown": "^0.12.9",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.37.0",
+    "valibot": "^1.1.0",
+    "zod": "^4.0.0"
+  },
+  "peerDependencies": {
+    "valibot": "^1.0.0",
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "valibot": {
+      "optional": true
+    },
+    "zod": {
+      "optional": true
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "protected": "eyJhbGciOiJSU0ExXzUiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2In0",
+  "encrypted_key": "UGhIOguC7IuEvf_NPVaXsGMoLOmwvc1GyqlIKOK1nN94nHPoltGRhWhw7Zx0-kFm",
+  "iv": "AxY8DCtDaGlsbGljb3RoZQ",
+  "ciphertext": "KDlTtXchhZTGufMYmOYGS4HffxPSUrfmqCHXaI9wOGY",
+  "tag": "Mz-VPPyU4RlcuYv1IwIvzw"
+}
