@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import { Base64UrlSchema } from "../shared/base-64-url"
+import { Base64UrlSchema, Base64Schema } from "../shared/base-64"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
@@ -34,8 +34,8 @@ const JweProtectedHeaderSchema = v.object({
   /** X.509 URL (optional) */
   x5u: v.optional(v.pipe(v.string(), v.url())),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: v.optional(v.array(v.string())),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: v.optional(Base64UrlSchema),
@@ -92,8 +92,8 @@ const JweUnprotectedHeaderSchema = v.object({
   /** X.509 URL (optional) */
   x5u: v.optional(v.pipe(v.string(), v.url())),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: v.optional(v.array(v.string())),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: v.optional(Base64UrlSchema),
@@ -126,8 +126,8 @@ const JwePerRecipientUnprotectedHeaderSchema = v.object({
   /** X.509 URL (optional) */
   x5u: v.optional(v.pipe(v.string(), v.url())),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: v.optional(v.array(v.string())),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: v.optional(Base64UrlSchema),

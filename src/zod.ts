@@ -1,6 +1,6 @@
 export * from "./constants"
 export * from "./types"
-export * from "./zod/shared/base-64-url"
+export * from "./zod/shared/base-64"
 export * from "./zod/shared/curves"
 export * from "./zod/shared/uri"
 export * from "./zod/jose"

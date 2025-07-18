@@ -1,5 +1,5 @@
 import type { BaseCredential, CredentialSubject, StatusPurpose } from "../core"
-import type { Base64Url } from "../../shared/base-64-url"
+import type { Base64Url } from "../../shared/base-64"
 import type { DateTimeStamp } from "../../shared/json-ld"
 
 /**

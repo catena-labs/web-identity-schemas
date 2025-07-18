@@ -230,8 +230,10 @@ This library exports comprehensive schemas for Web Identity and JOSE standards. 
 
 - **`UriSchema`** - URI format validation
   - [Types](./src/types/shared/uri.ts) | [Valibot](./src/valibot/shared/uri.ts) | [Zod](./src/zod/shared/uri.ts)
-- **`Base64UrlSchema`** - Base64URL encoded strings
-  - [Types](./src/types/shared/base-64-url.ts) | [Valibot](./src/valibot/shared/base-64-url.ts) | [Zod](./src/zod/shared/base-64-url.ts)
+- **`Base64UrlSchema`** - Base64url encoded strings
+  - [Types](./src/types/shared/base-64.ts) | [Valibot](./src/valibot/shared/base-64.ts) | [Zod](./src/zod/shared/base-64.ts)
+- **`Base64Schema`** - Base64 encoded strings
+  - [Types](./src/types/shared/base-64.ts) | [Valibot](./src/valibot/shared/base-64.ts) | [Zod](./src/zod/shared/base-64.ts)
 - **`DateTimeStampSchema`** - ISO 8601 datetime strings
   - [Types](./src/types/shared/json-ld.ts) | [Valibot](./src/valibot/shared/json-ld.ts) | [Zod](./src/zod/shared/json-ld.ts)
 

@@ -1,5 +1,5 @@
 export * from "./algorithms"
-export * from "./base-64-url"
+export * from "./base-64"
 export * from "./curves"
 export * from "./json-ld"
 export * from "./uri"

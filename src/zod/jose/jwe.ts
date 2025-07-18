@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { Base64UrlSchema } from "../shared/base-64-url"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
@@ -42,8 +42,8 @@ const JweProtectedHeaderSchema: Shape<JweProtectedHeader> = z.object({
   /** X.509 URL (optional) */
   x5u: z.url().optional(),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: z.array(z.string()).optional(),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: z.array(Base64Schema).optional(),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: Base64UrlSchema.optional(),
@@ -100,8 +100,8 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
   /** X.509 URL (optional) */
   x5u: z.url().optional(),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: z.array(z.string()).optional(),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: z.array(Base64Schema).optional(),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: Base64UrlSchema.optional(),
@@ -135,8 +135,8 @@ const JwePerRecipientUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> =
     /** X.509 URL (optional) */
     x5u: z.url().optional(),
 
-    /** X.509 Certificate Chain (optional) */
-    x5c: z.array(z.string()).optional(),
+    /** X.509 Certificate Chain (optional) (base64, not base64url) */
+    x5c: z.array(Base64Schema).optional(),
 
     /** X.509 Certificate SHA-1 Thumbprint (optional) */
     x5t: Base64UrlSchema.optional(),

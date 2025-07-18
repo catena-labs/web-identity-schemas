@@ -1,4 +1,4 @@
-import type { Base64Url } from "../shared/base-64-url"
+import type { Base64, Base64Url } from "../shared/base-64"
 import type { EllipticCurve, OctetKeyPairCurve } from "../shared/curves"
 import type { JoseAlgorithm } from "../shared/algorithms"
 
@@ -42,8 +42,11 @@ export interface BaseJwk {
   /** Intended key use ("sig" for signature, "enc" for encryption) */
   use?: KeyUse
 
-  /** X.509 certificate chain (base64url-encoded certs) */
-  x5c?: Base64Url[]
+  /**
+   * X.509 certificate chain (base64-encoded certs - explicitly NOT base64url)
+   * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.6}
+   */
+  x5c?: Base64[]
 
   /** X.509 certificate SHA-1 thumbprint (base64url-encoded) */
   x5t?: Base64Url
