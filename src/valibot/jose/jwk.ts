@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import { Base64UrlSchema } from "../shared/base-64-url"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { JoseAlgorithmSchema } from "./jwa"
 import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
 import { keyUses, keyOperations } from "../../constants/jwk"
@@ -70,8 +70,8 @@ export const BaseJwkSchema = v.object({
   /** Intended key use ("sig" for signature, "enc" for encryption) */
   use: v.optional(KeyUseSchema),
 
-  /** X.509 certificate chain (base64url-encoded certs) */
-  x5c: v.optional(v.array(Base64UrlSchema)),
+  /** X.509 certificate chain (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 certificate SHA-1 thumbprint (base64url-encoded) */
   x5t: v.optional(Base64UrlSchema),

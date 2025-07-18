@@ -1,6 +1,6 @@
 import * as z from "zod"
 import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64-url"
+import { Base64UrlSchema } from "../../shared/base-64"
 import { BaseCredentialSchema } from "../core"
 import {
   statusList2021Context,

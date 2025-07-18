@@ -1,6 +1,6 @@
 export * from "./constants"
 export * from "./types"
-export * from "./valibot/shared/base-64-url"
+export * from "./valibot/shared/base-64"
 export * from "./valibot/shared/curves"
 export * from "./valibot/shared/uri"
 export * from "./valibot/jose"

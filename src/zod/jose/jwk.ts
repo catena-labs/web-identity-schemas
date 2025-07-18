@@ -1,5 +1,5 @@
 import * as z from "zod"
-import { Base64UrlSchema } from "../shared/base-64-url"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { JoseAlgorithmSchema } from "./jwa"
 import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
 import { keyUses, keyOperations } from "../../constants/jwk"
@@ -57,8 +57,8 @@ export const BaseJwkSchema = z.object({
   /** Intended key use ("sig" for signature, "enc" for encryption) */
   use: KeyUseSchema.optional(),
 
-  /** X.509 certificate chain (base64url-encoded certs) */
-  x5c: z.array(z.string()).optional(),
+  /** X.509 certificate chain (base64, not base64url) */
+  x5c: z.array(Base64Schema).optional(),
 
   /** X.509 certificate SHA-1 thumbprint (base64url-encoded) */
   x5t: z.string().optional(),

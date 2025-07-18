@@ -7,7 +7,7 @@ const namespaces = {
   zod
 }
 
-describe("base64url", () => {
+describe("Base64 utils", () => {
   describe.each(Object.entries(namespaces))("%s", (namespace, schemas) => {
     describe("Base64UrlSchema", () => {
       test("valid inputs", () => {
@@ -33,6 +33,21 @@ describe("base64url", () => {
 
         for (const input of validInputs) {
           expect(input).toMatchSchema(schemas.Base64UrlSchema)
+        }
+      })
+
+      test("rejects pure base64 strings that are not base64url", () => {
+        const invalidInputs = [
+          "SGVsbG8+V29ybGQ", // Contains '+' (not allowed in base64url)
+          "U29tZSBkYXRhLw==", // Contains '=' padding (not allowed in base64url)
+          "SGVsbG8/V29ybGQ", // Contains '/' (not allowed in base64url)
+          "YWJj+ZGVm", // Contains '+' (not allowed in base64url)
+          "YWJjZGVm/", // Contains '/' (not allowed in base64url)
+          "YWJjZGVm=" // Contains '=' padding (not allowed in base64url)
+        ]
+
+        for (const input of invalidInputs) {
+          expect(input).not.toMatchSchema(schemas.Base64UrlSchema)
         }
       })
 
@@ -93,6 +108,19 @@ describe("base64url", () => {
 
         for (const input of nonStringInputs) {
           expect(input).not.toMatchSchema(schemas.Base64UrlSchema)
+        }
+      })
+    })
+
+    describe("Base64Schema", () => {
+      test("valid inputs", () => {
+        const validInputs = [
+          "SGVsbG8gV29ybGQ=", // "Hello World"
+          "U29tZSBkYXRhLw==" // "Some data/"
+        ]
+
+        for (const input of validInputs) {
+          expect(input).toMatchSchema(schemas.Base64Schema)
         }
       })
     })

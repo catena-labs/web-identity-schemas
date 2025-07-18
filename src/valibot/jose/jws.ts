@@ -1,5 +1,5 @@
 import * as v from "valibot"
-import { Base64UrlSchema } from "../shared/base-64-url"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { JoseAlgorithmSchema } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -24,8 +24,8 @@ export const JwsProtectedHeaderSchema = v.object({
   /** X.509 URL (optional) */
   x5u: v.optional(v.pipe(v.string(), v.url())),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: v.optional(v.array(v.string())),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: v.optional(Base64UrlSchema),
@@ -61,8 +61,8 @@ export const JwsUnprotectedHeaderSchema = v.object({
   /** X.509 URL (optional) */
   x5u: v.optional(v.pipe(v.string(), v.url())),
 
-  /** X.509 Certificate Chain (optional) */
-  x5c: v.optional(v.array(v.string())),
+  /** X.509 Certificate Chain (optional) (base64, not base64url) */
+  x5c: v.optional(v.array(Base64Schema)),
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t: v.optional(Base64UrlSchema),

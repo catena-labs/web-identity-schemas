@@ -1,4 +1,4 @@
-import type { Base64Url } from "../shared/base-64-url"
+import type { Base64, Base64Url } from "../shared/base-64"
 import type {
   JweKeyManagementAlgorithm,
   JweContentEncryptionAlgorithm,
@@ -34,7 +34,7 @@ export interface JweProtectedHeader {
   x5u?: string
 
   /** X.509 Certificate Chain (optional) */
-  x5c?: string[]
+  x5c?: Base64[]
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t?: Base64Url
@@ -71,7 +71,7 @@ export interface JweUnprotectedHeader {
   x5u?: string
 
   /** X.509 Certificate Chain (optional) */
-  x5c?: string[]
+  x5c?: Base64[]
 
   /** X.509 Certificate SHA-1 Thumbprint (optional) */
   x5t?: Base64Url

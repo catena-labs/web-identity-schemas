@@ -9,3 +9,8 @@
  * "eyJhbGciOiJIUzI1NiJ9" // JWT header example
  */
 export type Base64Url = string
+
+/**
+ * Base64 encoded string
+ */
+export type Base64 = string

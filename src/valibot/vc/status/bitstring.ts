@@ -1,6 +1,6 @@
 import * as v from "valibot"
 import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64-url"
+import { Base64UrlSchema } from "../../shared/base-64"
 import { BaseCredentialSchema, vcTypeSchema } from "../core"
 import {
   bitstringStatusListContext,
