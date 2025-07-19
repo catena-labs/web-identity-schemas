@@ -4,7 +4,7 @@
   "verificationMethod": [
     {
       "id": "did:example:123456789abcdefghi#keys-1",
-      "type": "JsonWebKey2020",
+      "type": "JsonWebKey",
       "controller": "did:example:123456789abcdefghi",
       "publicKeyJwk": {
         "kty": "OKP",

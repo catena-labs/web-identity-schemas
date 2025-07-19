@@ -60,7 +60,7 @@
   "scripts": {
     "build": "tsdown",
     "check": "bun run format:check && bun run lint && bun run typecheck && bun test",
-    "clean": "git clean -fdX dist node_modules/.cache",
+    "clean": "git clean -xdf dist node_modules/.cache",
     "fix": "bun run format && bun run lint:fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",

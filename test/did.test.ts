@@ -1,8 +1,6 @@
 import { test, expect, describe } from "bun:test"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
-
-// Import fixtures
 import didKeyValid from "./fixtures/did/did-key-valid.json"
 import didWebValid from "./fixtures/did/did-web-valid.json"
 import documentValid from "./fixtures/did/document-valid.json"
@@ -138,7 +136,7 @@ describe("did", () => {
       test("valid verification method", () => {
         const validVerificationMethod = {
           id: "did:example:123456789abcdefghi#keys-1",
-          type: "JsonWebKey2020",
+          type: "JsonWebKey",
           controller: "did:example:123456789abcdefghi",
           publicKeyJwk: {
             kty: "EC",
@@ -155,30 +153,53 @@ describe("did", () => {
         )
       })
 
-      test("different verification method types", () => {
-        const methodTypes = [
-          "JsonWebKey2020",
-          "Ed25519VerificationKey2020",
-          "Ed25519VerificationKey2018",
-          "X25519KeyAgreementKey2020",
-          "X25519KeyAgreementKey2019",
-          "EcdsaSecp256k1VerificationKey2019",
-          "EcdsaSecp256r1VerificationKey2019",
-          "RsaVerificationKey2018"
-        ]
-
-        for (const type of methodTypes) {
-          const verificationMethod = {
-            id: "did:example:123456789abcdefghi#keys-1",
-            type,
-            controller: "did:example:123456789abcdefghi",
-            publicKeyMultibase: "zQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC"
-          }
-
-          expect(verificationMethod).toMatchSchema(
-            schemas.VerificationMethodSchema
-          )
+      test("multikey verification method", () => {
+        const verificationMethod = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Multikey",
+          controller: "did:example:123456789abcdefghi",
+          publicKeyMultibase: "zQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC"
         }
+
+        expect(verificationMethod).toMatchSchema(
+          schemas.VerificationMethodSchema
+        )
+      })
+
+      test("json web key verification method", () => {
+        const verificationMethod = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "JsonWebKey",
+          controller: "did:example:123456789abcdefghi",
+          publicKeyJwk: {
+            kty: "EC",
+            crv: "P-256",
+            x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+          }
+        }
+
+        expect(verificationMethod).toMatchSchema(
+          schemas.VerificationMethodSchema
+        )
+      })
+
+      test("legacy verification method", () => {
+        const verificationMethod = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "JsonWebKey2020",
+          controller: "did:example:123456789abcdefghi",
+          publicKeyJwk: {
+            kty: "EC",
+            crv: "P-256",
+            x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+          }
+        }
+
+        expect(verificationMethod).toMatchSchema(
+          schemas.VerificationMethodSchema
+        )
       })
 
       test("with publicKeyBase58", () => {
@@ -241,7 +262,7 @@ describe("did", () => {
           verificationMethod: [
             {
               id: "did:example:123456789abcdefghi#keys-1",
-              type: "JsonWebKey2020",
+              type: "JsonWebKey",
               controller: "did:example:123456789abcdefghi",
               publicKeyJwk: {
                 kty: "EC",

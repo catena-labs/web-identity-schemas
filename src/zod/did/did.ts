@@ -11,10 +11,17 @@ import type {
   Did,
   VerificationMethodType,
   ServiceEndpointMap,
-  DidMethod
+  DidMethod,
+  LegacyVerificationMethodType
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
-import { didMethodRegex, didRegex, didUrlRegex } from "../../constants/did"
+import {
+  didMethodRegex,
+  didRegex,
+  didUrlRegex,
+  legacyVerificationMethodTypes,
+  verificationMethodTypes
+} from "../../constants/did"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.
@@ -61,40 +68,68 @@ export const DidMethodSchema = z
  * @see {@link https://www.w3.org/TR/did-spec-registries/#verification-method-types}
  */
 export const VerificationMethodTypeSchema: Shape<VerificationMethodType> =
-  z.union([
-    z.literal("JsonWebKey2020"),
-    z.literal("Ed25519VerificationKey2020"),
-    z.literal("Ed25519VerificationKey2018"),
-    z.literal("X25519KeyAgreementKey2020"),
-    z.literal("X25519KeyAgreementKey2019"),
-    z.literal("EcdsaSecp256k1VerificationKey2019"),
-    z.literal("EcdsaSecp256r1VerificationKey2019"),
-    z.literal("RsaVerificationKey2018")
-  ])
+  z.enum(verificationMethodTypes)
+
+export const LegacyVerificationMethodTypeSchema: Shape<LegacyVerificationMethodType> =
+  z.enum(legacyVerificationMethodTypes)
+
+/**
+ * Base verification method schema with common properties.
+ */
+const VerificationMethodBaseSchema = z.object({
+  /** The verification method identifier */
+  id: DidUrlSchema,
+
+  /** The DID that controls this verification method */
+  controller: DidSchema
+})
+
+/**
+ * JsonWebKey verification method schema.
+ */
+export const VerificationMethodJsonWebKeySchema = z.object({
+  ...VerificationMethodBaseSchema.shape,
+  /** The verification method type */
+  type: z.literal("JsonWebKey"),
+
+  /** JSON Web Key */
+  publicKeyJwk: JsonWebKeySchema
+})
+
+export const VerificationMethodMultikeySchema = z.object({
+  ...VerificationMethodBaseSchema.shape,
+  /** The verification method type */
+  type: z.literal("Multikey"),
+
+  /** Multibase-encoded public key */
+  publicKeyMultibase: z.string()
+})
+
+export const VerificationMethodLegacySchema = z.object({
+  ...VerificationMethodBaseSchema.shape,
+  /** The verification method type */
+  type: LegacyVerificationMethodTypeSchema,
+
+  /** Multibase-encoded public key */
+  publicKeyMultibase: z.string().optional(),
+
+  /** JSON Web Key */
+  publicKeyJwk: JsonWebKeySchema.optional(),
+
+  /** Base58-encoded public key (deprecated, use publicKeyJwk) */
+  publicKeyBase58: z.string().optional()
+})
 
 /**
  * Verification method schema.
  * @see {@link https://www.w3.org/TR/did-core/#verification-methods}
  */
-export const VerificationMethodSchema: Shape<VerificationMethod> = z.object({
-  /** The verification method identifier */
-  id: DidUrlSchema,
-
-  /** The verification method type */
-  type: VerificationMethodTypeSchema,
-
-  /** The DID that controls this verification method */
-  controller: DidSchema,
-
-  /** JSON Web Key (if type is JsonWebKey2020) */
-  publicKeyJwk: JsonWebKeySchema.optional(),
-
-  /** Base58-encoded public key (deprecated, use publicKeyJwk) */
-  publicKeyBase58: z.string().optional(),
-
-  /** Multibase-encoded public key */
-  publicKeyMultibase: z.string().optional()
-})
+export const VerificationMethodSchema: Shape<VerificationMethod> =
+  z.discriminatedUnion("type", [
+    VerificationMethodJsonWebKeySchema,
+    VerificationMethodMultikeySchema,
+    VerificationMethodLegacySchema
+  ])
 
 export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
   z.string(),
