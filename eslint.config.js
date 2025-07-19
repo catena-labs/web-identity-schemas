@@ -19,6 +19,7 @@ export default tseslint.config(
     },
     rules: {
       "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-deprecated": "off",
       "@typescript-eslint/no-empty-object-type": [
         "warn",
         {

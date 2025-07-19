@@ -1,6 +1,9 @@
-import type { VerificationMethodType } from "../types"
+import type {
+  LegacyVerificationMethodType,
+  VerificationMethodType
+} from "../types"
 
-export const verificationMethodTypes: VerificationMethodType[] = [
+export const legacyVerificationMethodTypes: LegacyVerificationMethodType[] = [
   "JsonWebKey2020",
   "Ed25519VerificationKey2020",
   "Ed25519VerificationKey2018",
@@ -9,6 +12,11 @@ export const verificationMethodTypes: VerificationMethodType[] = [
   "EcdsaSecp256k1VerificationKey2019",
   "EcdsaSecp256r1VerificationKey2019",
   "RsaVerificationKey2018"
+]
+
+export const verificationMethodTypes: VerificationMethodType[] = [
+  "JsonWebKey",
+  "Multikey"
 ]
 
 export const didRegex = /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]$/

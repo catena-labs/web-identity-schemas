@@ -7,17 +7,21 @@ import type {
   DidUrl,
   DidMethod,
   VerificationMethodType,
-  VerificationMethod,
   Service,
   ServiceEndpoint,
-  DidDocument
+  DidDocument,
+  LegacyVerificationMethodType,
+  VerificationMethodMultikey,
+  VerificationMethodJsonWebKey,
+  VerificationMethodLegacy
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
 import {
   verificationMethodTypes,
   didRegex,
   didUrlRegex,
-  didMethodRegex
+  didMethodRegex,
+  legacyVerificationMethodTypes
 } from "../../constants/did"
 
 /**
@@ -69,28 +73,76 @@ export const VerificationMethodTypeSchema = v.pipe(
 )
 
 /**
- * Verification method schema.
- * @see {@link https://www.w3.org/TR/did-core/#verification-methods}
+ * Legacy verification method type.
+ * @see {@link https://www.w3.org/TR/did-spec-registries/#verification-method-types}
  */
-export const VerificationMethodSchema = v.object({
+export const LegacyVerificationMethodTypeSchema = v.pipe(
+  v.picklist(legacyVerificationMethodTypes),
+  v.custom<LegacyVerificationMethodType>(() => true)
+)
+
+/**
+ * Base verification method schema with common properties.
+ */
+const VerificationMethodBaseSchema = v.object({
   /** The verification method identifier */
   id: DidUrlSchema,
 
-  /** The verification method type */
-  type: VerificationMethodTypeSchema,
-
   /** The DID that controls this verification method */
-  controller: DidSchema,
+  controller: DidSchema
+})
 
-  /** JSON Web Key (if type is JsonWebKey2020) */
-  publicKeyJwk: v.optional(JsonWebKeySchema),
+/**
+ * JsonWebKey verification method schema.
+ */
+export const VerificationMethodJsonWebKeySchema = v.object({
+  ...VerificationMethodBaseSchema.entries,
+  /** The verification method type */
+  type: v.literal("JsonWebKey"),
+
+  /** JSON Web Key */
+  publicKeyJwk: JsonWebKeySchema
+} satisfies Shape<VerificationMethodJsonWebKey>)
+
+/**
+ * Multikey verification method schema.
+ */
+export const VerificationMethodMultikeySchema = v.object({
+  ...VerificationMethodBaseSchema.entries,
+  /** The verification method type */
+  type: v.literal("Multikey"),
+
+  /** Multibase-encoded public key */
+  publicKeyMultibase: v.string()
+} satisfies Shape<VerificationMethodMultikey>)
+
+/**
+ * Legacy verification method schema.
+ */
+export const VerificationMethodLegacySchema = v.object({
+  ...VerificationMethodBaseSchema.entries,
+  /** The verification method type */
+  type: LegacyVerificationMethodTypeSchema,
 
   /** Multibase-encoded public key */
   publicKeyMultibase: v.optional(v.string()),
 
+  /** JSON Web Key */
+  publicKeyJwk: v.optional(JsonWebKeySchema),
+
   /** Base58-encoded public key (deprecated, use publicKeyJwk) */
   publicKeyBase58: v.optional(v.string())
-} satisfies Shape<VerificationMethod>)
+} satisfies Shape<VerificationMethodLegacy>)
+
+/**
+ * Verification method schema as a discriminated union.
+ * @see {@link https://www.w3.org/TR/did-core/#verification-methods}
+ */
+export const VerificationMethodSchema = v.variant("type", [
+  VerificationMethodJsonWebKeySchema,
+  VerificationMethodMultikeySchema,
+  VerificationMethodLegacySchema
+])
 
 /**
  * Service endpoint schema.

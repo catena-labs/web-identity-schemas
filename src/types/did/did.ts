@@ -24,10 +24,10 @@ export type Did<
 export type DidUrl = Did
 
 /**
- * Verification method type.
- * @see {@link https://www.w3.org/TR/did-spec-registries/#verification-method-types}
+ * Outdated verification method types.
+ * @deprecated use {@link VerificationMethodType} instead
  */
-export type VerificationMethodType =
+export type LegacyVerificationMethodType =
   | "JsonWebKey2020"
   | "Ed25519VerificationKey2020"
   | "Ed25519VerificationKey2018"
@@ -38,28 +38,51 @@ export type VerificationMethodType =
   | "RsaVerificationKey2018"
 
 /**
+ * Verification method type.
+ * @see {@link https://www.w3.org/2025/credentials/vcdi/vocab/v2/vocabulary.html#verificationMethod}
+ */
+export type VerificationMethodType = "JsonWebKey" | "Multikey"
+
+/**
  * Verification method.
  * @see {@link https://www.w3.org/TR/did-core/#verification-methods}
  */
-export interface VerificationMethod {
+interface VerificationMethodBase {
   /** A string that conforms to the rules in 3.2 DID URL Syntax. */
   id: DidUrl
 
-  /** The verification method type. */
-  type: VerificationMethodType
-
   /** A string that conforms to the rules in 3.1 DID Syntax. */
   controller: Did
+}
 
+export interface VerificationMethodJsonWebKey extends VerificationMethodBase {
+  type: "JsonWebKey"
   /** A map representing a JSON Web Key that conforms to [RFC7517]. */
-  publicKeyJwk?: unknown
+  publicKeyJwk: unknown
+}
 
+export interface VerificationMethodMultikey extends VerificationMethodBase {
+  type: "Multikey"
   /** A string that conforms to a multibase encoded public key. */
-  publicKeyMultibase?: string
+  publicKeyMultibase: string
+}
 
+export interface VerificationMethodLegacy extends VerificationMethodBase {
+  type: LegacyVerificationMethodType
+  publicKeyMultibase?: string
+  publicKeyJwk?: unknown
   /** @deprecated usa {@link publicKeyMultibase} or {@link publicKeyJwk} instead */
   publicKeyBase58?: string
 }
+
+/**
+ * Verification method.
+ * @see {@link https://www.w3.org/TR/did-core/#verification-methods}
+ */
+export type VerificationMethod =
+  | VerificationMethodJsonWebKey
+  | VerificationMethodMultikey
+  | VerificationMethodLegacy
 
 export interface ServiceEndpointMap {
   [key: string]: string | string[] | Uri | ServiceEndpointMap
