@@ -65,13 +65,13 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
 
 /**
  * Check if a value is a valid DID for a specific method.
- * @param value - The value to check.
  * @param method - The method to check.
+ * @param value - The value to check.
  * @returns True if the value is a valid DID for the method, false otherwise.
  */
 export function isDidWithMethod<T extends DidMethod>(
-  value: unknown,
-  method: T
+  method: T,
+  value: unknown
 ): value is Did<T> {
   return createDidSchema(method).safeParse(value).success
 }

@@ -63,10 +63,10 @@ describe("did", () => {
         expect("did:example:123456789abcdefghi").toMatchSchema(schema)
         expect("did:bad:123456789abcdefghi").not.toMatchSchema(schema)
         expect(
-          schemas.isDidWithMethod("did:example:123456789abcdefghi", "example")
+          schemas.isDidWithMethod("example", "did:example:123456789abcdefghi")
         ).toBe(true)
         expect(
-          schemas.isDidWithMethod("did:bad:123456789abcdefghi", "example")
+          schemas.isDidWithMethod("example", "did:bad:123456789abcdefghi")
         ).toBe(false)
       })
     })
