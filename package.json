@@ -74,6 +74,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@changesets/cli": "^2.29.5",
     "@eslint/js": "^9.31.0",
     "@prettier/plugin-oxc": "^0.0.4",
     "@types/bun": "latest",
