@@ -1,6 +1,6 @@
+import type { Proof } from "./proof"
 import type { JsonLdContext } from "../shared/json-ld"
 import type { Uri } from "../shared/uri"
-import type { Proof } from "./proof"
 
 export type CredentialType = string | string[]
 

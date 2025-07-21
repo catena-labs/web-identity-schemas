@@ -1,18 +1,18 @@
+import type {
+  StatusList2021CredentialSubject,
+  StatusList2021Credential
+} from "../../../types/vc/status/statuslist2021"
+import type { Shape } from "../../shared/shape"
 import * as v from "valibot"
-import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64"
 import {
   statusList2021Context,
   statusPurposes,
   vcV1CoreContext
 } from "../../../constants/vc"
-import { BaseCredentialSchema, vcTypeSchema } from "../core"
+import { DidSchema } from "../../did"
+import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
-import type { Shape } from "../../shared/shape"
-import type {
-  StatusList2021CredentialSubject,
-  StatusList2021Credential
-} from "../../../types/vc/status/statuslist2021"
+import { BaseCredentialSchema, vcTypeSchema } from "../core"
 
 /**
  * StatusList2021 context (for V1 credentials).

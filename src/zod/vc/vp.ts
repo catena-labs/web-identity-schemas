@@ -1,8 +1,7 @@
 import * as z from "zod"
-import { ProofSchema } from "./core"
-import { VerifiableCredentialSchema } from "./vc"
-import { VcContextSchema } from "./vc"
 import { DidSchema } from "../did"
+import { ProofSchema } from "./core"
+import { VerifiableCredentialSchema, VcContextSchema } from "./vc"
 
 /**
  * Verifiable Presentation literal type value.

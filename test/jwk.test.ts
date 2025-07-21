@@ -1,15 +1,15 @@
 import { test, expect, describe } from "bun:test"
+import { keyUses, keyOperations } from "../src/constants/jwk"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
-import { keyUses, keyOperations } from "../src/constants/jwk"
 import ecP256Valid from "./fixtures/jwk/ec-p256-valid.json"
-import rsaPublicValid from "./fixtures/jwk/rsa-public-valid.json"
-import rsaPrivateValid from "./fixtures/jwk/rsa-private-valid.json"
-import octValid from "./fixtures/jwk/oct-valid.json"
-import okpEd25519Valid from "./fixtures/jwk/okp-ed25519-valid.json"
 import invalidBadBase64url from "./fixtures/jwk/invalid-bad-base64url.json"
 import invalidMissingKty from "./fixtures/jwk/invalid-missing-kty.json"
 import jwksGithubTokenActions from "./fixtures/jwk/jwks-token.actions.githubusercontent.json"
+import octValid from "./fixtures/jwk/oct-valid.json"
+import okpEd25519Valid from "./fixtures/jwk/okp-ed25519-valid.json"
+import rsaPrivateValid from "./fixtures/jwk/rsa-private-valid.json"
+import rsaPublicValid from "./fixtures/jwk/rsa-public-valid.json"
 
 const namespaces = {
   valibot,

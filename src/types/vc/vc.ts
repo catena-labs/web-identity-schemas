@@ -1,6 +1,6 @@
+import type { CredentialSubject, CredentialType } from "./core"
 import type { VerifiableCredentialV1, VerifiablePresentationV1 } from "./v1"
 import type { VerifiableCredentialV2, VerifiablePresentationV2 } from "./v2"
-import type { CredentialSubject, CredentialType } from "./core"
 
 export type VerifiableCredential<
   TType extends CredentialType = CredentialType,

@@ -1,10 +1,10 @@
-import * as z from "zod"
-import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
-import { JoseAlgorithmSchema } from "./jwa"
-import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
-import { keyUses, keyOperations } from "../../constants/jwk"
-import type { Shape } from "../shared/shape"
 import type { KeyUse, KeyOperation, JsonWebKey } from "../../types/jose/jwk"
+import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { keyUses, keyOperations } from "../../constants/jwk"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
+import { JoseAlgorithmSchema } from "./jwa"
 
 /**
  * Intended key use.

@@ -1,9 +1,3 @@
-import * as v from "valibot"
-import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
-import { JoseAlgorithmSchema } from "./jwa"
-import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
-import { keyUses, keyOperations } from "../../constants/jwk"
-import type { Shape } from "../shared/shape"
 import type {
   KeyUse,
   KeyOperation,
@@ -14,6 +8,12 @@ import type {
   OkpJwk,
   JsonWebKey
 } from "../../types/jose/jwk"
+import type { Shape } from "../shared/shape"
+import * as v from "valibot"
+import { keyUses, keyOperations } from "../../constants/jwk"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
+import { JoseAlgorithmSchema } from "./jwa"
 
 /**
  * Intended key use.

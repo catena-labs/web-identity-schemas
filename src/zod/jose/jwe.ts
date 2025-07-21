@@ -1,11 +1,3 @@
-import * as z from "zod"
-import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
-import {
-  JweKeyManagementAlgorithmSchema,
-  JweContentEncryptionAlgorithmSchema,
-  JoseCompressionAlgorithmSchema
-} from "./jwa"
-import { JsonWebKeySchema } from "./jwk"
 import type {
   JweProtectedHeader,
   JweUnprotectedHeader,
@@ -14,6 +6,14 @@ import type {
   JweGeneralJson
 } from "../../types/jose/jwe"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import {
+  JweKeyManagementAlgorithmSchema,
+  JweContentEncryptionAlgorithmSchema,
+  JoseCompressionAlgorithmSchema
+} from "./jwa"
+import { JsonWebKeySchema } from "./jwk"
 
 /**
  * JWE Protected Header Schema.

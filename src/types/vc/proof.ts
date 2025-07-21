@@ -1,6 +1,6 @@
-import type { Uri } from "../shared/uri"
-import type { DateTimeStamp } from "../shared/json-ld"
 import type { JwsString } from "../jose/jws"
+import type { DateTimeStamp } from "../shared/json-ld"
+import type { Uri } from "../shared/uri"
 
 /**
  * Proof purpose values.

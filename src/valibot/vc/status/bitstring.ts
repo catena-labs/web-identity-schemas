@@ -1,18 +1,18 @@
+import type {
+  BitstringStatusListCredentialSubject,
+  BitstringStatusListCredential
+} from "../../../types/vc/status/bitstring"
+import type { Shape } from "../../shared/shape"
 import * as v from "valibot"
-import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64"
-import { BaseCredentialSchema, vcTypeSchema } from "../core"
 import {
   bitstringStatusListContext,
   statusPurposes,
   vcV2CoreContext
 } from "../../../constants/vc"
-import type { Shape } from "../../shared/shape"
-import type {
-  BitstringStatusListCredentialSubject,
-  BitstringStatusListCredential
-} from "../../../types/vc/status/bitstring"
+import { DidSchema } from "../../did"
+import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
+import { BaseCredentialSchema, vcTypeSchema } from "../core"
 
 /**
  * BitstringStatusList context (for V2 credentials).

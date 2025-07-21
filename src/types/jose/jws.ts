@@ -1,6 +1,6 @@
-import type { Base64, Base64Url } from "../shared/base-64"
-import type { JoseAlgorithm } from "../shared/algorithms"
 import type { JsonWebKey } from "./jwk"
+import type { JoseAlgorithm } from "../shared/algorithms"
+import type { Base64, Base64Url } from "../shared/base-64"
 
 /**
  * JWS Protected Header.

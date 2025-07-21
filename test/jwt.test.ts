@@ -1,9 +1,9 @@
 import { test, expect, describe } from "bun:test"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
+import jwtInvalidNoneWithSignature from "./fixtures/jwt/invalid-none-with-signature.json"
 import jwtObjectHs256Valid from "./fixtures/jwt/object-hs256-valid.json"
 import jwtObjectNoneValid from "./fixtures/jwt/object-none-valid.json"
-import jwtInvalidNoneWithSignature from "./fixtures/jwt/invalid-none-with-signature.json"
 
 const namespaces = {
   valibot,

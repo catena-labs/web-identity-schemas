@@ -1,7 +1,3 @@
-import * as z from "zod"
-import { JsonWebKeySchema } from "../jose/jwk"
-import { UriSchema } from "../shared/uri"
-import { jsonLdContextSchema } from "../shared/json-ld"
 import type {
   ServiceEndpoint,
   VerificationMethod,
@@ -15,6 +11,7 @@ import type {
   LegacyVerificationMethodType
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
 import {
   didMethodRegex,
   didRegex,
@@ -22,6 +19,9 @@ import {
   legacyVerificationMethodTypes,
   verificationMethodTypes
 } from "../../constants/did"
+import { JsonWebKeySchema } from "../jose/jwk"
+import { jsonLdContextSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.

@@ -1,6 +1,6 @@
-import type { BaseCredential, CredentialSubject, StatusPurpose } from "../core"
 import type { Base64Url } from "../../shared/base-64"
 import type { DateTimeStamp } from "../../shared/json-ld"
+import type { BaseCredential, CredentialSubject, StatusPurpose } from "../core"
 
 /**
  * StatusList2021 credential subject.

@@ -1,7 +1,3 @@
-import * as v from "valibot"
-import { UriSchema } from "../shared/uri"
-import { JsonWebKeySchema } from "../jose/jwk"
-import { jsonLdContextSchema } from "../shared/json-ld"
 import type {
   Did,
   DidUrl,
@@ -16,6 +12,7 @@ import type {
   VerificationMethodLegacy
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
+import * as v from "valibot"
 import {
   verificationMethodTypes,
   didRegex,
@@ -23,6 +20,9 @@ import {
   didMethodRegex,
   legacyVerificationMethodTypes
 } from "../../constants/did"
+import { JsonWebKeySchema } from "../jose/jwk"
+import { jsonLdContextSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.

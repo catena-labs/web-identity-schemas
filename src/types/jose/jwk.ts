@@ -1,6 +1,6 @@
+import type { JoseAlgorithm } from "../shared/algorithms"
 import type { Base64, Base64Url } from "../shared/base-64"
 import type { EllipticCurve, OctetKeyPairCurve } from "../shared/curves"
-import type { JoseAlgorithm } from "../shared/algorithms"
 
 /**
  * Intended key use.

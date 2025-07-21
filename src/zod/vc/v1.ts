@@ -1,9 +1,9 @@
-import * as z from "zod"
-import { BaseCredentialSchema, ProofSchema, credentialTypeSchema } from "./core"
-import { vcV1CoreContext } from "../../constants/vc"
-import type { Shape } from "../shared/shape"
 import type { Uri } from "../../types"
+import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { vcV1CoreContext } from "../../constants/vc"
 import { jsonLdContextSchema } from "../shared/json-ld"
+import { BaseCredentialSchema, ProofSchema, credentialTypeSchema } from "./core"
 
 /**
  * Core VC Data Model V1 context.

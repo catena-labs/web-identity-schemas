@@ -1,7 +1,3 @@
-import * as z from "zod"
-import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
-import { JoseAlgorithmSchema } from "./jwa"
-import { JsonWebKeySchema } from "./jwk"
 import type {
   JwsProtectedHeader,
   JwsUnprotectedHeader,
@@ -11,6 +7,10 @@ import type {
   JwsString
 } from "../../types/jose/jws"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import { JoseAlgorithmSchema } from "./jwa"
+import { JsonWebKeySchema } from "./jwk"
 
 /**
  * JWS Protected Header Schema.

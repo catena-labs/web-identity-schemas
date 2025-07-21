@@ -1,6 +1,6 @@
-import * as z from "zod"
 import type { JwtString, JwtStringParts } from "../../types/jose/jwt-string"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
 
 /**
  * JWT string format validation.
