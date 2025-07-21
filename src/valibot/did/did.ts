@@ -35,12 +35,39 @@ export const DidSchema = v.pipe(
   v.custom<Did>(() => true)
 )
 
+/**
+ * Check if a value is a valid DID.
+ * @param value - The value to check.
+ * @returns True if the value is a valid DID, false otherwise.
+ */
+export function isDid(value: unknown): value is Did {
+  return v.is(DidSchema, value)
+}
+
+/**
+ * Create a DID schema for a specific method.
+ * @param method - The method to create a schema for.
+ * @returns A schema for the DID.
+ */
 export const createDidSchema = <T extends DidMethod>(method: T) => {
   return v.pipe(
     DidSchema,
     v.startsWith(`did:${method}:`),
     v.custom<Did<T>>(() => true)
   )
+}
+
+/**
+ * Check if a value is a valid DID for a specific method.
+ * @param value - The value to check.
+ * @param method - The method to check.
+ * @returns True if the value is a valid DID for the method, false otherwise.
+ */
+export function isDidWithMethod<T extends DidMethod>(
+  value: unknown,
+  method: T
+): value is Did<T> {
+  return v.is(createDidSchema(method), value)
 }
 
 /**
