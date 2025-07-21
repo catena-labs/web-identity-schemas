@@ -1,7 +1,7 @@
-import * as v from "valibot"
-import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
-import { UriSchema } from "./uri"
 import type { Uri } from "../../types"
+import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
+import * as v from "valibot"
+import { UriSchema } from "./uri"
 
 /**
  * JSON-LD context schema.

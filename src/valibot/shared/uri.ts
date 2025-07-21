@@ -1,5 +1,5 @@
-import * as v from "valibot"
 import type { Uri } from "../../types/shared/uri"
+import * as v from "valibot"
 
 /**
  * URI schema according to RFC 3986.

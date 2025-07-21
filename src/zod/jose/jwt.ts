@@ -1,10 +1,3 @@
-import * as z from "zod"
-import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
-import {
-  JoseSignatureAlgorithmSchema,
-  JoseUnsecuredAlgorithmSchema
-} from "./jwa"
-import { JsonWebKeySchema } from "./jwk"
 import type {
   UnixTimestamp,
   JwtHeader,
@@ -16,6 +9,13 @@ import type {
   JwtObjectSigned
 } from "../../types/jose/jwt"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import {
+  JoseSignatureAlgorithmSchema,
+  JoseUnsecuredAlgorithmSchema
+} from "./jwa"
+import { JsonWebKeySchema } from "./jwk"
 
 const UnixTimestampSchema = z
   .number()

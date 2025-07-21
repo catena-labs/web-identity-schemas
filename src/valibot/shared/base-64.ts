@@ -1,5 +1,5 @@
-import * as v from "valibot"
 import type { Base64Url, Base64 } from "../../types/shared/base-64"
+import * as v from "valibot"
 
 /**
  * Base64url encoding pattern.

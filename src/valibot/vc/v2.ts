@@ -1,8 +1,8 @@
+import type { Uri } from "../../types"
 import * as v from "valibot"
-import { BaseCredentialSchema, vcTypeSchema } from "./core"
 import { vcV2CoreContext } from "../../constants/vc"
 import { jsonLdContextSchema } from "../shared/json-ld"
-import type { Uri } from "../../types"
+import { BaseCredentialSchema, vcTypeSchema } from "./core"
 
 /**
  * Core VC Data Model V2 context.

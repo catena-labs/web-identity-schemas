@@ -1,5 +1,5 @@
-import * as z from "zod"
 import type { Base64Url, Base64 } from "../../types/shared/base-64"
+import * as z from "zod"
 
 /**
  * Base64url encoding pattern.

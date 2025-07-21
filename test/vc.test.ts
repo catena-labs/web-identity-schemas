@@ -1,22 +1,20 @@
 import { test, expect, describe } from "bun:test"
-import * as valibot from "../src/valibot"
-import * as zod from "../src/zod"
 import {
   vcV1CoreContext,
   vcV2CoreContext,
   proofPurposes
 } from "../src/constants/vc"
+import * as valibot from "../src/valibot"
+import * as zod from "../src/zod"
+import credentialV1Valid from "./fixtures/vc/credential-v1-valid.json"
+import credentialV2Valid from "./fixtures/vc/credential-v2-valid.json"
+import invalidMissingContext from "./fixtures/vc/invalid-missing-context.json"
+import presentationValid from "./fixtures/vc/presentation-valid.json"
 
 // Helper function to safely test schemas with relaxed typing
 function testSchema(input: unknown, schema: unknown): void {
   expect(input).toMatchSchema(schema as never)
 }
-
-// Import fixtures
-import credentialV1Valid from "./fixtures/vc/credential-v1-valid.json"
-import credentialV2Valid from "./fixtures/vc/credential-v2-valid.json"
-import invalidMissingContext from "./fixtures/vc/invalid-missing-context.json"
-import presentationValid from "./fixtures/vc/presentation-valid.json"
 
 const namespaces = {
   valibot,

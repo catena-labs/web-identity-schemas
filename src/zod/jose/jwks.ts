@@ -1,7 +1,7 @@
-import * as z from "zod"
-import { JsonWebKeySchema } from "./jwk"
 import type { JsonWebKeySet } from "../../types/jose/jwks"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import { JsonWebKeySchema } from "./jwk"
 
 /**
  * JSON Web Key Set schema.

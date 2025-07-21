@@ -7,7 +7,7 @@ const config = {
   tabWidth: 2,
   semi: false,
   singleQuote: false,
-  plugins: ["prettier-plugin-packagejson"]
+  plugins: ["@prettier/plugin-oxc", "prettier-plugin-packagejson"]
 }
 
 export default config

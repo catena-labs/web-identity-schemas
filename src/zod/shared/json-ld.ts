@@ -1,7 +1,7 @@
-import * as z from "zod"
-import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
-import { UriSchema } from "./uri"
 import type { Uri } from "../../types"
+import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
+import * as z from "zod"
+import { UriSchema } from "./uri"
 
 /**
  * JSON-LD context schema.

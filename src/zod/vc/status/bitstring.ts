@@ -1,15 +1,15 @@
+import type { BitstringStatusListCredentialSubject } from "../../../types/vc/status/bitstring"
+import type { Shape } from "../../shared/shape"
 import * as z from "zod"
-import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64"
-import { BaseCredentialSchema } from "../core"
 import {
   bitstringStatusListContext,
   statusPurposes,
   vcV2CoreContext
 } from "../../../constants/vc"
+import { DidSchema } from "../../did"
+import { Base64UrlSchema } from "../../shared/base-64"
+import { BaseCredentialSchema } from "../core"
 import { VcV2CoreContextSchema } from "../v2"
-import type { BitstringStatusListCredentialSubject } from "../../../types/vc/status/bitstring"
-import type { Shape } from "../../shared/shape"
 
 /**
  * BitstringStatusList context (for V2 credentials).

@@ -1,7 +1,3 @@
-import * as z from "zod"
-import { JsonWebKeySchema } from "../jose/jwk"
-import { UriSchema } from "../shared/uri"
-import { jsonLdContextSchema } from "../shared/json-ld"
 import type {
   ServiceEndpoint,
   VerificationMethod,
@@ -15,6 +11,7 @@ import type {
   LegacyVerificationMethodType
 } from "../../types/did"
 import type { Shape } from "../shared/shape"
+import * as z from "zod"
 import {
   didMethodRegex,
   didRegex,
@@ -22,6 +19,9 @@ import {
   legacyVerificationMethodTypes,
   verificationMethodTypes
 } from "../../constants/did"
+import { JsonWebKeySchema } from "../jose/jwk"
+import { jsonLdContextSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.
@@ -31,6 +31,24 @@ export const DidSchema = z
   .string()
   .regex(didRegex, "Must be a valid DID")
   .pipe(z.custom<Did>())
+
+/**
+ * Check if a value is a valid DID.
+ * @param value - The value to check.
+ * @returns True if the value is a valid DID, false otherwise.
+ */
+export function isDid(value: unknown): value is Did {
+  return DidSchema.safeParse(value).success
+}
+
+/**
+ * DID URL with optional path, query, and fragment.
+ * @see {@link https://www.w3.org/TR/did-core/#did-url-syntax}
+ */
+export const DidUrlSchema = z
+  .string()
+  .regex(didUrlRegex, "Must be a valid DID URL")
+  .pipe(z.custom<DidUrl>())
 
 /**
  * Create a DID schema for a specific method.
@@ -46,13 +64,17 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
 }
 
 /**
- * DID URL with optional path, query, and fragment.
- * @see {@link https://www.w3.org/TR/did-core/#did-url-syntax}
+ * Check if a value is a valid DID for a specific method.
+ * @param value - The value to check.
+ * @param method - The method to check.
+ * @returns True if the value is a valid DID for the method, false otherwise.
  */
-export const DidUrlSchema = z
-  .string()
-  .regex(didUrlRegex, "Must be a valid DID URL")
-  .pipe(z.custom<DidUrl>())
+export function isDidWithMethod<T extends DidMethod>(
+  value: unknown,
+  method: T
+): value is Did<T> {
+  return createDidSchema(method).safeParse(value).success
+}
 
 /**
  * DID method names. Must follow format rules: lowercase letters and numbers only.

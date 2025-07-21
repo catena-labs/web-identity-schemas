@@ -1,14 +1,4 @@
-import * as z from "zod"
-import { UriSchema } from "../shared/uri"
-import { DateTimeStampSchema } from "../shared/json-ld"
-import { JwsStringSchema } from "../jose/jws"
 import type { JwsString } from "../../types/jose/jws"
-import {
-  proofPurposes,
-  credentialStatusTypes,
-  statusPurposes
-} from "../../constants/vc"
-import type { Shape } from "../shared/shape"
 import type {
   CredentialStatusType,
   StatusPurpose,
@@ -19,6 +9,16 @@ import type {
   GenericResource
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
+import type { Shape } from "../shared/shape"
+import * as z from "zod"
+import {
+  proofPurposes,
+  credentialStatusTypes,
+  statusPurposes
+} from "../../constants/vc"
+import { JwsStringSchema } from "../jose/jws"
+import { DateTimeStampSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 
 /**
  * Verifiable Credential literal type value.

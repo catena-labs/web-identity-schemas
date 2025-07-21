@@ -1,7 +1,7 @@
+import type { Uri } from "../../types"
 import * as v from "valibot"
 import { createVerifiableCredentialV1Schema, VcV1ContextSchema } from "./v1"
 import { createVerifiableCredentialV2Schema, VcV2ContextSchema } from "./v2"
-import type { Uri } from "../../types"
 
 /**
  * Verifiable Credential context values (union of V1 and V2).

@@ -1,6 +1,6 @@
+import type { MatcherResult } from "bun:test"
 import { expect } from "bun:test"
 import * as s from "standard-parse"
-import type { MatcherResult } from "bun:test"
 
 interface StandardSchemaTestMatchers {
   toMatchSchema<TOutput>(

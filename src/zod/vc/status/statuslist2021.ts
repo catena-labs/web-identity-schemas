@@ -1,15 +1,15 @@
+import type { StatusList2021CredentialSubject } from "../../../types/vc/status/statuslist2021"
+import type { Shape } from "../../shared/shape"
 import * as z from "zod"
-import { DidSchema } from "../../did"
-import { Base64UrlSchema } from "../../shared/base-64"
-import { BaseCredentialSchema } from "../core"
 import {
   statusList2021Context,
   statusPurposes,
   vcV1CoreContext
 } from "../../../constants/vc"
+import { DidSchema } from "../../did"
+import { Base64UrlSchema } from "../../shared/base-64"
+import { BaseCredentialSchema } from "../core"
 import { VcV1CoreContextSchema } from "../v1"
-import type { StatusList2021CredentialSubject } from "../../../types/vc/status/statuslist2021"
-import type { Shape } from "../../shared/shape"
 
 /**
  * StatusList2021 context (for V1 credentials).

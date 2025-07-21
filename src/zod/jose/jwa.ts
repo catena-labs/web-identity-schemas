@@ -1,3 +1,11 @@
+import type {
+  JoseSignatureAlgorithm,
+  JoseUnsecuredAlgorithm,
+  JoseAlgorithm,
+  JweContentEncryptionAlgorithm,
+  JweKeyManagementAlgorithm,
+  JoseCompressionAlgorithm
+} from "../../types/shared/algorithms"
 import * as z from "zod"
 import {
   joseSignatureAlgorithms,
@@ -7,14 +15,6 @@ import {
   jweKeyManagementAlgorithms,
   joseCompressionAlgorithms
 } from "../../constants/algorithms"
-import type {
-  JoseSignatureAlgorithm,
-  JoseUnsecuredAlgorithm,
-  JoseAlgorithm,
-  JweContentEncryptionAlgorithm,
-  JweKeyManagementAlgorithm,
-  JoseCompressionAlgorithm
-} from "../../types/shared/algorithms"
 
 /**
  * JSON Web Signature algorithms that require cryptographic signatures.

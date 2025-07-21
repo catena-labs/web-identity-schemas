@@ -1,8 +1,8 @@
 import * as v from "valibot"
-import { VcContextSchema } from "./index"
-import { VerifiableCredentialSchema } from "./vc"
 import { DidSchema } from "../did"
 import { ProofSchema } from "./core"
+import { VerifiableCredentialSchema } from "./vc"
+import { VcContextSchema } from "./index"
 
 /**
  * Verifiable Presentation type values.

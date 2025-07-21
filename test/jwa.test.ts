@@ -1,12 +1,12 @@
 import { test, expect, describe } from "bun:test"
-import * as valibot from "../src/valibot"
-import * as zod from "../src/zod"
 import {
   joseAlgorithms,
   jweContentEncryptionAlgorithms,
   jweKeyManagementAlgorithms,
   joseCompressionAlgorithms
 } from "../src/constants/algorithms"
+import * as valibot from "../src/valibot"
+import * as zod from "../src/zod"
 
 const namespaces = {
   valibot,

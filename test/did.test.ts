@@ -29,6 +29,7 @@ describe("did", () => {
 
         for (const did of validDids) {
           expect(did).toMatchSchema(schemas.DidSchema)
+          expect(schemas.isDid(did)).toBe(true)
         }
       })
 
@@ -52,6 +53,21 @@ describe("did", () => {
         for (const did of invalidDids) {
           expect(did).not.toMatchSchema(schemas.DidSchema)
         }
+      })
+    })
+
+    describe("createDidSchema", () => {
+      test("creates a schema that matches the method", () => {
+        const schema = schemas.createDidSchema("example")
+
+        expect("did:example:123456789abcdefghi").toMatchSchema(schema)
+        expect("did:bad:123456789abcdefghi").not.toMatchSchema(schema)
+        expect(
+          schemas.isDidWithMethod("did:example:123456789abcdefghi", "example")
+        ).toBe(true)
+        expect(
+          schemas.isDidWithMethod("did:bad:123456789abcdefghi", "example")
+        ).toBe(false)
       })
     })
 
