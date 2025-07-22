@@ -1,4 +1,4 @@
-import { test, expect, describe } from "bun:test"
+import { test, expect, describe } from "vitest"
 import { keyUses, keyOperations } from "../src/constants/jwk"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
