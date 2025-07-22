@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test"
+import { describe, it, expect } from "vitest"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 

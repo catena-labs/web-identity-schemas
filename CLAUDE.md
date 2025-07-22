@@ -3,20 +3,12 @@ globs: "*.ts, *.js, package.json"
 alwaysApply: false
 ---
 
-Default to using Bun instead of Node.js.
-
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
-
 ## Testing
 
-Use `bun test` to run tests.
+Use `pnpm test` to run tests.
 
 ```ts#index.test.ts
-import { test, expect } from "bun:test";
+import { test, expect } from "vitest";
 
 test("hello world", () => {
   expect(1).toBe(1);
@@ -31,19 +23,19 @@ This project provides TypeScript schemas and validation for Web Identity standar
 
 ```bash
 # Install dependencies
-bun install
+pnpm install
 
 # Run tests (both valibot and zod)
-bun test
+pnpm test
 
 # Run TypeScript type checking
-bun run typecheck
+pnpm run typecheck
 
 # Run linting
-bun run lint
+pnpm run lint
 
 # Run specific test file
-bun test test/vc.test.ts
+pnpm test test/vc.test.ts
 ```
 
 ## Project Structure
@@ -128,7 +120,7 @@ expect(statusCredential).toMatchSchema(
 
 ### Type Safety First
 
-- Always run `bun run typecheck` and `bun run lint` before commits
+- Always run `pnpm run typecheck` and `pnpm run lint` before commits
 - Fix all TypeScript errors and linting warnings
 - Use proper type assertions instead of `any` or `as` casting
 
@@ -140,7 +132,7 @@ expect(statusCredential).toMatchSchema(
 
 ### Debugging Failed Tests
 
-1. Run specific test: `bun test test/vc.test.ts`
+1. Run specific test: `pnpm test test/vc.test.ts`
 2. Check both valibot and zod implementations
 3. Verify type definitions match schema outputs
 4. Use proper error messages in custom validators

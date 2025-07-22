@@ -1,17 +1,23 @@
-import type { MatcherResult } from "bun:test"
-import { expect } from "bun:test"
 import * as s from "standard-parse"
+import { expect } from "vitest"
 
-interface StandardSchemaTestMatchers {
+interface ExpectationResult {
+  pass: boolean
+  message: () => string
+  actual?: unknown
+  expected?: unknown
+}
+
+interface StandardSchemaTestMatchers<R = unknown> {
   toMatchSchema<TOutput>(
     schema: s.Schema<unknown, TOutput>,
     additionalChecks?: (parsed: TOutput) => void
-  ): void
+  ): R
 }
 
-declare module "bun:test" {
-  interface Matchers extends StandardSchemaTestMatchers {}
-  interface AsymmetricMatchers extends StandardSchemaTestMatchers {}
+declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  interface Matchers<T = any> extends StandardSchemaTestMatchers<T> {}
 }
 
 function toMatchSchema<TOutput>(
@@ -19,14 +25,16 @@ function toMatchSchema<TOutput>(
   received: unknown,
   schema: s.Schema<unknown, TOutput>,
   additionalChecks?: (parsed: TOutput) => void
-): MatcherResult {
+): ExpectationResult {
   const result = s.safeParse(schema, received)
 
   if (result.issues) {
     return {
       pass: false,
       message: () =>
-        `Expected ${JSON.stringify(received)} to match schema.\n${formatIssues(result.issues)}`
+        `Expected ${JSON.stringify(received)} to match schema.\n${formatIssues(result.issues)}`,
+      actual: result.issues,
+      expected: undefined
     }
   }
 

@@ -1,4 +1,4 @@
-import { test, expect, describe } from "bun:test"
+import { test, expect, describe } from "vitest"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 import didKeyValid from "./fixtures/did/did-key-valid.json"

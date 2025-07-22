@@ -22,11 +22,7 @@ export default tseslint.config(
       }
     },
     settings: {
-      "import-x/resolver-next": [
-        createTypeScriptImportResolver({
-          bun: true
-        })
-      ]
+      "import-x/resolver-next": [createTypeScriptImportResolver({})]
     },
     rules: {
       "@typescript-eslint/no-confusing-void-expression": "off",
