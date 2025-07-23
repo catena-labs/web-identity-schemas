@@ -1,13 +1,5 @@
+import type { ArrayContaining } from "../../types"
 import type { JwsString } from "../../types/jose/jws"
-import type {
-  CredentialStatusType,
-  StatusPurpose,
-  CredentialStatus,
-  CredentialSchema,
-  CredentialSubject,
-  IdOrObject,
-  GenericResource
-} from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
 import type { Shape } from "../shared/shape"
 import * as v from "valibot"
@@ -16,9 +8,20 @@ import {
   credentialStatusTypes,
   statusPurposes
 } from "../../constants/vc"
+import {
+  type CredentialStatusType,
+  type StatusPurpose,
+  type CredentialStatus,
+  type CredentialSchemaType,
+  type CredentialSubject,
+  type IdOrObject,
+  type GenericResource,
+  type Verifiable
+} from "../../types/vc/core"
 import { JwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema } from "../shared/json-ld"
 import { UriSchema } from "../shared/uri"
+import { includesAll, oneOrMany } from "../shared/utils"
 
 /**
  * Verifiable Credential type values.
@@ -26,38 +29,48 @@ import { UriSchema } from "../shared/uri"
  */
 export const VcTypeLiteralSchema = v.literal("VerifiableCredential")
 
-export const vcTypeSchema = (additionalTypes?: string | string[]) => {
-  if (additionalTypes) {
-    return v.tuple([
-      VcTypeLiteralSchema,
-      ...[additionalTypes].flat().map((t) => v.literal(t))
-    ])
-  } else {
-    return v.pipe(
-      v.union([
-        VcTypeLiteralSchema,
-        v.tuple([VcTypeLiteralSchema]),
-        v.pipe(
-          v.array(v.string()),
-          v.minLength(1),
-          v.check(
-            (types) => types[0] === "VerifiableCredential",
-            "First type must be VerifiableCredential"
-          )
-        )
-      ]),
-      v.transform((input) => (typeof input === "string" ? [input] : input)),
-      v.custom<
-        ["VerifiableCredential"] | ["VerifiableCredential", ...string[]]
-      >(() => true)
-    )
-  }
+/**
+ * Generate a Credential type schema that will require "VerifiableCredential" as
+ * a type, as well as any other required types provided. Additional strings are
+ * always allowed.
+ *
+ * If no additional types are provided, it accepts either a single
+ * VerifiableCredential string or an array containing VerifiableCredential and
+ * other strings.
+ *
+ * If additional types are provided, it only accepts an array containing
+ * VerifiableCredential, all additional types, and any other strings.
+ */
+export function credentialTypeSchema<
+  TAdditionalTypes extends string | readonly string[] = never
+>(additionalTypes?: TAdditionalTypes) {
+  const requiredTypes = additionalTypes
+    ? ["VerifiableCredential", ...[additionalTypes].flat()]
+    : ["VerifiableCredential"]
+
+  return v.pipe(
+    oneOrMany(v.string()),
+    includesAll(requiredTypes),
+    v.custom<
+      ArrayContaining<
+        [
+          "VerifiableCredential",
+          ...(TAdditionalTypes extends readonly string[]
+            ? TAdditionalTypes
+            : TAdditionalTypes extends string
+              ? [TAdditionalTypes]
+              : never)
+        ],
+        string
+      >
+    >(() => true)
+  )
 }
 
 /**
  * Relaxed Verifiable Credential type schema that accepts both string and array formats.
  */
-export const VcTypeSchema = vcTypeSchema()
+export const VcTypeSchema = credentialTypeSchema()
 
 /**
  * Proof purpose values.
@@ -154,13 +167,13 @@ export const CredentialStatusSchema = v.object({
  * Credential schema reference.
  * @see {@link https://www.w3.org/TR/vc-data-model/#data-schemas}
  */
-export const CredentialSchemaSchema = v.object({
+export const CredentialSchemaTypeSchema = v.object({
   /** Schema identifier */
   id: UriSchema,
 
   /** Schema type */
   type: v.string()
-} satisfies Shape<CredentialSchema>)
+} satisfies Shape<CredentialSchemaType>)
 
 /**
  * Generic resource schema for evidence, refresh services, and terms of use.
@@ -192,7 +205,7 @@ export const IdOrObjectSchema = v.pipe(
  * @see {@link https://www.w3.org/TR/vc-data-model/#credential-subject}
  */
 export const CredentialSubjectSchema = v.pipe(
-  v.object({
+  v.looseObject({
     /** Subject identifier (optional) */
     id: v.optional(v.union([UriSchema, v.string()]))
   }),
@@ -200,15 +213,15 @@ export const CredentialSubjectSchema = v.pipe(
 )
 
 /**
- * Base credential schema with common fields.
+ * Base W3C credential schema without proof (unsigned credential).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
-export const BaseCredentialSchema = v.object({
+export const BaseCredentialSchema = v.looseObject({
   /** Credential identifier (optional) */
   id: v.optional(UriSchema),
 
   /** Credential types (must include VerifiableCredential) */
-  type: vcTypeSchema(),
+  type: credentialTypeSchema(),
 
   /** Credential issuer */
   issuer: IdOrObjectSchema,
@@ -220,7 +233,7 @@ export const BaseCredentialSchema = v.object({
 
   /** Credential schema (optional) */
   credentialSchema: v.optional(
-    v.union([CredentialSchemaSchema, v.array(CredentialSchemaSchema)])
+    v.union([CredentialSchemaTypeSchema, v.array(CredentialSchemaTypeSchema)])
   ),
 
   /** Credential subject */
@@ -242,8 +255,25 @@ export const BaseCredentialSchema = v.object({
   /** Terms of use (optional) */
   termsOfUse: v.optional(
     v.union([GenericResourceSchema, v.array(GenericResourceSchema)])
-  ),
-
-  /** Proof (optional) */
-  proof: v.optional(v.union([ProofSchema, v.array(ProofSchema)]))
+  )
 })
+
+/**
+ * Makes any credential schema verifiable by adding a required proof field.
+ * @param credentialSchema The unsigned credential schema to make verifiable
+ * @returns Schema that requires proof field
+ */
+export function makeVerifiable<
+  TSchema extends v.LooseObjectSchema<
+    v.ObjectEntries,
+    v.ErrorMessage<v.LooseObjectIssue> | undefined
+  >
+>(schema: TSchema) {
+  return v.pipe(
+    v.looseObject({
+      ...schema.entries,
+      proof: v.union([ProofSchema, v.array(ProofSchema)])
+    }),
+    v.custom<Verifiable<v.InferOutput<TSchema>>>(() => true)
+  )
+}

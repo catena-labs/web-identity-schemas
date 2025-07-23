@@ -12,7 +12,7 @@ import {
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
-import { BaseCredentialSchema, vcTypeSchema } from "../core"
+import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
  * BitstringStatusList context (for V2 credentials).
@@ -57,7 +57,7 @@ export const BitstringStatusListCredentialSchema = v.strictObject({
 
   /** Credential types */
   type: v.pipe(
-    vcTypeSchema("BitstringStatusListCredential"),
+    credentialTypeSchema("BitstringStatusListCredential"),
     v.custom<["VerifiableCredential", "BitstringStatusListCredential"]>(
       () => true
     )

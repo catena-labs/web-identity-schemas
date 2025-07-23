@@ -3,7 +3,12 @@ import type { Shape } from "../shared/shape"
 import * as z from "zod"
 import { vcV1CoreContext } from "../../constants/vc"
 import { jsonLdContextSchema } from "../shared/json-ld"
-import { BaseCredentialSchema, ProofSchema, credentialTypeSchema } from "./core"
+import {
+  BaseCredentialSchema,
+  makeVerifiable,
+  credentialTypeSchema,
+  CredentialSubjectSchema
+} from "./core"
 
 /**
  * Core VC Data Model V1 context.
@@ -26,9 +31,9 @@ export const VcV1ContextSchema: Shape<string | string[]> = z.union([
     )
 ])
 
-export const createVerifiableCredentialV1Schema = (
+export const createCredentialV1Schema = (
+  credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  credentialSubjectSchema?: z.ZodType,
   contextSchema?: Uri | Uri[]
 ) =>
   BaseCredentialSchema.extend({
@@ -47,30 +52,31 @@ export const createVerifiableCredentialV1Schema = (
     expirationDate: z.iso.datetime().optional(),
 
     /** Credential subject */
-    credentialSubject:
-      credentialSubjectSchema ?? z.object({ id: z.string().optional() })
-  }).strict()
+    credentialSubject: z.union([
+      credentialSubjectSchema,
+      z.array(credentialSubjectSchema)
+    ])
+  }).loose()
 
-/**
- * Create a signed V1 verifiable credential schema.
- * @param credentialSubjectSchema - The schema for the credential subject.
- * @returns The signed V1 verifiable credential schema.
- * @see {@link createVerifiableCredentialV1Schema}
- */
-export const createSignedVerifiableCredentialV1Schema = (
+export const createVerifiableCredentialV1Schema = (
+  credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  credentialSubjectSchema?: z.ZodType,
   contextSchema?: Uri | Uri[]
 ) =>
-  createVerifiableCredentialV1Schema(
-    additionalTypes,
-    credentialSubjectSchema,
-    contextSchema
-  ).extend({
-    proof: ProofSchema
-  })
+  makeVerifiable(
+    createCredentialV1Schema(
+      credentialSubjectSchema,
+      additionalTypes,
+      contextSchema
+    )
+  )
 
 /**
- * Default V1 verifiable credential schema.
+ * Default V1 credential schema (unsigned).
+ */
+export const CredentialV1Schema = createCredentialV1Schema()
+
+/**
+ * Default V1 verifiable credential schema (with required proof).
  */
 export const VerifiableCredentialV1Schema = createVerifiableCredentialV1Schema()

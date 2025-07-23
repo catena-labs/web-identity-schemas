@@ -1,7 +1,7 @@
 import * as z from "zod"
 import { DidSchema } from "../did"
 import { ProofSchema } from "./core"
-import { VerifiableCredentialSchema, VcContextSchema } from "./vc"
+import { W3CCredentialSchema, VcContextSchema } from "./vc"
 
 /**
  * Verifiable Presentation literal type value.
@@ -49,10 +49,10 @@ export function presentationTypeSchema<TTypes extends string | string[]>(
 }
 
 /**
- * Verifiable Presentation schema.
+ * Presentation schema (unsigned, no proof).
  * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
  */
-export const VerifiablePresentationSchema = z.object({
+export const PresentationSchema = z.object({
   /** JSON-LD context */
   "@context": z.union([VcContextSchema, z.array(VcContextSchema)]),
 
@@ -67,9 +67,15 @@ export const VerifiablePresentationSchema = z.object({
 
   /** Verifiable credentials */
   verifiableCredential: z
-    .union([VerifiableCredentialSchema, z.array(VerifiableCredentialSchema)])
-    .optional(),
+    .union([W3CCredentialSchema, z.array(W3CCredentialSchema)])
+    .optional()
+})
 
-  /** Proof (added when presentation is signed) */
-  proof: z.union([ProofSchema, z.array(ProofSchema)]).optional()
+/**
+ * Verifiable Presentation schema (with required proof).
+ * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
+ */
+export const VerifiablePresentationSchema = PresentationSchema.extend({
+  /** Proof (required for verifiable presentations) */
+  proof: z.union([ProofSchema, z.array(ProofSchema)])
 })

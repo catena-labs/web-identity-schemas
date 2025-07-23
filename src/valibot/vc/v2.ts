@@ -1,8 +1,13 @@
-import type { Uri } from "../../types"
+import type { CredentialV2, Uri } from "../../types"
 import * as v from "valibot"
 import { vcV2CoreContext } from "../../constants/vc"
 import { jsonLdContextSchema } from "../shared/json-ld"
-import { BaseCredentialSchema, vcTypeSchema } from "./core"
+import {
+  BaseCredentialSchema,
+  credentialTypeSchema,
+  CredentialSubjectSchema,
+  makeVerifiable
+} from "./core"
 
 /**
  * Core VC Data Model V2 context.
@@ -26,16 +31,16 @@ export const VcV2ContextSchema = v.union([
 ])
 
 /**
- * Generic V2 verifiable credential schema that accepts credential type, subject, and context types.
+ * Generic V2 credential schema (unsigned) that accepts credential type, subject, and context types.
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
-export const createVerifiableCredentialV2Schema = (
+export const createCredentialV2Schema = (
+  credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  credentialSubjectSchema?: v.GenericSchema,
   contextSchema?: Uri | Uri[]
 ) =>
   v.pipe(
-    v.strictObject({
+    v.looseObject({
       ...BaseCredentialSchema.entries,
 
       /** JSON-LD context (V2) */
@@ -46,7 +51,7 @@ export const createVerifiableCredentialV2Schema = (
       ),
 
       /** Credential types */
-      type: vcTypeSchema(additionalTypes),
+      type: credentialTypeSchema(additionalTypes),
 
       /** Valid from date (V2) */
       validFrom: v.optional(v.pipe(v.string(), v.isoTimestamp())),
@@ -56,18 +61,36 @@ export const createVerifiableCredentialV2Schema = (
 
       /** Credential subject */
       credentialSubject: v.union([
-        credentialSubjectSchema ??
-          v.looseObject({ id: v.optional(v.string()) }),
-        v.array(
-          credentialSubjectSchema ??
-            v.looseObject({ id: v.optional(v.string()) })
-        )
+        credentialSubjectSchema,
+        v.array(credentialSubjectSchema)
       ])
     }),
-    v.custom(() => true)
+    v.custom<CredentialV2>(() => true)
   )
 
 /**
- * Default V2 verifiable credential schema.
+ * Generic V2 verifiable credential schema (with required proof).
+ * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
+ */
+export const createVerifiableCredentialV2Schema = (
+  credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
+  additionalTypes?: string | string[],
+  contextSchema?: Uri | Uri[]
+) =>
+  makeVerifiable(
+    createCredentialV2Schema(
+      credentialSubjectSchema,
+      additionalTypes,
+      contextSchema
+    )
+  )
+
+/**
+ * Default V2 credential schema (unsigned).
+ */
+export const CredentialV2Schema = createCredentialV2Schema()
+
+/**
+ * Default V2 verifiable credential schema (with required proof).
  */
 export const VerifiableCredentialV2Schema = createVerifiableCredentialV2Schema()

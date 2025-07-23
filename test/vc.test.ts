@@ -216,8 +216,8 @@ describe("vc", () => {
             )
             expect(
               Array.isArray(parsed.proof)
-                ? parsed.proof[0]?.type
-                : parsed.proof?.type
+                ? parsed.proof[0]!.type
+                : parsed.proof.type
             ).toBe("JsonWebSignature2020")
           }
         )
@@ -233,7 +233,7 @@ describe("vc", () => {
         }
 
         expect(minimalCredential).toMatchSchema(
-          schemas.VerifiableCredentialSchema,
+          schemas.W3CCredentialSchema,
           (parsed) => {
             expect(parsed.type).toEqual(["VerifiableCredential"])
             expect(parsed.issuer).toBe("did:example:123")
@@ -243,14 +243,10 @@ describe("vc", () => {
 
       test("discriminated union accepts both V1 and V2", () => {
         // V1 credential should be valid
-        expect(credentialV1Valid).toMatchSchema(
-          schemas.VerifiableCredentialSchema
-        )
+        expect(credentialV1Valid).toMatchSchema(schemas.W3CCredentialSchema)
 
         // V2 credential should be valid
-        expect(credentialV2Valid).toMatchSchema(
-          schemas.VerifiableCredentialSchema
-        )
+        expect(credentialV2Valid).toMatchSchema(schemas.W3CCredentialSchema)
       })
 
       test("invalid credentials", () => {
@@ -260,7 +256,16 @@ describe("vc", () => {
             "@context": "https://www.w3.org/2018/credentials/v1",
             type: "VerifiableCredential"
             // Missing issuer, issuanceDate, credentialSubject
-          },
+          }
+        ]
+
+        for (const credential of invalidCredentials) {
+          expect(credential).not.toMatchSchema(schemas.W3CCredentialSchema)
+        }
+      })
+
+      test("invalid verifiable credentials", () => {
+        const invalidCredentials = [
           {
             "@context": "https://www.w3.org/2018/credentials/v1",
             type: "VerifiableCredential",
@@ -297,7 +302,7 @@ describe("vc", () => {
         }
 
         expect(v1Credential).toMatchSchema(
-          schemas.VerifiableCredentialV1Schema,
+          schemas.CredentialV1Schema,
           (parsed) => {
             expect(parsed).toHaveProperty("issuanceDate")
             expect(parsed).toHaveProperty("expirationDate")
@@ -331,7 +336,7 @@ describe("vc", () => {
         }
 
         expect(v2Credential).toMatchSchema(
-          schemas.VerifiableCredentialV2Schema,
+          schemas.CredentialV2Schema,
           (parsed) => {
             expect(parsed).toHaveProperty("validFrom")
             expect(parsed).toHaveProperty("validUntil")
@@ -388,8 +393,8 @@ describe("vc", () => {
             expect(Array.isArray(parsed.verifiableCredential)).toBe(true)
             expect(
               Array.isArray(parsed.proof)
-                ? parsed.proof[0]?.challenge
-                : parsed.proof?.challenge
+                ? parsed.proof[0]!.challenge
+                : parsed.proof.challenge
             ).toBe("challenge-123")
           }
         )
@@ -402,7 +407,7 @@ describe("vc", () => {
         }
 
         expect(minimalPresentation).toMatchSchema(
-          schemas.VerifiablePresentationSchema,
+          schemas.PresentationSchema,
           (parsed) => {
             expect(parsed.type).toBe("VerifiablePresentation")
           }
@@ -529,29 +534,19 @@ describe("vc", () => {
 
     test("fixture-based validation tests", () => {
       // Test valid V1 credential from fixture
-      expect(credentialV1Valid).toMatchSchema(
-        schemas.VerifiableCredentialV1Schema
-      )
-      expect(credentialV1Valid).toMatchSchema(
-        schemas.VerifiableCredentialSchema
-      )
+      expect(credentialV1Valid).toMatchSchema(schemas.CredentialV1Schema)
+      expect(credentialV1Valid).toMatchSchema(schemas.W3CCredentialSchema)
 
       // Test valid V2 credential from fixture
-      expect(credentialV2Valid).toMatchSchema(
-        schemas.VerifiableCredentialV2Schema
-      )
-      expect(credentialV2Valid).toMatchSchema(
-        schemas.VerifiableCredentialSchema
-      )
+      expect(credentialV2Valid).toMatchSchema(schemas.CredentialV2Schema)
+      expect(credentialV2Valid).toMatchSchema(schemas.W3CCredentialSchema)
 
       // Test valid presentation from fixture
-      expect(presentationValid).toMatchSchema(
-        schemas.VerifiablePresentationSchema
-      )
+      expect(presentationValid).toMatchSchema(schemas.PresentationSchema)
 
       // Test invalid credential missing context
       expect(invalidMissingContext).not.toMatchSchema(
-        schemas.VerifiableCredentialSchema
+        schemas.W3CCredentialSchema
       )
     })
 
@@ -568,9 +563,7 @@ describe("vc", () => {
         }
       }
 
-      expect(credentialWithHttpUrls).toMatchSchema(
-        schemas.VerifiableCredentialSchema
-      )
+      expect(credentialWithHttpUrls).toMatchSchema(schemas.W3CCredentialSchema)
 
       // Test credential with issuer object containing HTTP URL
       const credentialWithIssuerObject = {
@@ -585,7 +578,7 @@ describe("vc", () => {
       }
 
       expect(credentialWithIssuerObject).toMatchSchema(
-        schemas.VerifiableCredentialSchema
+        schemas.W3CCredentialSchema
       )
     })
   })
