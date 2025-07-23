@@ -8,7 +8,7 @@ import {
 } from "../../../constants/vc"
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
-import { BaseCredentialSchema } from "../core"
+import { BaseCredentialSchema, ProofSchema } from "../core"
 import { VcV1CoreContextSchema } from "../v1"
 
 /**
@@ -66,5 +66,8 @@ export const StatusList2021CredentialSchema = BaseCredentialSchema.extend({
   expirationDate: z.iso.datetime().optional(),
 
   /** Credential subject */
-  credentialSubject: StatusList2021CredentialSubjectSchema
+  credentialSubject: StatusList2021CredentialSubjectSchema,
+
+  /** Proof (optional) */
+  proof: z.union([ProofSchema, z.array(ProofSchema)]).optional()
 }).strict()

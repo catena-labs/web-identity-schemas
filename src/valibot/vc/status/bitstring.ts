@@ -12,7 +12,7 @@ import {
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
-import { BaseCredentialSchema, vcTypeSchema } from "../core"
+import { BaseCredentialSchema, vcTypeSchema, ProofSchema } from "../core"
 
 /**
  * BitstringStatusList context (for V2 credentials).
@@ -70,5 +70,8 @@ export const BitstringStatusListCredentialSchema = v.strictObject({
   validUntil: v.optional(v.pipe(v.string(), v.isoTimestamp())),
 
   /** Credential subject */
-  credentialSubject: BitstringStatusListCredentialSubjectSchema
+  credentialSubject: BitstringStatusListCredentialSubjectSchema,
+
+  /** Proof (optional) */
+  proof: v.optional(v.union([ProofSchema, v.array(ProofSchema)]))
 } satisfies Shape<BitstringStatusListCredential>)

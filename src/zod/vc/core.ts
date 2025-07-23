@@ -6,7 +6,8 @@ import type {
   CredentialSchema,
   CredentialSubject,
   IdOrObject,
-  GenericResource
+  GenericResource,
+  Verifiable
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
 import type { Shape } from "../shared/shape"
@@ -186,13 +187,15 @@ export const IdOrObjectSchema: Shape<IdOrObject> = z.union([
  * Credential subject schema.
  * @see {@link https://www.w3.org/TR/vc-data-model/#credential-subject}
  */
-export const CredentialSubjectSchema: Shape<CredentialSubject> = z.object({
-  /** Subject identifier (optional) */
-  id: z.union([UriSchema, z.string()]).optional()
-})
+export const CredentialSubjectSchema: Shape<CredentialSubject> = z
+  .object({
+    /** Subject identifier (optional) */
+    id: z.union([UriSchema, z.string()]).optional()
+  })
+  .loose()
 
 /**
- * Base credential schema with common fields.
+ * Base W3C credential schema without proof (unsigned credential).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export const BaseCredentialSchema = z.object({
@@ -234,8 +237,18 @@ export const BaseCredentialSchema = z.object({
   /** Terms of use (optional) */
   termsOfUse: z
     .union([GenericResourceSchema, z.array(GenericResourceSchema)])
-    .optional(),
-
-  /** Proof (optional) */
-  proof: z.union([ProofSchema, z.array(ProofSchema)]).optional()
+    .optional()
 })
+
+/**
+ * Makes any credential schema verifiable by adding a required proof field.
+ * @param credentialSchema The unsigned credential schema to make verifiable
+ * @returns Schema that requires proof field
+ */
+export function makeVerifiable(credentialSchema: z.ZodObject<z.ZodRawShape>) {
+  return credentialSchema
+    .extend({
+      proof: z.union([ProofSchema, z.array(ProofSchema)])
+    })
+    .pipe(z.custom<Verifiable<z.output<typeof credentialSchema>>>(() => true))
+}

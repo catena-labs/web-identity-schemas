@@ -6,7 +6,8 @@ import type {
   CredentialSchema,
   CredentialSubject,
   IdOrObject,
-  GenericResource
+  GenericResource,
+  Verifiable
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
 import type { Shape } from "../shared/shape"
@@ -192,7 +193,7 @@ export const IdOrObjectSchema = v.pipe(
  * @see {@link https://www.w3.org/TR/vc-data-model/#credential-subject}
  */
 export const CredentialSubjectSchema = v.pipe(
-  v.object({
+  v.looseObject({
     /** Subject identifier (optional) */
     id: v.optional(v.union([UriSchema, v.string()]))
   }),
@@ -200,7 +201,7 @@ export const CredentialSubjectSchema = v.pipe(
 )
 
 /**
- * Base credential schema with common fields.
+ * Base W3C credential schema without proof (unsigned credential).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export const BaseCredentialSchema = v.object({
@@ -242,8 +243,25 @@ export const BaseCredentialSchema = v.object({
   /** Terms of use (optional) */
   termsOfUse: v.optional(
     v.union([GenericResourceSchema, v.array(GenericResourceSchema)])
-  ),
-
-  /** Proof (optional) */
-  proof: v.optional(v.union([ProofSchema, v.array(ProofSchema)]))
+  )
 })
+
+/**
+ * Makes any credential schema verifiable by adding a required proof field.
+ * @param credentialSchema The unsigned credential schema to make verifiable
+ * @returns Schema that requires proof field
+ */
+export function makeVerifiable<
+  TSchema extends v.LooseObjectSchema<
+    v.ObjectEntries,
+    v.ErrorMessage<v.LooseObjectIssue> | undefined
+  >
+>(credentialSchema: TSchema) {
+  return v.pipe(
+    v.looseObject({
+      ...credentialSchema.entries,
+      proof: v.union([ProofSchema, v.array(ProofSchema)])
+    }),
+    v.custom<Verifiable<v.InferOutput<TSchema>>>(() => true)
+  )
+}

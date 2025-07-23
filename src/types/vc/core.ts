@@ -4,6 +4,10 @@ import type { Uri } from "../shared/uri"
 
 export type CredentialType = string | string[]
 
+/**
+ * Raw credential type value that ensures "VerifiableCredential" is always present.
+ * @see {@link https://www.w3.org/TR/vc-data-model/#types}
+ */
 type RawCredentialType<
   TBaseType extends string,
   TAdditionalTypes extends string | string[] = never
@@ -115,7 +119,18 @@ export interface GenericResource {
 }
 
 /**
- * Base credential properties common to all versions.
+ * Makes any credential verifiable by ensuring it has a required proof.
+ * A verifiable record is one that includes cryptographic proof.
+ *
+ * @template T - The credential type to make verifiable
+ */
+export type Verifiable<T> = T & {
+  /** Cryptographic proof that makes the credential verifiable */
+  proof: Proof | Proof[]
+}
+
+/**
+ * Base W3C Credential without proof (unsigned credential).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export interface BaseCredential<
@@ -151,9 +166,6 @@ export interface BaseCredential<
 
   /** Terms of use (optional) */
   termsOfUse?: GenericResource | GenericResource[]
-
-  /** Proof (optional) */
-  proof?: Proof | Proof[]
 }
 
 /**
@@ -178,7 +190,4 @@ export interface BasePresentation<
 
   /** Presentation holder (optional) */
   holder?: IdOrObject
-
-  /** Proof */
-  proof?: Proof | Proof[]
 }

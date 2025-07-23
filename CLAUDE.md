@@ -49,9 +49,98 @@ pnpm test test/vc.test.ts
 
 ## Key Patterns & Recent Changes
 
+### Verifiable<T> Pattern (New!)
+
+The project now supports a clean `Verifiable<T>` pattern that separates unsigned credentials from signed/verifiable ones:
+
+```typescript
+// Types (TypeScript)
+type Verifiable<T> = T & { proof: Proof | Proof[] }
+
+// Base unsigned credential (clean, no proof field)
+interface BaseCredential<TSubject, TType> {
+  /* All credential fields except proof */
+}
+
+// V1/V2 unsigned credentials
+interface CredentialV1<TSubject, TType>
+  extends BaseCredential<TSubject, TType> {
+  issuanceDate: DateTimeStamp
+}
+
+// V1/V2 signed credentials using Verifiable<T>
+type VerifiableCredentialV1<TSubject, TType> = Verifiable<
+  CredentialV1<TSubject, TType>
+>
+
+// Union types for convenience
+type Credential<TSubject, TType> =
+  | CredentialV1<TSubject, TType>
+  | CredentialV2<TSubject, TType>
+type VerifiableCredential<TSubject, TType> =
+  | VerifiableCredentialV1<TSubject, TType>
+  | VerifiableCredentialV2<TSubject, TType>
+```
+
+**Available Schema Variants (Both Valibot & Zod):**
+
+```typescript
+// Unsigned credentials (no proof)
+;(CredentialV1Schema, CredentialV2Schema, W3CCredentialSchema)
+
+// Optional proof (backward compatible)
+;(VerifiableCredentialV1Schema,
+  VerifiableCredentialV2Schema,
+  VerifiableCredentialSchema)
+
+// Required proof (signed)
+;(SignedVerifiableCredentialV1Schema,
+  SignedVerifiableCredentialV2Schema,
+  SignedVerifiableCredentialSchema)
+```
+
+**Generic Parameter Order**: All types use `<TSubject, TType>` consistently (subject first, type second).
+
+**Usage Examples:**
+
+```typescript
+import {
+  CredentialV1Schema,
+  VerifiableCredentialV1Schema,
+  SignedVerifiableCredentialV1Schema
+} from "./valibot/vc"
+
+// 1. Building unsigned credential (before signing)
+const unsignedCredential = {
+  "@context": "https://www.w3.org/2018/credentials/v1",
+  type: "VerifiableCredential",
+  issuer: "did:example:issuer",
+  issuanceDate: "2023-01-01T00:00:00Z",
+  credentialSubject: { name: "Alice" }
+  // No proof field
+}
+
+// Validate unsigned credential
+const parsed1 = CredentialV1Schema.parse(unsignedCredential) // ✅ Success
+
+// 2. Flexible validation (accepts with or without proof)
+const maybeSignedCredential = { ...unsignedCredential, proof: optionalProof }
+const parsed2 = VerifiableCredentialV1Schema.parse(maybeSignedCredential) // ✅ Success (with or without proof)
+
+// 3. Strict validation (requires proof)
+const signedCredential = { ...unsignedCredential, proof: requiredProof }
+const parsed3 = SignedVerifiableCredentialV1Schema.parse(signedCredential) // ✅ Success only with proof
+```
+
+**When to Use Each Variant:**
+
+- **Unsigned** (`CredentialV1Schema`) - When building credentials before signing
+- **Optional Proof** (`VerifiableCredentialV1Schema`) - For flexible APIs that handle both signed and unsigned
+- **Required Proof** (`SignedVerifiableCredentialV1Schema`) - For verification pipelines that require signatures
+
 ### Credential Type Schemas (Updated Pattern)
 
-The project now uses relaxed credential type patterns that support both string and array formats:
+The project uses relaxed credential type patterns that support both string and array formats:
 
 ```typescript
 // Accepts: "VerifiableCredential" OR ["VerifiableCredential", ...string[]]
