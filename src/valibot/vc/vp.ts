@@ -1,8 +1,7 @@
 import * as v from "valibot"
 import { DidSchema } from "../did"
 import { ProofSchema } from "./core"
-import { VerifiableCredentialSchema } from "./vc"
-import { VcContextSchema } from "./index"
+import { W3CCredentialSchema, VcContextSchema } from "./vc"
 
 /**
  * Verifiable Presentation type values.
@@ -37,10 +36,10 @@ export const vpTypeSchema = (type?: string | string[]) => {
 export const VpTypeSchema = vpTypeSchema()
 
 /**
- * Verifiable Presentation schema.
+ * Presentation schema (unsigned, no proof).
  * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
  */
-export const VerifiablePresentationSchema = v.object({
+export const PresentationSchema = v.object({
   /** JSON-LD context */
   "@context": v.union([VcContextSchema, v.array(VcContextSchema)]),
 
@@ -55,9 +54,16 @@ export const VerifiablePresentationSchema = v.object({
 
   /** Verifiable credentials */
   verifiableCredential: v.optional(
-    v.union([VerifiableCredentialSchema, v.array(VerifiableCredentialSchema)])
-  ),
+    v.union([W3CCredentialSchema, v.array(W3CCredentialSchema)])
+  )
+})
 
-  /** Proof (added when presentation is signed) */
-  proof: v.optional(v.union([ProofSchema, v.array(ProofSchema)]))
+/**
+ * Verifiable Presentation schema (with required proof).
+ * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
+ */
+export const VerifiablePresentationSchema = v.object({
+  ...PresentationSchema.entries,
+  /** Proof (required for verifiable presentations) */
+  proof: v.union([ProofSchema, v.array(ProofSchema)])
 })

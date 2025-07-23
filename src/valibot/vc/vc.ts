@@ -4,13 +4,11 @@ import { CredentialSubjectSchema } from "./core"
 import {
   createCredentialV1Schema,
   createVerifiableCredentialV1Schema,
-  createSignedVerifiableCredentialV1Schema,
   VcV1ContextSchema
 } from "./v1"
 import {
   createCredentialV2Schema,
   createVerifiableCredentialV2Schema,
-  createSignedVerifiableCredentialV2Schema,
   VcV2ContextSchema
 } from "./v2"
 
@@ -42,7 +40,7 @@ export const createCredentialSchema = (
   ])
 
 /**
- * Default verifiable credential schema (with optional proof, discriminated union of V1 and V2).
+ * Default verifiable credential schema (with required proof, discriminated union of V1 and V2).
  */
 export const createVerifiableCredentialSchema = (
   credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
@@ -62,28 +60,5 @@ export const createVerifiableCredentialSchema = (
     )
   ])
 
-/**
- * Default signed verifiable credential schema (with required proof, discriminated union of V1 and V2).
- */
-export const createSignedVerifiableCredentialSchema = (
-  credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
-  additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
-) =>
-  v.union([
-    createSignedVerifiableCredentialV1Schema(
-      credentialSubjectSchema,
-      additionalTypes,
-      contextSchema
-    ),
-    createSignedVerifiableCredentialV2Schema(
-      credentialSubjectSchema,
-      additionalTypes,
-      contextSchema
-    )
-  ])
-
 export const W3CCredentialSchema = createCredentialSchema()
 export const VerifiableCredentialSchema = createVerifiableCredentialSchema()
-export const SignedVerifiableCredentialSchema =
-  createSignedVerifiableCredentialSchema()

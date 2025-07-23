@@ -1,9 +1,10 @@
+import type { ArrayContaining } from "../../types"
 import type { JwsString } from "../../types/jose/jws"
 import type {
   CredentialStatusType,
   StatusPurpose,
   CredentialStatus,
-  CredentialSchema,
+  CredentialSchemaType,
   CredentialSubject,
   IdOrObject,
   GenericResource,
@@ -20,6 +21,7 @@ import {
 import { JwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema } from "../shared/json-ld"
 import { UriSchema } from "../shared/uri"
+import { includesAll, oneOrMany } from "../shared/utils"
 
 /**
  * Verifiable Credential literal type value.
@@ -33,39 +35,44 @@ export const VcTypeLiteralSchema = z.literal("VerifiableCredential")
 export const VcTypeSchema = credentialTypeSchema()
 
 /**
- * Creates a type schema that ensures "VerifiableCredential" is always the first type.
- * @param additionalTypes Additional types to append after "VerifiableCredential"
+ * Generate a Credential type schema that will require "VerifiableCredential" as
+ * a type, as well as any other required types provided. Additional strings are
+ * always allowed.
+ *
+ * If no additional types are provided, it accepts either a single
+ * VerifiableCredential string or an array containing VerifiableCredential and
+ * other strings.
+ *
+ * If additional types are provided, it only accepts an array containing
+ * VerifiableCredential, all additional types, and any other strings.
  */
-export function credentialTypeSchema(additionalTypes?: string | string[]) {
-  if (additionalTypes) {
-    if (typeof additionalTypes === "string") {
-      return z.tuple([VcTypeLiteralSchema, z.literal(additionalTypes)])
-    } else {
-      return z.tuple([
-        VcTypeLiteralSchema,
-        ...additionalTypes.map((t) => z.literal(t))
-      ])
-    }
-  } else {
-    return z
-      .union([
-        VcTypeLiteralSchema,
-        z.tuple([VcTypeLiteralSchema]),
-        z
-          .array(z.string())
-          .min(1)
-          .refine(
-            (types) => types[0] === "VerifiableCredential",
-            "First type must be VerifiableCredential"
-          )
-      ])
-      .transform((input) => {
-        if (typeof input === "string") {
-          return [input] as ["VerifiableCredential"]
-        }
-        return input as ["VerifiableCredential", ...string[]]
-      })
-  }
+export function credentialTypeSchema<
+  TAdditionalTypes extends string | readonly string[] = never
+>(additionalTypes?: TAdditionalTypes) {
+  const requiredTypes = additionalTypes
+    ? ["VerifiableCredential", ...[additionalTypes].flat()]
+    : ["VerifiableCredential"]
+
+  return z
+    .pipe(
+      oneOrMany(z.string()),
+      z.array(z.string()).refine(includesAll(requiredTypes))
+    )
+    .pipe(
+      z.custom<
+        ArrayContaining<
+          [
+            "VerifiableCredential",
+            ...(TAdditionalTypes extends readonly string[]
+              ? TAdditionalTypes
+              : TAdditionalTypes extends string
+                ? [TAdditionalTypes]
+                : never)
+          ],
+          string
+        >
+      >(() => true)
+    )
 }
 
 /**
@@ -153,13 +160,15 @@ export const CredentialStatusSchema: Shape<CredentialStatus> = z.object({
  * Credential schema reference.
  * @see {@link https://www.w3.org/TR/vc-data-model/#data-schemas}
  */
-export const CredentialSchemaSchema: Shape<CredentialSchema> = z.object({
-  /** Schema identifier */
-  id: UriSchema,
+export const CredentialSchemaTypeSchema: Shape<CredentialSchemaType> = z.object(
+  {
+    /** Schema identifier */
+    id: UriSchema,
 
-  /** Schema type */
-  type: z.string()
-})
+    /** Schema type */
+    type: z.string()
+  }
+)
 
 /**
  * Generic resource schema for evidence, refresh services, and terms of use.
@@ -198,47 +207,49 @@ export const CredentialSubjectSchema: Shape<CredentialSubject> = z
  * Base W3C credential schema without proof (unsigned credential).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
-export const BaseCredentialSchema = z.object({
-  /** Credential identifier (optional) */
-  id: UriSchema.optional(),
+export const BaseCredentialSchema = z
+  .object({
+    /** Credential identifier (optional) */
+    id: UriSchema.optional(),
 
-  /** Credential types (must include VerifiableCredential) */
-  type: credentialTypeSchema(),
+    /** Credential types (must include VerifiableCredential) */
+    type: credentialTypeSchema(),
 
-  /** Credential issuer */
-  issuer: IdOrObjectSchema,
+    /** Credential issuer */
+    issuer: IdOrObjectSchema,
 
-  /** Credential status (optional) */
-  credentialStatus: z
-    .union([CredentialStatusSchema, z.array(CredentialStatusSchema)])
-    .optional(),
+    /** Credential status (optional) */
+    credentialStatus: z
+      .union([CredentialStatusSchema, z.array(CredentialStatusSchema)])
+      .optional(),
 
-  /** Credential schema (optional) */
-  credentialSchema: z
-    .union([CredentialSchemaSchema, z.array(CredentialSchemaSchema)])
-    .optional(),
+    /** Credential schema (optional) */
+    credentialSchema: z
+      .union([CredentialSchemaTypeSchema, z.array(CredentialSchemaTypeSchema)])
+      .optional(),
 
-  /** Credential subject */
-  credentialSubject: z.union([
-    CredentialSubjectSchema,
-    z.array(CredentialSubjectSchema)
-  ]),
+    /** Credential subject */
+    credentialSubject: z.union([
+      CredentialSubjectSchema,
+      z.array(CredentialSubjectSchema)
+    ]),
 
-  /** Evidence (optional) */
-  evidence: z
-    .union([GenericResourceSchema, z.array(GenericResourceSchema)])
-    .optional(),
+    /** Evidence (optional) */
+    evidence: z
+      .union([GenericResourceSchema, z.array(GenericResourceSchema)])
+      .optional(),
 
-  /** Refresh service (optional) */
-  refreshService: z
-    .union([GenericResourceSchema, z.array(GenericResourceSchema)])
-    .optional(),
+    /** Refresh service (optional) */
+    refreshService: z
+      .union([GenericResourceSchema, z.array(GenericResourceSchema)])
+      .optional(),
 
-  /** Terms of use (optional) */
-  termsOfUse: z
-    .union([GenericResourceSchema, z.array(GenericResourceSchema)])
-    .optional()
-})
+    /** Terms of use (optional) */
+    termsOfUse: z
+      .union([GenericResourceSchema, z.array(GenericResourceSchema)])
+      .optional()
+  })
+  .loose()
 
 /**
  * Makes any credential schema verifiable by adding a required proof field.
@@ -250,5 +261,6 @@ export function makeVerifiable(credentialSchema: z.ZodObject<z.ZodRawShape>) {
     .extend({
       proof: z.union([ProofSchema, z.array(ProofSchema)])
     })
+    .loose()
     .pipe(z.custom<Verifiable<z.output<typeof credentialSchema>>>(() => true))
 }

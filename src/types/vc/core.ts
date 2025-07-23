@@ -1,22 +1,26 @@
 import type { Proof } from "./proof"
+import type { JwtString } from "../jose"
 import type { JsonLdContext } from "../shared/json-ld"
 import type { Uri } from "../shared/uri"
+import type { ArrayContaining, OneOrMany, LooseObject } from "../shared/utils"
 
 export type CredentialType = string | string[]
 
 /**
- * Raw credential type value that ensures "VerifiableCredential" is always present.
+ * Raw credential type value that ensures "VerifiableCredential" is always
+ * present, as well as any additional types provided. Per the spec: "If more
+ * than one value is provided, the order does not matter."
  * @see {@link https://www.w3.org/TR/vc-data-model/#types}
  */
 type RawCredentialType<
   TBaseType extends string,
   TAdditionalTypes extends string | string[] = never
 > = [TAdditionalTypes] extends [never]
-  ? TBaseType | [TBaseType]
+  ? TBaseType | ArrayContaining<[TBaseType], string>
   : TAdditionalTypes extends string
-    ? TBaseType | [TBaseType] | [TBaseType, TAdditionalTypes]
+    ? ArrayContaining<[TBaseType, TAdditionalTypes], string>
     : TAdditionalTypes extends string[]
-      ? TBaseType | [TBaseType] | [TBaseType, ...TAdditionalTypes]
+      ? ArrayContaining<[TBaseType, ...TAdditionalTypes], string>
       : never
 
 /**
@@ -75,7 +79,7 @@ export interface CredentialStatus {
  * Credential schema reference.
  * @see {@link https://www.w3.org/TR/vc-data-model/#data-schemas}
  */
-export interface CredentialSchema {
+export interface CredentialSchemaType {
   /** Schema identifier */
   id: Uri
 
@@ -136,37 +140,37 @@ export type Verifiable<T> = T & {
 export interface BaseCredential<
   TSubject extends CredentialSubject = CredentialSubject,
   TType extends CredentialType = CredentialType
-> {
-  /** JSON-LD context */
-  "@context": JsonLdContext
+> extends LooseObject<{
+    /** JSON-LD context */
+    "@context": JsonLdContext
 
-  /** Credential identifier (optional) */
-  id?: Uri
+    /** Credential identifier (optional) */
+    id?: Uri
 
-  /** Credential types (must include VerifiableCredential) */
-  type: VerifiableCredentialType<TType>
+    /** Credential types (must include VerifiableCredential) */
+    type: VerifiableCredentialType<TType>
 
-  /** Credential issuer */
-  issuer: IdOrObject
+    /** Credential issuer */
+    issuer: IdOrObject
 
-  /** Credential status (optional) */
-  credentialStatus?: CredentialStatus | CredentialStatus[]
+    /** Credential status (optional) */
+    credentialStatus?: OneOrMany<CredentialStatus>
 
-  /** Credential schema (optional) */
-  credentialSchema?: CredentialSchema | CredentialSchema[]
+    /** Credential schema (optional) */
+    credentialSchema?: OneOrMany<CredentialSchemaType>
 
-  /** Credential subject */
-  credentialSubject: TSubject | TSubject[]
+    /** Credential subject */
+    credentialSubject: OneOrMany<TSubject>
 
-  /** Evidence (optional) */
-  evidence?: GenericResource | GenericResource[]
+    /** Evidence (optional) */
+    evidence?: OneOrMany<GenericResource>
 
-  /** Refresh service (optional) */
-  refreshService?: GenericResource | GenericResource[]
+    /** Refresh service (optional) */
+    refreshService?: OneOrMany<GenericResource>
 
-  /** Terms of use (optional) */
-  termsOfUse?: GenericResource | GenericResource[]
-}
+    /** Terms of use (optional) */
+    termsOfUse?: OneOrMany<GenericResource>
+  }> {}
 
 /**
  * Base Verifiable Presentation properties.
@@ -186,7 +190,7 @@ export interface BasePresentation<
   type: VerifiablePresentationType<TType>
 
   /** Verifiable credentials */
-  verifiableCredential?: (TCredential | string)[]
+  verifiableCredential?: (TCredential | JwtString)[]
 
   /** Presentation holder (optional) */
   holder?: IdOrObject

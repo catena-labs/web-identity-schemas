@@ -6,7 +6,6 @@ import {
   BaseCredentialSchema,
   makeVerifiable,
   credentialTypeSchema,
-  ProofSchema,
   CredentialSubjectSchema
 } from "./core"
 
@@ -65,46 +64,10 @@ export const createCredentialV2Schema = (
   }).strict()
 
 /**
- * Generic V2 verifiable credential schema (with optional proof) that accepts credential type, subject, and context types.
+ * Generic V2 verifiable credential schema (with required proof).
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export const createVerifiableCredentialV2Schema = (
-  credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
-  additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
-) =>
-  BaseCredentialSchema.extend({
-    /** JSON-LD context (V2) */
-    "@context": jsonLdContextSchema(
-      contextSchema
-        ? [vcV2CoreContext, ...[contextSchema].flat()]
-        : vcV2CoreContext
-    ),
-
-    /** Credential types */
-    type: credentialTypeSchema(additionalTypes),
-
-    /** Valid from date (V2) */
-    validFrom: z.iso.datetime().optional(),
-
-    /** Valid until date (V2) */
-    validUntil: z.iso.datetime().optional(),
-
-    /** Credential subject */
-    credentialSubject: z.union([
-      credentialSubjectSchema,
-      z.array(credentialSubjectSchema)
-    ]),
-
-    /** Proof (optional) */
-    proof: z.union([ProofSchema, z.array(ProofSchema)]).optional()
-  }).strict()
-
-/**
- * Generic V2 signed verifiable credential schema (with required proof).
- * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
- */
-export const createSignedVerifiableCredentialV2Schema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
   contextSchema?: Uri | Uri[]
@@ -123,12 +86,6 @@ export const createSignedVerifiableCredentialV2Schema = (
 export const CredentialV2Schema = createCredentialV2Schema()
 
 /**
- * Default V2 verifiable credential schema (with optional proof).
+ * Default V2 verifiable credential schema (with required proof).
  */
 export const VerifiableCredentialV2Schema = createVerifiableCredentialV2Schema()
-
-/**
- * Default V2 signed verifiable credential schema (with required proof).
- */
-export const SignedVerifiableCredentialV2Schema =
-  createSignedVerifiableCredentialV2Schema()

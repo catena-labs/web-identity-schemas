@@ -12,7 +12,7 @@ import {
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
-import { BaseCredentialSchema, vcTypeSchema, ProofSchema } from "../core"
+import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
  * StatusList2021 context (for V1 credentials).
@@ -49,7 +49,7 @@ export const StatusList2021CredentialSchema = v.strictObject({
 
   /** Credential types */
   type: v.pipe(
-    vcTypeSchema("StatusList2021Credential"),
+    credentialTypeSchema("StatusList2021Credential"),
     v.custom<["VerifiableCredential", "StatusList2021Credential"]>(() => true)
   ),
 
@@ -60,8 +60,5 @@ export const StatusList2021CredentialSchema = v.strictObject({
   expirationDate: v.optional(v.pipe(v.string(), v.isoTimestamp())),
 
   /** Credential subject */
-  credentialSubject: StatusList2021CredentialSubjectSchema,
-
-  /** Proof (optional) */
-  proof: v.optional(v.union([ProofSchema, v.array(ProofSchema)]))
+  credentialSubject: StatusList2021CredentialSubjectSchema
 } satisfies Shape<StatusList2021Credential>)

@@ -7,7 +7,6 @@ import {
   BaseCredentialSchema,
   makeVerifiable,
   credentialTypeSchema,
-  ProofSchema,
   CredentialSubjectSchema
 } from "./core"
 
@@ -57,39 +56,9 @@ export const createCredentialV1Schema = (
       credentialSubjectSchema,
       z.array(credentialSubjectSchema)
     ])
-  }).strict()
+  }).loose()
 
 export const createVerifiableCredentialV1Schema = (
-  credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
-  additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
-) =>
-  BaseCredentialSchema.extend({
-    /** JSON-LD context (V1) */
-    "@context": contextSchema
-      ? jsonLdContextSchema(contextSchema)
-      : z.union([VcV1ContextSchema, z.array(VcV1ContextSchema)]),
-
-    /** Credential types */
-    type: credentialTypeSchema(additionalTypes),
-
-    /** Issuance date (V1) */
-    issuanceDate: z.iso.datetime(),
-
-    /** Expiration date (V1) */
-    expirationDate: z.iso.datetime().optional(),
-
-    /** Credential subject */
-    credentialSubject: z.union([
-      credentialSubjectSchema,
-      z.array(credentialSubjectSchema)
-    ]),
-
-    /** Proof (optional) */
-    proof: z.union([ProofSchema, z.array(ProofSchema)]).optional()
-  }).strict()
-
-export const createSignedVerifiableCredentialV1Schema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
   contextSchema?: Uri | Uri[]
@@ -108,12 +77,6 @@ export const createSignedVerifiableCredentialV1Schema = (
 export const CredentialV1Schema = createCredentialV1Schema()
 
 /**
- * Default V1 verifiable credential schema (with optional proof).
+ * Default V1 verifiable credential schema (with required proof).
  */
 export const VerifiableCredentialV1Schema = createVerifiableCredentialV1Schema()
-
-/**
- * Default V1 signed verifiable credential schema (with required proof).
- */
-export const SignedVerifiableCredentialV1Schema =
-  createSignedVerifiableCredentialV1Schema()
