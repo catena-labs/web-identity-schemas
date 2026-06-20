@@ -1,7 +1,7 @@
 import * as v from "valibot"
 
-import { DidSchema } from "../did"
-import { ProofSchema } from "./core"
+import { JwtStringSchema } from "../jose"
+import { IdOrObjectSchema, ProofSchema } from "./core"
 import { W3CCredentialSchema, VcContextSchema } from "./vc"
 
 /**
@@ -51,11 +51,15 @@ export const PresentationSchema = v.object({
   type: vpTypeSchema(),
 
   /** Presentation holder */
-  holder: v.optional(DidSchema),
+  holder: v.optional(IdOrObjectSchema),
 
-  /** Verifiable credentials */
+  /** Verifiable credentials (credential objects or enveloped JWT strings) */
   verifiableCredential: v.optional(
-    v.union([W3CCredentialSchema, v.array(W3CCredentialSchema)]),
+    v.union([
+      W3CCredentialSchema,
+      JwtStringSchema,
+      v.array(v.union([W3CCredentialSchema, JwtStringSchema])),
+    ]),
   ),
 })
 

@@ -2,7 +2,7 @@ import * as v from "valibot"
 
 import { vcV1CoreContext } from "../../constants/vc"
 import type { CredentialV1, Uri } from "../../types"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DateTimeStampSchema, jsonLdContextSchema } from "../shared/json-ld"
 import {
   BaseCredentialSchema,
   credentialTypeSchema,
@@ -25,8 +25,8 @@ export const VcV1ContextSchema = v.union([
   v.pipe(
     v.pipe(v.array(v.string()), v.nonEmpty()),
     v.check(
-      (contexts) => contexts.includes(vcV1CoreContext),
-      "Array must contain V1 core context",
+      (contexts) => contexts[0] === vcV1CoreContext,
+      "First context must be the V1 core context",
     ),
   ),
 ])
@@ -55,10 +55,10 @@ export const createCredentialV1Schema = (
       type: credentialTypeSchema(additionalTypes),
 
       /** Issuance date (V1) */
-      issuanceDate: v.pipe(v.string(), v.isoTimestamp()),
+      issuanceDate: DateTimeStampSchema,
 
       /** Expiration date (V1) */
-      expirationDate: v.optional(v.pipe(v.string(), v.isoTimestamp())),
+      expirationDate: v.optional(DateTimeStampSchema),
 
       /** Credential subject */
       credentialSubject: v.union([

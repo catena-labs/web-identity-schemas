@@ -582,5 +582,76 @@ describe("vc", () => {
         schemas.W3CCredentialSchema,
       )
     })
+
+    describe("spec conformance and parity", () => {
+      const baseV1 = {
+        "@context": "https://www.w3.org/2018/credentials/v1",
+        type: "VerifiableCredential",
+        issuer: "did:example:issuer",
+        issuanceDate: "2023-01-01T00:00:00Z",
+        credentialSubject: { id: "did:example:subject" },
+      }
+      const baseV2 = {
+        "@context": "https://www.w3.org/ns/credentials/v2",
+        type: "VerifiableCredential",
+        issuer: "did:example:issuer",
+        credentialSubject: { id: "did:example:subject" },
+      }
+
+      test("accepts datetimes with numeric timezone offsets", () => {
+        testSchema(
+          { ...baseV1, issuanceDate: "2023-01-01T00:00:00+02:00" },
+          schemas.CredentialV1Schema,
+        )
+      })
+
+      test("accepts datetimes with sub-second precision", () => {
+        testSchema(
+          { ...baseV1, issuanceDate: "2023-01-01T00:00:00.123456Z" },
+          schemas.CredentialV1Schema,
+        )
+      })
+
+      test("rejects @context where the core context is not first", () => {
+        expect({
+          ...baseV1,
+          "@context": [
+            "https://example.com/custom/v1",
+            "https://www.w3.org/2018/credentials/v1",
+          ],
+        }).not.toMatchSchema(schemas.CredentialV1Schema as never)
+      })
+
+      test("V2 credential allows unknown top-level fields (loose)", () => {
+        testSchema(
+          { ...baseV2, somethingExtra: true },
+          schemas.CredentialV2Schema,
+        )
+      })
+
+      test("presentation holder accepts an object with id", () => {
+        testSchema(
+          {
+            "@context": "https://www.w3.org/2018/credentials/v1",
+            type: "VerifiablePresentation",
+            holder: { id: "did:example:holder" },
+          },
+          schemas.PresentationSchema,
+        )
+      })
+
+      test("presentation accepts an enveloped JWT-string credential", () => {
+        testSchema(
+          {
+            "@context": "https://www.w3.org/2018/credentials/v1",
+            type: "VerifiablePresentation",
+            verifiableCredential: [
+              "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
+            ],
+          },
+          schemas.PresentationSchema,
+        )
+      })
+    })
   })
 })
