@@ -1,6 +1,7 @@
 import * as z from "zod"
 
 import {
+  base58btcMultibaseRegex,
   didMethodRegex,
   didRegex,
   didUrlRegex,
@@ -97,6 +98,17 @@ export const LegacyVerificationMethodTypeSchema: Shape<LegacyVerificationMethodT
   z.enum(legacyVerificationMethodTypes)
 
 /**
+ * Base58btc multibase-encoded public key (starts with 'z').
+ * @see {@link https://datatracker.ietf.org/doc/html/draft-multiformats-multibase}
+ */
+const Base58BtcMultibaseSchema = z
+  .string()
+  .regex(
+    base58btcMultibaseRegex,
+    "Must be a base58btc multibase-encoded value (starts with 'z')",
+  )
+
+/**
  * Base verification method schema with common properties.
  */
 const VerificationMethodBaseSchema = z.object({
@@ -124,8 +136,8 @@ export const VerificationMethodMultikeySchema = z.object({
   /** The verification method type */
   type: z.literal("Multikey"),
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: z.string(),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: Base58BtcMultibaseSchema,
 })
 
 export const VerificationMethodLegacySchema = z.object({
@@ -133,8 +145,8 @@ export const VerificationMethodLegacySchema = z.object({
   /** The verification method type */
   type: LegacyVerificationMethodTypeSchema,
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: z.string().optional(),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: Base58BtcMultibaseSchema.optional(),
 
   /** JSON Web Key */
   publicKeyJwk: JsonWebKeySchema.optional(),

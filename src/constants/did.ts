@@ -22,6 +22,8 @@ export const verificationMethodTypes: VerificationMethodType[] = [
 export const didRegex = /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]$/
 
 export const didUrlRegex =
-  /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]([/?#][^]*)?$/
+  /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]([/?#][a-zA-Z0-9._~\-!$&'()*+,;=:@/?#%]*)?$/
 
 export const didMethodRegex = /^[a-z0-9]+$/
+
+export const base58btcMultibaseRegex = /^z[1-9A-HJ-NP-Za-km-z]+$/

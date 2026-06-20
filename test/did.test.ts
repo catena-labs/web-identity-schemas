@@ -106,6 +106,21 @@ describe("did", () => {
           expect(didUrl).toMatchSchema(schemas.DidUrlSchema)
         }
       })
+
+      test("invalid DID URLs", () => {
+        const invalidDidUrls = [
+          "did:example:123456789abcdefghi#frag ment", // Space in fragment
+          "did:example:123456789abcdefghi#frag\tment", // Tab in fragment
+          "did:example:123456789abcdefghi#frag\nment", // Newline in fragment
+          'did:example:123456789abcdefghi#"quoted"', // Quotes in fragment
+          "did:example:123456789abcdefghi?q=a b", // Space in query
+          "did:example:123456789abcdefghi/pa th", // Space in path
+        ]
+
+        for (const didUrl of invalidDidUrls) {
+          expect(didUrl).not.toMatchSchema(schemas.DidUrlSchema)
+        }
+      })
     })
 
     describe("DidMethodSchema", () => {
@@ -231,6 +246,41 @@ describe("did", () => {
           schemas.VerificationMethodSchema,
         )
       })
+
+      test("rejects non-base58btc publicKeyMultibase", () => {
+        const emptyMultibase = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Multikey",
+          controller: "did:example:123456789abcdefghi",
+          publicKeyMultibase: "",
+        }
+
+        const nonBase58BtcMultibase = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Multikey",
+          controller: "did:example:123456789abcdefghi",
+          // base64 multibase prefix 'm', not base58btc 'z'
+          publicKeyMultibase: "mQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC",
+        }
+
+        const multibaseWithInvalidChar = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Ed25519VerificationKey2020",
+          controller: "did:example:123456789abcdefghi",
+          // contains '0' which is not in the base58btc alphabet
+          publicKeyMultibase: "z0H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
+        }
+
+        expect(emptyMultibase).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+        expect(nonBase58BtcMultibase).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+        expect(multibaseWithInvalidChar).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+      })
     })
 
     describe("ServiceSchema", () => {
@@ -268,6 +318,48 @@ describe("did", () => {
         } as const
 
         expect(serviceWithObjectEndpoint).toMatchSchema(schemas.ServiceSchema)
+      })
+
+      test("accepts a valid DWN-style nested map endpoint", () => {
+        const serviceWithNestedMap = {
+          id: "did:example:123456789abcdefghi#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            nodes: ["https://dwn.example.com", "https://dwn2.example.com"],
+            auth: "bearer",
+            messaging: {
+              endpoint: "https://dwn.example.com/messages",
+              protocols: ["https://example.com/protocol"],
+            },
+          },
+        }
+
+        expect(serviceWithNestedMap).toMatchSchema(schemas.ServiceSchema)
+        expect(serviceWithNestedMap.serviceEndpoint).toMatchSchema(
+          schemas.ServiceEndpointMapSchema,
+        )
+      })
+
+      test("rejects a map endpoint with an invalid value type", () => {
+        const serviceWithInvalidEndpointValue = {
+          id: "did:example:123456789abcdefghi#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            // numbers are not a valid service endpoint map value
+            port: 8080,
+          },
+        }
+
+        const mapWithBooleanValue = {
+          enabled: true,
+        }
+
+        expect(serviceWithInvalidEndpointValue).not.toMatchSchema(
+          schemas.ServiceSchema,
+        )
+        expect(mapWithBooleanValue).not.toMatchSchema(
+          schemas.ServiceEndpointMapSchema,
+        )
       })
     })
 

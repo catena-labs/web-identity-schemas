@@ -6,6 +6,7 @@ import {
   didUrlRegex,
   didMethodRegex,
   legacyVerificationMethodTypes,
+  base58btcMultibaseRegex,
 } from "../../constants/did"
 import type {
   Did,
@@ -14,6 +15,7 @@ import type {
   VerificationMethodType,
   Service,
   ServiceEndpoint,
+  ServiceEndpointMap,
   DidDocument,
   LegacyVerificationMethodType,
   VerificationMethodMultikey,
@@ -110,6 +112,18 @@ export const LegacyVerificationMethodTypeSchema = v.pipe(
 )
 
 /**
+ * Base58btc multibase-encoded public key (starts with 'z').
+ * @see {@link https://datatracker.ietf.org/doc/html/draft-multiformats-multibase}
+ */
+const Base58BtcMultibaseSchema = v.pipe(
+  v.string(),
+  v.regex(
+    base58btcMultibaseRegex,
+    "Must be a base58btc multibase-encoded value (starts with 'z')",
+  ),
+)
+
+/**
  * Base verification method schema with common properties.
  */
 const VerificationMethodBaseSchema = v.object({
@@ -140,8 +154,8 @@ export const VerificationMethodMultikeySchema = v.object({
   /** The verification method type */
   type: v.literal("Multikey"),
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: v.string(),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: Base58BtcMultibaseSchema,
 } satisfies Shape<VerificationMethodMultikey>)
 
 /**
@@ -152,8 +166,8 @@ export const VerificationMethodLegacySchema = v.object({
   /** The verification method type */
   type: LegacyVerificationMethodTypeSchema,
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: v.optional(v.string()),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: v.optional(Base58BtcMultibaseSchema),
 
   /** JSON Web Key */
   publicKeyJwk: v.optional(JsonWebKeySchema),
@@ -173,6 +187,24 @@ export const VerificationMethodSchema = v.variant("type", [
 ])
 
 /**
+ * Service endpoint map schema.
+ * A map whose values are strings, string arrays, URIs, URI arrays, or
+ * nested service endpoint maps.
+ * @see {@link https://www.w3.org/TR/did-core/#services}
+ */
+export const ServiceEndpointMapSchema: v.GenericSchema<ServiceEndpointMap> =
+  v.record(
+    v.string(),
+    v.union([
+      v.string(),
+      v.array(v.string()),
+      UriSchema,
+      v.array(UriSchema),
+      v.lazy(() => ServiceEndpointMapSchema),
+    ]),
+  )
+
+/**
  * Service endpoint schema.
  * Can be a URI, a map, or an array of URIs and/or maps.
  * @see {@link https://www.w3.org/TR/did-core/#services}
@@ -180,8 +212,8 @@ export const VerificationMethodSchema = v.variant("type", [
 export const ServiceEndpointSchema = v.pipe(
   v.union([
     UriSchema,
-    v.record(v.string(), v.unknown()),
-    v.array(v.union([UriSchema, v.record(v.string(), v.unknown())])),
+    ServiceEndpointMapSchema,
+    v.array(v.union([UriSchema, ServiceEndpointMapSchema])),
   ]),
   v.custom<ServiceEndpoint>(() => true),
 )
