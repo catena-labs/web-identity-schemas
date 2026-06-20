@@ -17,11 +17,23 @@ export function jsonLdContextSchema(context: Uri | Uri[]) {
 
   const arrayContaining = z
     .array(UriSchema)
-    .refine((arr) => contexts.every((ctx) => arr.includes(ctx)), {
-      message: `Array must contain all required contexts: ${contexts.join(", ")}`,
-    })
+    .refine(
+      (arr) =>
+        arr[0] === contexts[0] && contexts.every((ctx) => arr.includes(ctx)),
+      {
+        message: `Array must start with ${contexts[0]} and contain all required contexts: ${contexts.join(", ")}`,
+      },
+    )
 
-  const recordSchema = z.record(z.string(), z.union([...literals, UriSchema]))
+  // JSON-LD allows an inline context object (a map of string -> URI). Arrays are
+  // handled by `arrayContaining`; this branch must not greedily match them.
+  const recordSchema = z.custom<Record<string, Uri>>(
+    (input) =>
+      typeof input === "object" &&
+      input !== null &&
+      !Array.isArray(input) &&
+      Object.values(input).every((value) => typeof value === "string"),
+  )
 
   const validSchemas = singleStringSchema
     ? [singleStringSchema, arrayContaining, recordSchema]
@@ -39,7 +51,7 @@ export function jsonLdContextSchema(context: Uri | Uri[]) {
 export const DateTimeStampSchema = z
   .string()
   .regex(
-    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)$/,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?([+-]\d{2}:\d{2}|Z)$/,
     "Must be a valid ISO 8601 date-time string",
   )
   .pipe(z.custom<DateTimeStamp>())

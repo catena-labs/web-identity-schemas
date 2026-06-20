@@ -2,7 +2,7 @@ import * as z from "zod"
 
 import { vcV1CoreContext } from "../../constants/vc"
 import type { Uri } from "../../types"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DateTimeStampSchema, jsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import {
   BaseCredentialSchema,
@@ -27,8 +27,8 @@ export const VcV1ContextSchema: Shape<string | string[]> = z.union([
     .array(z.string())
     .nonempty()
     .refine(
-      (contexts) => contexts.includes(vcV1CoreContext),
-      "Array must contain V1 core context",
+      (contexts) => contexts[0] === vcV1CoreContext,
+      "First context must be the V1 core context",
     ),
 ])
 
@@ -39,18 +39,20 @@ export const createCredentialV1Schema = (
 ) =>
   BaseCredentialSchema.extend({
     /** JSON-LD context (V1) */
-    "@context": contextSchema
-      ? jsonLdContextSchema(contextSchema)
-      : z.union([VcV1ContextSchema, z.array(VcV1ContextSchema)]),
+    "@context": jsonLdContextSchema(
+      contextSchema
+        ? [vcV1CoreContext, ...[contextSchema].flat()]
+        : vcV1CoreContext,
+    ),
 
     /** Credential types */
     type: credentialTypeSchema(additionalTypes),
 
     /** Issuance date (V1) */
-    issuanceDate: z.iso.datetime(),
+    issuanceDate: DateTimeStampSchema,
 
     /** Expiration date (V1) */
-    expirationDate: z.iso.datetime().optional(),
+    expirationDate: DateTimeStampSchema.optional(),
 
     /** Credential subject */
     credentialSubject: z.union([

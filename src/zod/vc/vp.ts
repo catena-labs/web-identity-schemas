@@ -1,7 +1,7 @@
 import * as z from "zod"
 
-import { DidSchema } from "../did"
-import { ProofSchema } from "./core"
+import { JwtStringSchema } from "../jose"
+import { IdOrObjectSchema, ProofSchema } from "./core"
 import { W3CCredentialSchema, VcContextSchema } from "./vc"
 
 /**
@@ -64,11 +64,15 @@ export const PresentationSchema = z.object({
   type: presentationTypeSchema(),
 
   /** Presentation holder */
-  holder: DidSchema.optional(),
+  holder: IdOrObjectSchema.optional(),
 
-  /** Verifiable credentials */
+  /** Verifiable credentials (credential objects or enveloped JWT strings) */
   verifiableCredential: z
-    .union([W3CCredentialSchema, z.array(W3CCredentialSchema)])
+    .union([
+      W3CCredentialSchema,
+      JwtStringSchema,
+      z.array(z.union([W3CCredentialSchema, JwtStringSchema])),
+    ])
     .optional(),
 })
 
