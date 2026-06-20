@@ -256,7 +256,7 @@ When TypeScript complains about type mismatches:
 
 1. Check if the schema output type matches the TypeScript interface
 2. Verify generic type parameters are consistent
-3. Use the appropriate `Shape<T>` or `ObjectShape<T>` pattern
+3. Use the appropriate `Shape<T>` (zod) or `satisfies Shape<T>` (valibot) pattern
 
 ## Schema Validation Patterns
 
@@ -306,17 +306,29 @@ export const UriSchema = z
   .pipe(z.custom<Uri>())
 ```
 
-For object schemas, use `ObjectShape<T>` for schemas that need `.extend()` method:
+For object schemas, annotate with `Shape<T>` (defined in `src/zod/shared/shape.ts`
+as `z.ZodType<TOutput>`):
 
 ```ts
-// For schemas that need .extend() method
-export const BaseJwkSchema: ObjectShape<BaseJwk> = z.object({
+export const ProofSchema: Shape<Proof> = z.object({
+  type: z.string(),
+  // ... other fields
+})
+```
+
+`Shape<T>` is `z.ZodType<T>`, which does NOT expose `.extend()`. When a base
+schema needs to be extended, keep the base object schema un-annotated (so it
+stays a `z.ZodObject` with `.extend()`/`.shape`) and annotate the composed
+result, or compose by spreading `...BaseSchema.shape`:
+
+```ts
+const BaseJwkSchema = z.object({
   kty: z.string(),
-  use: z.optional(KeyUseSchema),
+  use: KeyUseSchema.optional(),
   // ... other fields
 })
 
-export const RsaJwkSchema: ObjectShape<RsaJwk> = BaseJwkSchema.extend({
+export const RsaJwkSchema: Shape<RsaJwk> = BaseJwkSchema.extend({
   kty: z.literal("RSA"),
   n: Base64UrlSchema,
   e: Base64UrlSchema,
@@ -324,7 +336,7 @@ export const RsaJwkSchema: ObjectShape<RsaJwk> = BaseJwkSchema.extend({
 })
 ```
 
-For non-object schemas or those that don't need `.extend()`, use `Shape<T>`:
+For discriminated unions and non-object schemas, also use `Shape<T>`:
 
 ```ts
 export const UnionSchema: Shape<MyUnion> = z.discriminatedUnion("type", [
@@ -333,11 +345,11 @@ export const UnionSchema: Shape<MyUnion> = z.discriminatedUnion("type", [
 ])
 ```
 
-**Why ObjectShape vs Shape for zod:**
+**Why `Shape<T>` for zod:**
 
-- ✅ `ObjectShape<T>` preserves `.extend()` method for object schemas
-- ✅ `Shape<T>` for discriminated unions and non-object schemas
-- ✅ Both provide compile-time + runtime type safety
+- ✅ One helper for object, union, and non-object schemas
+- ✅ Provides compile-time + runtime type safety (output matches `T`)
+- ✅ Extend object schemas before annotating, or spread `...BaseSchema.shape`
 
 ### Benefits
 
