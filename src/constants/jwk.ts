@@ -11,7 +11,7 @@ export const keyTypes = [
   "RSA", // RSA keys
   "EC", // Elliptic Curve keys
   "oct", // Octet sequence (symmetric keys)
-  "OKP" // Octet string key pairs (Ed25519, X25519, etc.)
+  "OKP", // Octet string key pairs (Ed25519, X25519, etc.)
 ] as const
 
 /**
@@ -20,7 +20,7 @@ export const keyTypes = [
  */
 export const keyUses = [
   "sig", // Signature
-  "enc" // Encryption
+  "enc", // Encryption
 ] as const
 
 /**
@@ -35,5 +35,5 @@ export const keyOperations = [
   "wrapKey", // Encrypt key
   "unwrapKey", // Decrypt key and validate decryption, if applicable
   "deriveKey", // Derive key
-  "deriveBits" // Derive bits not to be used as a key
+  "deriveBits", // Derive bits not to be used as a key
 ] as const

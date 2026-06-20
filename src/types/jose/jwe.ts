@@ -1,10 +1,10 @@
-import type { JsonWebKey } from "./jwk"
 import type {
   JweKeyManagementAlgorithm,
   JweContentEncryptionAlgorithm,
-  JoseCompressionAlgorithm
+  JoseCompressionAlgorithm,
 } from "../shared/algorithms"
 import type { Base64, Base64Url } from "../shared/base-64"
+import type { JsonWebKey } from "./jwk"
 
 /**
  * JWE Protected Header.

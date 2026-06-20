@@ -1,4 +1,5 @@
 import * as v from "valibot"
+
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { JoseAlgorithmSchema } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
@@ -40,7 +41,7 @@ export const JwsProtectedHeaderSchema = v.object({
   cty: v.optional(v.string()),
 
   /** Critical header parameter (optional) */
-  crit: v.optional(v.array(v.string()))
+  crit: v.optional(v.array(v.string())),
 })
 
 /**
@@ -71,7 +72,7 @@ export const JwsUnprotectedHeaderSchema = v.object({
   "x5t#S256": v.optional(Base64UrlSchema),
 
   /** Critical header parameter (optional) */
-  crit: v.optional(v.array(v.string()))
+  crit: v.optional(v.array(v.string())),
 })
 
 /**
@@ -87,7 +88,7 @@ export const JwsSignatureSchema = v.object({
   header: v.optional(JwsUnprotectedHeaderSchema),
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -108,7 +109,7 @@ export const JwsCompactSerializationSchema = v.object({
   payload: Base64UrlSchema,
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -121,7 +122,7 @@ export const JwsJsonSerializationSchema = v.object({
   payload: Base64UrlSchema,
 
   /** JWS Signatures */
-  signatures: v.array(JwsSignatureSchema)
+  signatures: v.array(JwsSignatureSchema),
 })
 
 /**
@@ -140,7 +141,7 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
   header: v.optional(JwsUnprotectedHeaderSchema),
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -151,7 +152,7 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
  */
 export const JwsStringSchema = v.pipe(
   v.string(),
-  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+$/)
+  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+$/),
 )
 
 /**
@@ -166,9 +167,9 @@ export const JwsParsedSchema = v.pipe(
     return {
       protected: parts[0],
       payload: parts[1],
-      signature: parts[2]
+      signature: parts[2],
     }
-  })
+  }),
 )
 
 /**
@@ -187,7 +188,7 @@ export const JwsObjectSchema = v.object({
   payload: Base64UrlSchema,
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -198,5 +199,5 @@ export const JwsObjectSchema = v.object({
  */
 export const DetachedJwsStringSchema = v.pipe(
   v.string(),
-  v.regex(/^[A-Za-z0-9_-]+\.\.[A-Za-z0-9_-]+$/)
+  v.regex(/^[A-Za-z0-9_-]+\.\.[A-Za-z0-9_-]+$/),
 )

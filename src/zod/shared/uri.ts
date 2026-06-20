@@ -1,5 +1,6 @@
-import type { Uri } from "../../types/shared/uri"
 import * as z from "zod"
+
+import type { Uri } from "../../types/shared/uri"
 
 /**
  * URI schema according to RFC 3986.

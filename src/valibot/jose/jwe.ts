@@ -1,9 +1,10 @@
 import * as v from "valibot"
+
 import { Base64UrlSchema, Base64Schema } from "../shared/base-64"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
-  JoseCompressionAlgorithmSchema
+  JoseCompressionAlgorithmSchema,
 } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -71,7 +72,7 @@ const JweProtectedHeaderSchema = v.object({
   p2s: v.optional(Base64UrlSchema),
 
   /** PBES2 Count (optional, for PBES2) */
-  p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1)))
+  p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
 })
 
 /**
@@ -102,7 +103,7 @@ const JweUnprotectedHeaderSchema = v.object({
   "x5t#S256": v.optional(Base64UrlSchema),
 
   /** Critical header parameter (optional) */
-  crit: v.optional(v.array(v.string()))
+  crit: v.optional(v.array(v.string())),
 })
 
 /**
@@ -136,7 +137,7 @@ const JwePerRecipientUnprotectedHeaderSchema = v.object({
   "x5t#S256": v.optional(Base64UrlSchema),
 
   /** Critical header parameter (optional) */
-  crit: v.optional(v.array(v.string()))
+  crit: v.optional(v.array(v.string())),
 })
 
 /**
@@ -149,7 +150,7 @@ const JweRecipientSchema = v.object({
   header: v.optional(JwePerRecipientUnprotectedHeaderSchema),
 
   /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema
+  encrypted_key: Base64UrlSchema,
 })
 
 /**
@@ -171,7 +172,7 @@ export const JweCompactSerializationSchema = v.object({
   ciphertext: Base64UrlSchema,
 
   /** JWE Authentication Tag (base64url encoded) */
-  tag: Base64UrlSchema
+  tag: Base64UrlSchema,
 })
 
 /**
@@ -199,7 +200,7 @@ export const JweJsonSerializationSchema = v.object({
   aad: v.optional(Base64UrlSchema),
 
   /** JWE Recipients */
-  recipients: v.array(JweRecipientSchema)
+  recipients: v.array(JweRecipientSchema),
 })
 
 /**
@@ -230,7 +231,7 @@ export const JweFlattenedJsonSerializationSchema = v.object({
   tag: Base64UrlSchema,
 
   /** JWE Additional Authenticated Data (base64url encoded, optional) */
-  aad: v.optional(Base64UrlSchema)
+  aad: v.optional(Base64UrlSchema),
 })
 
 /**
@@ -242,7 +243,7 @@ export const JweFlattenedJsonSerializationSchema = v.object({
 export const JweStringSchema = v.pipe(
   v.string(),
   v.regex(
-    /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/
+    /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
   ),
   v.transform((jwe) => {
     const parts = jwe.split(".")
@@ -251,9 +252,9 @@ export const JweStringSchema = v.pipe(
       encrypted_key: parts[1],
       iv: parts[2],
       ciphertext: parts[3],
-      tag: parts[4]
+      tag: parts[4],
     }
-  })
+  }),
 )
 
 /**
@@ -278,5 +279,5 @@ export const JweObjectSchema = v.object({
   ciphertext: Base64UrlSchema,
 
   /** JWE Authentication Tag (base64url encoded) */
-  tag: Base64UrlSchema
+  tag: Base64UrlSchema,
 })

@@ -1,15 +1,16 @@
 import { test, expect, describe } from "vitest"
+
 import {
   ellipticCurves,
   octetKeyPairCurves,
-  cryptographicCurves
+  cryptographicCurves,
 } from "../src/constants/curves"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("curves", () => {
@@ -29,7 +30,7 @@ describe("curves", () => {
           "secp999r1", // Non-existent curve
           "prime256v1", // OpenSSL name, not standard
           "",
-          "INVALID"
+          "INVALID",
         ]
 
         for (const curve of invalidCurves) {
@@ -53,7 +54,7 @@ describe("curves", () => {
           "ed25519", // Wrong case
           "x25519", // Wrong case
           "",
-          "INVALID"
+          "INVALID",
         ]
 
         for (const curve of invalidCurves) {
@@ -77,7 +78,7 @@ describe("curves", () => {
           "ed25519", // Wrong case
           "x25519", // Wrong case
           "",
-          "INVALID"
+          "INVALID",
         ]
 
         for (const curve of invalidCurves) {

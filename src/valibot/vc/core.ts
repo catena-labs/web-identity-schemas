@@ -1,13 +1,12 @@
-import type { ArrayContaining } from "../../types"
-import type { JwsString } from "../../types/jose/jws"
-import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import type { Shape } from "../shared/shape"
 import * as v from "valibot"
+
 import {
   proofPurposes,
   credentialStatusTypes,
-  statusPurposes
+  statusPurposes,
 } from "../../constants/vc"
+import type { ArrayContaining } from "../../types"
+import type { JwsString } from "../../types/jose/jws"
 import {
   type CredentialStatusType,
   type StatusPurpose,
@@ -16,10 +15,12 @@ import {
   type CredentialSubject,
   type IdOrObject,
   type GenericResource,
-  type Verifiable
+  type Verifiable,
 } from "../../types/vc/core"
+import type { ProofPurpose, Proof } from "../../types/vc/proof"
 import { JwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema } from "../shared/json-ld"
+import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 import { includesAll, oneOrMany } from "../shared/utils"
 
@@ -42,7 +43,7 @@ export const VcTypeLiteralSchema = v.literal("VerifiableCredential")
  * VerifiableCredential, all additional types, and any other strings.
  */
 export function credentialTypeSchema<
-  TAdditionalTypes extends string | readonly string[] = never
+  TAdditionalTypes extends string | readonly string[] = never,
 >(additionalTypes?: TAdditionalTypes) {
   const requiredTypes = additionalTypes
     ? ["VerifiableCredential", ...[additionalTypes].flat()]
@@ -59,11 +60,11 @@ export function credentialTypeSchema<
             ? TAdditionalTypes
             : TAdditionalTypes extends string
               ? [TAdditionalTypes]
-              : never)
+              : never),
         ],
         string
       >
-    >(() => true)
+    >(() => true),
   )
 }
 
@@ -79,9 +80,9 @@ export const VcTypeSchema = credentialTypeSchema()
 export const ProofPurposeSchema = v.pipe(
   v.union([
     v.picklist(proofPurposes),
-    v.string() // Allow custom proof purposes
+    v.string(), // Allow custom proof purposes
   ]),
-  v.custom<ProofPurpose>(() => true)
+  v.custom<ProofPurpose>(() => true),
 )
 
 /**
@@ -114,15 +115,15 @@ export const ProofSchema = v.object({
   jws: v.optional(
     v.pipe(
       JwsStringSchema,
-      v.custom<JwsString>(() => true)
-    )
+      v.custom<JwsString>(() => true),
+    ),
   ),
 
   /** Signature value (for other proof types) */
   signatureValue: v.optional(v.string()),
 
   /** Proof value (generic) */
-  proofValue: v.optional(v.string())
+  proofValue: v.optional(v.string()),
 } satisfies Shape<Proof>)
 
 /**
@@ -132,9 +133,9 @@ export const ProofSchema = v.object({
 export const CredentialStatusTypeSchema = v.pipe(
   v.union([
     v.picklist(credentialStatusTypes),
-    v.string() // Allow custom status types
+    v.string(), // Allow custom status types
   ]),
-  v.custom<CredentialStatusType>(() => true)
+  v.custom<CredentialStatusType>(() => true),
 )
 
 /**
@@ -158,9 +159,9 @@ export const CredentialStatusSchema = v.object({
   statusPurpose: v.optional(
     v.pipe(
       v.union([v.picklist(statusPurposes), v.string()]),
-      v.custom<StatusPurpose>(() => true)
-    )
-  )
+      v.custom<StatusPurpose>(() => true),
+    ),
+  ),
 } satisfies Shape<CredentialStatus>)
 
 /**
@@ -172,7 +173,7 @@ export const CredentialSchemaTypeSchema = v.object({
   id: UriSchema,
 
   /** Schema type */
-  type: v.string()
+  type: v.string(),
 } satisfies Shape<CredentialSchemaType>)
 
 /**
@@ -184,7 +185,7 @@ export const GenericResourceSchema = v.object({
   id: v.optional(v.union([UriSchema, v.string()])),
 
   /** Resource type */
-  type: v.union([v.string(), v.array(v.string())])
+  type: v.union([v.string(), v.array(v.string())]),
 } satisfies Shape<GenericResource>)
 
 /**
@@ -194,10 +195,10 @@ export const IdOrObjectSchema = v.pipe(
   v.union([
     UriSchema,
     v.object({
-      id: UriSchema
-    })
+      id: UriSchema,
+    }),
   ]),
-  v.custom<IdOrObject>(() => true)
+  v.custom<IdOrObject>(() => true),
 )
 
 /**
@@ -207,9 +208,9 @@ export const IdOrObjectSchema = v.pipe(
 export const CredentialSubjectSchema = v.pipe(
   v.looseObject({
     /** Subject identifier (optional) */
-    id: v.optional(v.union([UriSchema, v.string()]))
+    id: v.optional(v.union([UriSchema, v.string()])),
   }),
-  v.custom<CredentialSubject>(() => true)
+  v.custom<CredentialSubject>(() => true),
 )
 
 /**
@@ -228,34 +229,34 @@ export const BaseCredentialSchema = v.looseObject({
 
   /** Credential status (optional) */
   credentialStatus: v.optional(
-    v.union([CredentialStatusSchema, v.array(CredentialStatusSchema)])
+    v.union([CredentialStatusSchema, v.array(CredentialStatusSchema)]),
   ),
 
   /** Credential schema (optional) */
   credentialSchema: v.optional(
-    v.union([CredentialSchemaTypeSchema, v.array(CredentialSchemaTypeSchema)])
+    v.union([CredentialSchemaTypeSchema, v.array(CredentialSchemaTypeSchema)]),
   ),
 
   /** Credential subject */
   credentialSubject: v.union([
     CredentialSubjectSchema,
-    v.array(CredentialSubjectSchema)
+    v.array(CredentialSubjectSchema),
   ]),
 
   /** Evidence (optional) */
   evidence: v.optional(
-    v.union([GenericResourceSchema, v.array(GenericResourceSchema)])
+    v.union([GenericResourceSchema, v.array(GenericResourceSchema)]),
   ),
 
   /** Refresh service (optional) */
   refreshService: v.optional(
-    v.union([GenericResourceSchema, v.array(GenericResourceSchema)])
+    v.union([GenericResourceSchema, v.array(GenericResourceSchema)]),
   ),
 
   /** Terms of use (optional) */
   termsOfUse: v.optional(
-    v.union([GenericResourceSchema, v.array(GenericResourceSchema)])
-  )
+    v.union([GenericResourceSchema, v.array(GenericResourceSchema)]),
+  ),
 })
 
 /**
@@ -267,13 +268,13 @@ export function makeVerifiable<
   TSchema extends v.LooseObjectSchema<
     v.ObjectEntries,
     v.ErrorMessage<v.LooseObjectIssue> | undefined
-  >
+  >,
 >(schema: TSchema) {
   return v.pipe(
     v.looseObject({
       ...schema.entries,
-      proof: v.union([ProofSchema, v.array(ProofSchema)])
+      proof: v.union([ProofSchema, v.array(ProofSchema)]),
     }),
-    v.custom<Verifiable<v.InferOutput<TSchema>>>(() => true)
+    v.custom<Verifiable<v.InferOutput<TSchema>>>(() => true),
   )
 }

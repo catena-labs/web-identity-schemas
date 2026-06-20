@@ -13,5 +13,5 @@ export type LooseObject<T> = T & Record<string, unknown>
  */
 export type ArrayContaining<T extends readonly unknown[], TRest = unknown> = [
   ...T,
-  ...TRest[]
+  ...TRest[],
 ]

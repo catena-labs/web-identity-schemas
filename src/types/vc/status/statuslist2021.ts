@@ -21,11 +21,10 @@ export interface StatusList2021CredentialSubject extends CredentialSubject {
  * StatusList2021 Credential.
  * @see {@link https://www.w3.org/TR/vc-status-list/#statuslist2021credential}
  */
-export interface StatusList2021Credential
-  extends BaseCredential<
-    StatusList2021CredentialSubject,
-    "StatusList2021Credential"
-  > {
+export interface StatusList2021Credential extends BaseCredential<
+  StatusList2021CredentialSubject,
+  "StatusList2021Credential"
+> {
   /** Issuance date (V1) */
   issuanceDate: DateTimeStamp
 

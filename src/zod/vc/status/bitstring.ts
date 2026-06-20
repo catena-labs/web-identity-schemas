@@ -1,13 +1,14 @@
-import type { BitstringStatusListCredentialSubject } from "../../../types/vc/status/bitstring"
-import type { Shape } from "../../shared/shape"
 import * as z from "zod"
+
 import {
   bitstringStatusListContext,
   statusPurposes,
-  vcV2CoreContext
+  vcV2CoreContext,
 } from "../../../constants/vc"
+import type { BitstringStatusListCredentialSubject } from "../../../types/vc/status/bitstring"
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
+import type { Shape } from "../../shared/shape"
 import { BaseCredentialSchema } from "../core"
 import { VcV2CoreContextSchema } from "../v2"
 
@@ -16,7 +17,7 @@ import { VcV2CoreContextSchema } from "../v2"
  * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/}
  */
 export const BitstringStatusListContextSchema = z.literal(
-  bitstringStatusListContext
+  bitstringStatusListContext,
 )
 
 /**
@@ -38,7 +39,7 @@ export const BitstringStatusListCredentialSubjectSchema: Shape<BitstringStatusLi
     encodedList: Base64UrlSchema,
 
     /** Time to live for the status list in seconds */
-    ttl: z.number().optional()
+    ttl: z.number().optional(),
   })
 
 /**
@@ -53,8 +54,8 @@ const BitstringStatusListCredentialContextSchema = z.union([
       (contexts) =>
         contexts.includes(vcV2CoreContext) &&
         contexts.includes(bitstringStatusListContext),
-      "Array must contain both V2 core context and BitstringStatusList context"
-    )
+      "Array must contain both V2 core context and BitstringStatusList context",
+    ),
 ])
 
 /**
@@ -71,5 +72,5 @@ export const BitstringStatusListCredentialSchema = BaseCredentialSchema.extend({
   validUntil: z.iso.datetime().optional(),
 
   /** Credential subject */
-  credentialSubject: BitstringStatusListCredentialSubjectSchema
+  credentialSubject: BitstringStatusListCredentialSubjectSchema,
 }).strict()

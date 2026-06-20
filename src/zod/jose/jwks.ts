@@ -1,6 +1,7 @@
+import * as z from "zod"
+
 import type { JsonWebKeySet } from "../../types/jose/jwks"
 import type { Shape } from "../shared/shape"
-import * as z from "zod"
 import { JsonWebKeySchema } from "./jwk"
 
 /**
@@ -15,5 +16,5 @@ import { JsonWebKeySchema } from "./jwk"
  * }
  */
 export const JsonWebKeySetSchema: Shape<JsonWebKeySet> = z.object({
-  keys: z.array(JsonWebKeySchema)
+  keys: z.array(JsonWebKeySchema),
 })

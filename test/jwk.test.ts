@@ -1,4 +1,5 @@
 import { test, expect, describe } from "vitest"
+
 import { keyUses, keyOperations } from "../src/constants/jwk"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
@@ -13,7 +14,7 @@ import rsaPublicValid from "./fixtures/jwk/rsa-public-valid.json"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("jwk", () => {
@@ -40,7 +41,7 @@ describe("jwk", () => {
           ...keyOperations.map((op) => [op]),
           ["sign", "verify"],
           ["encrypt", "decrypt"],
-          ["sign", "verify", "deriveKey"]
+          ["sign", "verify", "deriveKey"],
         ]
 
         for (const ops of validOps) {
@@ -54,7 +55,7 @@ describe("jwk", () => {
           ["SIGN"], // Wrong case
           ["sign", "invalid"],
           "sign", // Not an array
-          [""]
+          [""],
         ]
 
         for (const ops of invalidOps) {
@@ -77,7 +78,7 @@ describe("jwk", () => {
           { kty: "RSA" }, // Missing n and e
           { kty: "RSA", n: "inv@lid", e: "AQAB" }, // Invalid base64url
           { kty: "RSA", n: "SGVsbG8", e: "inv@lid" }, // Invalid base64url
-          { kty: "EC", n: "SGVsbG8", e: "AQAB" } // Wrong kty
+          { kty: "EC", n: "SGVsbG8", e: "AQAB" }, // Wrong kty
         ]
 
         for (const key of invalidRsaKeys) {
@@ -97,7 +98,7 @@ describe("jwk", () => {
           crv: "P-256",
           x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
           y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
-          d: "870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE"
+          d: "870MB6gfuTJ4HtUnUvYMyJpr5eUZNP4Bk43bVdj3eAE",
         }
 
         expect(validEcPrivateKey).toMatchSchema(schemas.EcJwkSchema)
@@ -110,7 +111,7 @@ describe("jwk", () => {
           "P-256K",
           "secp256k1",
           "P-384",
-          "P-521"
+          "P-521",
         ]
 
         for (const crv of curves) {
@@ -118,7 +119,7 @@ describe("jwk", () => {
             kty: "EC",
             crv,
             x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
           }
 
           expect(ecKey).toMatchSchema(schemas.EcJwkSchema)
@@ -142,7 +143,7 @@ describe("jwk", () => {
           kty: "OKP",
           crv: "X25519",
           x: "3p7bfXt9wbTTW2HC7OQ1Nz-DQ8hbeGdNrfx-FG-IK08",
-          use: "enc"
+          use: "enc",
         }
 
         expect(validX25519Key).toMatchSchema(schemas.OkpJwkSchema)
@@ -152,7 +153,7 @@ describe("jwk", () => {
     describe("github token actions", () => {
       test("valid JWKS", () => {
         expect(jwksGithubTokenActions).toMatchSchema(
-          schemas.JsonWebKeySetSchema
+          schemas.JsonWebKeySetSchema,
         )
       })
     })
@@ -163,23 +164,23 @@ describe("jwk", () => {
           {
             kty: "RSA",
             n: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
-            e: "AQAB"
+            e: "AQAB",
           },
           {
             kty: "EC",
             crv: "P-256",
             x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
           },
           {
             kty: "oct",
-            k: "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow"
+            k: "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow",
           },
           {
             kty: "OKP",
             crv: "Ed25519",
-            x: "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
-          }
+            x: "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo",
+          },
         ]
 
         for (const key of keys) {
@@ -194,7 +195,7 @@ describe("jwk", () => {
           { kty: "EC", n: "invalid" }, // Wrong fields for EC
           { kty: "oct", crv: "P-256" }, // Wrong fields for oct
           { kty: "OKP", n: "invalid" }, // Wrong fields for OKP
-          {} // Missing kty
+          {}, // Missing kty
         ]
 
         for (const key of invalidKeys) {

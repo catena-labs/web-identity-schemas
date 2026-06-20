@@ -1,13 +1,14 @@
-import type { StatusList2021CredentialSubject } from "../../../types/vc/status/statuslist2021"
-import type { Shape } from "../../shared/shape"
 import * as z from "zod"
+
 import {
   statusList2021Context,
   statusPurposes,
-  vcV1CoreContext
+  vcV1CoreContext,
 } from "../../../constants/vc"
+import type { StatusList2021CredentialSubject } from "../../../types/vc/status/statuslist2021"
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
+import type { Shape } from "../../shared/shape"
 import { BaseCredentialSchema } from "../core"
 import { VcV1CoreContextSchema } from "../v1"
 
@@ -33,7 +34,7 @@ export const StatusList2021CredentialSubjectSchema: Shape<StatusList2021Credenti
     statusPurpose: z.enum(statusPurposes),
 
     /** Base64url-encoded status list */
-    encodedList: Base64UrlSchema
+    encodedList: Base64UrlSchema,
   })
 
 /**
@@ -48,8 +49,8 @@ const StatusList2021CredentialContextSchema = z.union([
       (contexts) =>
         contexts.includes(vcV1CoreContext) &&
         contexts.includes(statusList2021Context),
-      "Array must contain both V1 core context and StatusList2021 context"
-    )
+      "Array must contain both V1 core context and StatusList2021 context",
+    ),
 ])
 
 /**
@@ -66,5 +67,5 @@ export const StatusList2021CredentialSchema = BaseCredentialSchema.extend({
   expirationDate: z.iso.datetime().optional(),
 
   /** Credential subject */
-  credentialSubject: StatusList2021CredentialSubjectSchema
+  credentialSubject: StatusList2021CredentialSubjectSchema,
 }).strict()

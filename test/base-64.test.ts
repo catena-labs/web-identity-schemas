@@ -1,10 +1,11 @@
 import { test, expect, describe } from "vitest"
+
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("Base64 utils", () => {
@@ -28,7 +29,7 @@ describe("Base64 utils", () => {
           "AQAB", // RSA e parameter (common value)
           // Empty string is actually invalid base64url for our schema
           "abc123_ABC-", // Mixed alphanumeric with URL-safe chars
-          "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK" // DID key identifier
+          "z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK", // DID key identifier
         ]
 
         for (const input of validInputs) {
@@ -43,7 +44,7 @@ describe("Base64 utils", () => {
           "SGVsbG8/V29ybGQ", // Contains '/' (not allowed in base64url)
           "YWJj+ZGVm", // Contains '+' (not allowed in base64url)
           "YWJjZGVm/", // Contains '/' (not allowed in base64url)
-          "YWJjZGVm=" // Contains '=' padding (not allowed in base64url)
+          "YWJjZGVm=", // Contains '=' padding (not allowed in base64url)
         ]
 
         for (const input of invalidInputs) {
@@ -81,7 +82,7 @@ describe("Base64 utils", () => {
           "SGVsbG8=", // Standard base64 with padding
           "SGVsbG8==", // Standard base64 with padding
           "bad$$value", // Invalid characters
-          "" // Empty string is invalid
+          "", // Empty string is invalid
         ]
 
         for (const input of invalidInputs) {
@@ -103,7 +104,7 @@ describe("Base64 utils", () => {
           /regex/,
           () => {
             return "base64url"
-          }
+          },
         ]
 
         for (const input of nonStringInputs) {
@@ -116,7 +117,7 @@ describe("Base64 utils", () => {
       test("valid inputs", () => {
         const validInputs = [
           "SGVsbG8gV29ybGQ=", // "Hello World"
-          "U29tZSBkYXRhLw==" // "Some data/"
+          "U29tZSBkYXRhLw==", // "Some data/"
         ]
 
         for (const input of validInputs) {

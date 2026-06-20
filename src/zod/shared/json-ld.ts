@@ -1,6 +1,7 @@
+import * as z from "zod"
+
 import type { Uri } from "../../types"
 import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
-import * as z from "zod"
 import { UriSchema } from "./uri"
 
 /**
@@ -17,7 +18,7 @@ export function jsonLdContextSchema(context: Uri | Uri[]) {
   const arrayContaining = z
     .array(UriSchema)
     .refine((arr) => contexts.every((ctx) => arr.includes(ctx)), {
-      message: `Array must contain all required contexts: ${contexts.join(", ")}`
+      message: `Array must contain all required contexts: ${contexts.join(", ")}`,
     })
 
   const recordSchema = z.record(z.string(), z.union([...literals, UriSchema]))
@@ -39,6 +40,6 @@ export const DateTimeStampSchema = z
   .string()
   .regex(
     /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?([+-]\d{2}:\d{2}|Z)$/,
-    "Must be a valid ISO 8601 date-time string"
+    "Must be a valid ISO 8601 date-time string",
   )
   .pipe(z.custom<DateTimeStamp>())

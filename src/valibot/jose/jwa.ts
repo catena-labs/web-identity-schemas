@@ -1,20 +1,21 @@
-import type {
-  JoseSignatureAlgorithm,
-  JoseUnsecuredAlgorithm,
-  JoseAlgorithm,
-  JweContentEncryptionAlgorithm,
-  JweKeyManagementAlgorithm,
-  JoseCompressionAlgorithm
-} from "../../types/shared/algorithms"
 import * as v from "valibot"
+
 import {
   joseSignatureAlgorithms,
   joseUnsecuredAlgorithm,
   joseAlgorithms,
   jweContentEncryptionAlgorithms,
   jweKeyManagementAlgorithms,
-  joseCompressionAlgorithms
+  joseCompressionAlgorithms,
 } from "../../constants/algorithms"
+import type {
+  JoseSignatureAlgorithm,
+  JoseUnsecuredAlgorithm,
+  JoseAlgorithm,
+  JweContentEncryptionAlgorithm,
+  JweKeyManagementAlgorithm,
+  JoseCompressionAlgorithm,
+} from "../../types/shared/algorithms"
 
 /**
  * JSON Web Signature algorithms that require cryptographic signatures.
@@ -26,7 +27,7 @@ import {
  */
 export const JoseSignatureAlgorithmSchema = v.pipe(
   v.picklist(joseSignatureAlgorithms),
-  v.custom<JoseSignatureAlgorithm>(() => true)
+  v.custom<JoseSignatureAlgorithm>(() => true),
 )
 
 /**
@@ -38,7 +39,7 @@ export const JoseSignatureAlgorithmSchema = v.pipe(
  */
 export const JoseUnsecuredAlgorithmSchema = v.pipe(
   v.literal(joseUnsecuredAlgorithm),
-  v.custom<JoseUnsecuredAlgorithm>(() => true)
+  v.custom<JoseUnsecuredAlgorithm>(() => true),
 )
 
 /**
@@ -52,7 +53,7 @@ export const JoseUnsecuredAlgorithmSchema = v.pipe(
  */
 export const JoseAlgorithmSchema = v.pipe(
   v.picklist(joseAlgorithms),
-  v.custom<JoseAlgorithm>(() => true)
+  v.custom<JoseAlgorithm>(() => true),
 )
 
 /**
@@ -65,7 +66,7 @@ export const JoseAlgorithmSchema = v.pipe(
  */
 export const JweContentEncryptionAlgorithmSchema = v.pipe(
   v.picklist(jweContentEncryptionAlgorithms),
-  v.custom<JweContentEncryptionAlgorithm>(() => true)
+  v.custom<JweContentEncryptionAlgorithm>(() => true),
 )
 
 /**
@@ -78,7 +79,7 @@ export const JweContentEncryptionAlgorithmSchema = v.pipe(
  */
 export const JweKeyManagementAlgorithmSchema = v.pipe(
   v.picklist(jweKeyManagementAlgorithms),
-  v.custom<JweKeyManagementAlgorithm>(() => true)
+  v.custom<JweKeyManagementAlgorithm>(() => true),
 )
 
 /**
@@ -90,5 +91,5 @@ export const JweKeyManagementAlgorithmSchema = v.pipe(
  */
 export const JoseCompressionAlgorithmSchema = v.pipe(
   v.picklist(joseCompressionAlgorithms),
-  v.custom<JoseCompressionAlgorithm>(() => true)
+  v.custom<JoseCompressionAlgorithm>(() => true),
 )

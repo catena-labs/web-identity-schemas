@@ -5,5 +5,5 @@
  */
 export type Uri<
   TScheme extends string = string,
-  TPath extends string = string
+  TPath extends string = string,
 > = `${TScheme}:${TPath}`

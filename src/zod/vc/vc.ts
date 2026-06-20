@@ -1,14 +1,15 @@
 import * as z from "zod"
+
 import { CredentialSubjectSchema } from "./core"
 import {
   createCredentialV1Schema,
   createVerifiableCredentialV1Schema,
-  VcV1ContextSchema
+  VcV1ContextSchema,
 } from "./v1"
 import {
   createCredentialV2Schema,
   createVerifiableCredentialV2Schema,
-  VcV2ContextSchema
+  VcV2ContextSchema,
 } from "./v2"
 
 /**
@@ -22,11 +23,11 @@ export const VcContextSchema = z.union([VcV1ContextSchema, VcV2ContextSchema])
  */
 export const createCredentialSchema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
-  additionalTypes?: string | string[]
+  additionalTypes?: string | string[],
 ) =>
   z.union([
     createCredentialV1Schema(credentialSubjectSchema, additionalTypes),
-    createCredentialV2Schema(credentialSubjectSchema, additionalTypes)
+    createCredentialV2Schema(credentialSubjectSchema, additionalTypes),
   ])
 
 /**
@@ -34,14 +35,17 @@ export const createCredentialSchema = (
  */
 export const createVerifiableCredentialSchema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
-  additionalTypes?: string | string[]
+  additionalTypes?: string | string[],
 ) =>
   z.union([
     createVerifiableCredentialV1Schema(
       credentialSubjectSchema,
-      additionalTypes
+      additionalTypes,
     ),
-    createVerifiableCredentialV2Schema(credentialSubjectSchema, additionalTypes)
+    createVerifiableCredentialV2Schema(
+      credentialSubjectSchema,
+      additionalTypes,
+    ),
   ])
 
 export const W3CCredentialSchema = createCredentialSchema()

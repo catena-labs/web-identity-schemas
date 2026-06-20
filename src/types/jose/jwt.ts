@@ -1,9 +1,9 @@
-import type { JsonWebKey } from "./jwk"
 import type {
   JoseSignatureAlgorithm,
-  JoseUnsecuredAlgorithm
+  JoseUnsecuredAlgorithm,
 } from "../shared/algorithms"
 import type { Base64, Base64Url } from "../shared/base-64"
+import type { JsonWebKey } from "./jwk"
 
 /**
  * Unix timestamp type.

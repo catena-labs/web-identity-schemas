@@ -9,7 +9,7 @@ import * as v from "valibot"
  */
 export const JwtStringSchema = v.pipe(
   v.string(),
-  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/)
+  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/),
 )
 
 /**
@@ -29,7 +29,7 @@ export const JwtStringPartsSchema = v.pipe(
     return {
       header,
       payload,
-      signature: signature ?? ""
+      signature: signature ?? "",
     }
-  })
+  }),
 )

@@ -1,12 +1,13 @@
-import type { Uri } from "../../types"
 import * as z from "zod"
+
 import { vcV2CoreContext } from "../../constants/vc"
+import type { Uri } from "../../types"
 import { jsonLdContextSchema } from "../shared/json-ld"
 import {
   BaseCredentialSchema,
   makeVerifiable,
   credentialTypeSchema,
-  CredentialSubjectSchema
+  CredentialSubjectSchema,
 } from "./core"
 
 /**
@@ -26,8 +27,8 @@ export const VcV2ContextSchema = z.union([
     .nonempty()
     .refine(
       (contexts) => contexts.includes(vcV2CoreContext),
-      "Array must contain V2 core context"
-    )
+      "Array must contain V2 core context",
+    ),
 ])
 
 /**
@@ -37,14 +38,14 @@ export const VcV2ContextSchema = z.union([
 export const createCredentialV2Schema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   BaseCredentialSchema.extend({
     /** JSON-LD context (V2) */
     "@context": jsonLdContextSchema(
       contextSchema
         ? [vcV2CoreContext, ...[contextSchema].flat()]
-        : vcV2CoreContext
+        : vcV2CoreContext,
     ),
 
     /** Credential types */
@@ -59,8 +60,8 @@ export const createCredentialV2Schema = (
     /** Credential subject */
     credentialSubject: z.union([
       credentialSubjectSchema,
-      z.array(credentialSubjectSchema)
-    ])
+      z.array(credentialSubjectSchema),
+    ]),
   }).strict()
 
 /**
@@ -70,14 +71,14 @@ export const createCredentialV2Schema = (
 export const createVerifiableCredentialV2Schema = (
   credentialSubjectSchema: z.ZodType = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   makeVerifiable(
     createCredentialV2Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
-    )
+      contextSchema,
+    ),
   )
 
 /**

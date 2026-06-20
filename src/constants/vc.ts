@@ -38,7 +38,7 @@ export const proofPurposes = [
   "authentication",
   "keyAgreement",
   "capabilityInvocation",
-  "capabilityDelegation"
+  "capabilityDelegation",
 ] as const
 
 /**
@@ -48,7 +48,7 @@ export const proofPurposes = [
 export const credentialStatusTypes = [
   "RevocationList2020Status",
   "StatusList2021Entry",
-  "BitstringStatusListEntry"
+  "BitstringStatusListEntry",
 ] as const
 
 /**

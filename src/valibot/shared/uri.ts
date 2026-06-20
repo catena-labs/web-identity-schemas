@@ -1,5 +1,6 @@
-import type { Uri } from "../../types/shared/uri"
 import * as v from "valibot"
+
+import type { Uri } from "../../types/shared/uri"
 
 /**
  * URI schema according to RFC 3986.
@@ -9,5 +10,5 @@ import * as v from "valibot"
 export const UriSchema = v.pipe(
   v.string(),
   v.regex(/^[a-zA-Z][a-zA-Z0-9+.-]*:.+/, "Must be a valid URI with scheme"),
-  v.custom<Uri>(() => true)
+  v.custom<Uri>(() => true),
 )

@@ -14,7 +14,7 @@ import * as v from "valibot"
 export function flatArray<T>(schema: v.GenericSchema<T>) {
   return v.pipe(
     schema,
-    v.transform((val) => [val].flat() as T[])
+    v.transform((val) => [val].flat() as T[]),
   )
 }
 
@@ -38,7 +38,7 @@ export function flatArray<T>(schema: v.GenericSchema<T>) {
 export function oneOrMany<T>(schema: v.GenericSchema<T>) {
   return v.pipe(
     v.union([schema, v.array(schema)]),
-    v.transform((val) => [val].flat())
+    v.transform((val) => [val].flat()),
   )
 }
 
@@ -57,7 +57,7 @@ export function oneOrMany<T>(schema: v.GenericSchema<T>) {
  */
 export function includesAll<T extends string>(values: T[]) {
   return v.check(
-    (val: T[]) => values.every((v) => val.includes(v)),
-    `Must include all of: ${values.join(", ")}`
+    (val: T[]) => values.every((value) => val.includes(value)),
+    `Must include all of: ${values.join(", ")}`,
   )
 }

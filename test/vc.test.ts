@@ -1,8 +1,9 @@
 import { test, expect, describe } from "vitest"
+
 import {
   vcV1CoreContext,
   vcV2CoreContext,
-  proofPurposes
+  proofPurposes,
 } from "../src/constants/vc"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
@@ -18,7 +19,7 @@ function testSchema(input: unknown, schema: unknown): void {
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("vc", () => {
@@ -33,7 +34,7 @@ describe("vc", () => {
           // V1 with additional contexts
           [vcV1CoreContext, "https://example.com/custom-context/v1"],
           // V2 with additional contexts
-          [vcV2CoreContext, "https://www.w3.org/ns/credentials/status/v1"]
+          [vcV2CoreContext, "https://www.w3.org/ns/credentials/status/v1"],
         ]
 
         for (const context of validContexts) {
@@ -50,7 +51,7 @@ describe("vc", () => {
           // Array without VC core context
           ["https://example.com/custom-context/v1"],
           // Empty array
-          []
+          [],
         ]
 
         for (const context of invalidContexts) {
@@ -96,7 +97,7 @@ describe("vc", () => {
           created: "2023-01-01T00:00:00Z",
           verificationMethod: "did:example:123#key-1",
           proofPurpose: "assertionMethod",
-          jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature"
+          jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
         }
 
         expect(validProof).toMatchSchema(schemas.ProofSchema, (parsed) => {
@@ -111,7 +112,7 @@ describe("vc", () => {
           created: "2023-01-01T00:00:00Z",
           verificationMethod: "did:example:123#key-1",
           proofPurpose: "assertionMethod",
-          signatureValue: "z3WJ5B+Cqf5+8X3o2A7LRq2j8YcW6uMQ9KP2LhE5vFQq="
+          signatureValue: "z3WJ5B+Cqf5+8X3o2A7LRq2j8YcW6uMQ9KP2LhE5vFQq=",
         }
 
         expect(validProof).toMatchSchema(schemas.ProofSchema, (parsed) => {
@@ -128,7 +129,7 @@ describe("vc", () => {
           proofPurpose: "authentication",
           challenge: "random-challenge-string",
           domain: ["example.com", "app.example.com"],
-          jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature"
+          jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
         }
 
         expect(proofWithChallenge).toMatchSchema(
@@ -136,7 +137,7 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.challenge).toBe("random-challenge-string")
             expect(Array.isArray(parsed.domain)).toBe(true)
-          }
+          },
         )
       })
     })
@@ -148,7 +149,7 @@ describe("vc", () => {
           type: "StatusList2021Entry",
           statusListCredential: "https://example.com/status/1",
           statusListIndex: "94567",
-          statusPurpose: "revocation"
+          statusPurpose: "revocation",
         }
 
         expect(validStatus).toMatchSchema(
@@ -156,7 +157,7 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.type).toBe("StatusList2021Entry")
             expect(parsed.statusListIndex).toBe("94567")
-          }
+          },
         )
       })
 
@@ -166,7 +167,7 @@ describe("vc", () => {
           type: "BitstringStatusListEntry",
           statusListCredential: "https://example.com/status/2",
           statusListIndex: 456,
-          statusPurpose: "suspension"
+          statusPurpose: "suspension",
         }
 
         expect(validStatus).toMatchSchema(
@@ -174,7 +175,7 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.type).toBe("BitstringStatusListEntry")
             expect(parsed.statusListIndex).toBe(456)
-          }
+          },
         )
       })
     })
@@ -184,7 +185,7 @@ describe("vc", () => {
         const validCredential = {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://www.w3.org/2018/credentials/examples/v1"
+            "https://www.w3.org/2018/credentials/examples/v1",
           ],
           id: "http://example.edu/credentials/1872",
           type: ["VerifiableCredential", "UniversityDegreeCredential"],
@@ -195,16 +196,16 @@ describe("vc", () => {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
             degree: {
               type: "BachelorDegree",
-              name: "Bachelor of Science and Arts"
-            }
+              name: "Bachelor of Science and Arts",
+            },
           },
           proof: {
             type: "JsonWebSignature2020",
             created: "2023-01-01T00:00:00Z",
             verificationMethod: "did:example:123#key-1",
             proofPurpose: "assertionMethod",
-            jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature"
-          }
+            jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
+          },
         }
 
         expect(validCredential).toMatchSchema(
@@ -212,14 +213,14 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.type).toContain("VerifiableCredential")
             expect((parsed.credentialSubject as { id?: string }).id).toBe(
-              "did:example:ebfeb1f712ebc6f1c276e12ec21"
+              "did:example:ebfeb1f712ebc6f1c276e12ec21",
             )
             expect(
               Array.isArray(parsed.proof)
                 ? parsed.proof[0]!.type
-                : parsed.proof.type
+                : parsed.proof.type,
             ).toBe("JsonWebSignature2020")
-          }
+          },
         )
       })
 
@@ -229,7 +230,7 @@ describe("vc", () => {
           type: "VerifiableCredential",
           issuer: "did:example:123",
           issuanceDate: "2023-01-01T00:00:00Z",
-          credentialSubject: {}
+          credentialSubject: {},
         }
 
         expect(minimalCredential).toMatchSchema(
@@ -237,7 +238,7 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.type).toEqual(["VerifiableCredential"])
             expect(parsed.issuer).toBe("did:example:123")
-          }
+          },
         )
       })
 
@@ -254,9 +255,9 @@ describe("vc", () => {
           {}, // Missing required fields
           {
             "@context": "https://www.w3.org/2018/credentials/v1",
-            type: "VerifiableCredential"
+            type: "VerifiableCredential",
             // Missing issuer, issuanceDate, credentialSubject
-          }
+          },
         ]
 
         for (const credential of invalidCredentials) {
@@ -277,14 +278,14 @@ describe("vc", () => {
               created: "2023-01-01T00:00:00Z",
               verificationMethod: "did:example:123#key-1",
               proofPurpose: "assertionMethod",
-              jws: "invalid-jws" // Invalid JWS format (should be header.payload.signature)
-            }
-          }
+              jws: "invalid-jws", // Invalid JWS format (should be header.payload.signature)
+            },
+          },
         ]
 
         for (const credential of invalidCredentials) {
           expect(credential).not.toMatchSchema(
-            schemas.VerifiableCredentialSchema
+            schemas.VerifiableCredentialSchema,
           )
         }
       })
@@ -298,7 +299,7 @@ describe("vc", () => {
           issuer: "did:example:123",
           issuanceDate: "2023-01-01T00:00:00Z",
           expirationDate: "2025-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:456", name: "Alice" }
+          credentialSubject: { id: "did:example:456", name: "Alice" },
         }
 
         expect(v1Credential).toMatchSchema(
@@ -308,18 +309,18 @@ describe("vc", () => {
             expect(parsed).toHaveProperty("expirationDate")
             expect(parsed).not.toHaveProperty("validFrom")
             expect(parsed).not.toHaveProperty("validUntil")
-          }
+          },
         )
 
         // V1 credentials should NOT have V2 fields
         const v1WithV2Fields = {
           ...v1Credential,
           validFrom: "2023-01-01T00:00:00Z",
-          validUntil: "2025-01-01T00:00:00Z"
+          validUntil: "2025-01-01T00:00:00Z",
         }
 
         expect(v1WithV2Fields).not.toMatchSchema(
-          schemas.VerifiableCredentialV1Schema
+          schemas.VerifiableCredentialV1Schema,
         )
       })
     })
@@ -332,7 +333,7 @@ describe("vc", () => {
           issuer: "did:example:123",
           validFrom: "2023-01-01T00:00:00Z",
           validUntil: "2025-01-01T00:00:00Z",
-          credentialSubject: { id: "did:example:456", name: "Alice" }
+          credentialSubject: { id: "did:example:456", name: "Alice" },
         }
 
         expect(v2Credential).toMatchSchema(
@@ -342,18 +343,18 @@ describe("vc", () => {
             expect(parsed).toHaveProperty("validUntil")
             expect(parsed).not.toHaveProperty("issuanceDate")
             expect(parsed).not.toHaveProperty("expirationDate")
-          }
+          },
         )
 
         // V2 credentials should NOT have V1 fields
         const v2WithV1Fields = {
           ...v2Credential,
           issuanceDate: "2023-01-01T00:00:00Z",
-          expirationDate: "2025-01-01T00:00:00Z"
+          expirationDate: "2025-01-01T00:00:00Z",
         }
 
         expect(v2WithV1Fields).not.toMatchSchema(
-          schemas.VerifiableCredentialV2Schema
+          schemas.VerifiableCredentialV2Schema,
         )
       })
     })
@@ -363,7 +364,7 @@ describe("vc", () => {
         const validPresentation = {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://www.w3.org/2018/credentials/examples/v1"
+            "https://www.w3.org/2018/credentials/examples/v1",
           ],
           id: "urn:uuid:3978344f-8596-4c3a-a978-8fcaba3903c5",
           type: ["VerifiablePresentation", "CredentialManagerPresentation"],
@@ -373,8 +374,8 @@ describe("vc", () => {
               type: "VerifiableCredential",
               issuer: "did:example:123",
               issuanceDate: "2023-01-01T00:00:00Z",
-              credentialSubject: { id: "did:example:456" }
-            }
+              credentialSubject: { id: "did:example:456" },
+            },
           ],
           proof: {
             type: "JsonWebSignature2020",
@@ -382,8 +383,8 @@ describe("vc", () => {
             verificationMethod: "did:example:123#key-1",
             proofPurpose: "authentication",
             challenge: "challenge-123",
-            jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature"
-          }
+            jws: "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
+          },
         }
 
         expect(validPresentation).toMatchSchema(
@@ -394,23 +395,23 @@ describe("vc", () => {
             expect(
               Array.isArray(parsed.proof)
                 ? parsed.proof[0]!.challenge
-                : parsed.proof.challenge
+                : parsed.proof.challenge,
             ).toBe("challenge-123")
-          }
+          },
         )
       })
 
       test("minimal presentation", () => {
         const minimalPresentation = {
           "@context": "https://www.w3.org/2018/credentials/v1",
-          type: "VerifiablePresentation"
+          type: "VerifiablePresentation",
         }
 
         expect(minimalPresentation).toMatchSchema(
           schemas.PresentationSchema,
           (parsed) => {
             expect(parsed.type).toBe("VerifiablePresentation")
-          }
+          },
         )
       })
 
@@ -418,19 +419,19 @@ describe("vc", () => {
         const invalidPresentations = [
           {}, // Missing required fields
           {
-            "@context": "https://www.w3.org/2018/credentials/v1"
+            "@context": "https://www.w3.org/2018/credentials/v1",
             // Missing type
           },
           {
             "@context": "https://www.w3.org/2018/credentials/v1",
             type: "VerifiablePresentation",
-            verifiableCredential: "not-an-array-or-object" // Wrong type
-          }
+            verifiableCredential: "not-an-array-or-object", // Wrong type
+          },
         ]
 
         for (const presentation of invalidPresentations) {
           expect(presentation).not.toMatchSchema(
-            schemas.VerifiablePresentationSchema
+            schemas.VerifiablePresentationSchema,
           )
         }
       })
@@ -443,7 +444,7 @@ describe("vc", () => {
           type: "StatusList2021",
           statusPurpose: "revocation",
           encodedList:
-            "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA"
+            "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
         }
 
         expect(validStatusList).toMatchSchema(
@@ -451,7 +452,7 @@ describe("vc", () => {
           (parsed) => {
             expect(parsed.type).toBe("StatusList2021")
             expect(parsed.statusPurpose).toBe("revocation")
-          }
+          },
         )
       })
     })
@@ -461,7 +462,7 @@ describe("vc", () => {
         const statusListCredential = {
           "@context": [
             "https://www.w3.org/2018/credentials/v1",
-            "https://w3id.org/vc/status-list/2021/v1"
+            "https://w3id.org/vc/status-list/2021/v1",
           ],
           id: "did:example:status:1",
           type: ["VerifiableCredential", "StatusList2021Credential"],
@@ -472,15 +473,15 @@ describe("vc", () => {
             type: "StatusList2021",
             statusPurpose: "revocation",
             encodedList:
-              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA"
-          }
+              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+          },
         }
 
         expect(statusListCredential).toMatchSchema(
           schemas.StatusList2021CredentialSchema,
           (parsed: { credentialSubject: { type: string } }) => {
             expect(parsed.credentialSubject.type).toBe("StatusList2021")
-          }
+          },
         )
       })
     })
@@ -492,7 +493,7 @@ describe("vc", () => {
         statusPurpose: "suspension",
         encodedList:
           "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
-        ttl: 86400
+        ttl: 86400,
       }
 
       expect(validBitstringStatusList).toMatchSchema(
@@ -500,7 +501,7 @@ describe("vc", () => {
         (parsed) => {
           expect(parsed.type).toBe("BitstringStatusList")
           expect(parsed.ttl).toBe(86400)
-        }
+        },
       )
     })
 
@@ -508,7 +509,7 @@ describe("vc", () => {
       const bitstringCredential = {
         "@context": [
           "https://www.w3.org/ns/credentials/v2",
-          "https://www.w3.org/ns/credentials/status/v1"
+          "https://www.w3.org/ns/credentials/status/v1",
         ],
         id: "did:example:status:2",
         type: ["VerifiableCredential", "BitstringStatusListCredential"],
@@ -520,15 +521,15 @@ describe("vc", () => {
           statusPurpose: "suspension",
           encodedList:
             "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
-          ttl: 86400
-        }
+          ttl: 86400,
+        },
       }
 
       expect(bitstringCredential).toMatchSchema(
         schemas.BitstringStatusListCredentialSchema,
         (parsed: { credentialSubject: { type: string } }) => {
           expect(parsed.credentialSubject.type).toBe("BitstringStatusList")
-        }
+        },
       )
     })
 
@@ -546,7 +547,7 @@ describe("vc", () => {
 
       // Test invalid credential missing context
       expect(invalidMissingContext).not.toMatchSchema(
-        schemas.W3CCredentialSchema
+        schemas.W3CCredentialSchema,
       )
     })
 
@@ -559,8 +560,8 @@ describe("vc", () => {
         issuanceDate: "2023-01-01T00:00:00Z",
         credentialSubject: {
           id: "https://example.com/users/alice",
-          name: "Alice Smith"
-        }
+          name: "Alice Smith",
+        },
       }
 
       expect(credentialWithHttpUrls).toMatchSchema(schemas.W3CCredentialSchema)
@@ -571,14 +572,14 @@ describe("vc", () => {
         type: "VerifiableCredential",
         issuer: {
           id: "https://example.edu/issuers/565049",
-          name: "Example University"
+          name: "Example University",
         },
         issuanceDate: "2023-01-01T00:00:00Z",
-        credentialSubject: {}
+        credentialSubject: {},
       }
 
       expect(credentialWithIssuerObject).toMatchSchema(
-        schemas.W3CCredentialSchema
+        schemas.W3CCredentialSchema,
       )
     })
   })

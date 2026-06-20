@@ -1,17 +1,18 @@
+import * as z from "zod"
+
 import type {
   JweProtectedHeader,
   JweUnprotectedHeader,
   JweRecipient,
   JweFlattenedJson,
-  JweGeneralJson
+  JweGeneralJson,
 } from "../../types/jose/jwe"
-import type { Shape } from "../shared/shape"
-import * as z from "zod"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
-  JoseCompressionAlgorithmSchema
+  JoseCompressionAlgorithmSchema,
 } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -79,7 +80,7 @@ const JweProtectedHeaderSchema: Shape<JweProtectedHeader> = z.object({
   p2s: Base64UrlSchema.optional(),
 
   /** PBES2 Count (optional, for PBES2) */
-  p2c: z.number().int().min(1).optional()
+  p2c: z.number().int().min(1).optional(),
 })
 
 /**
@@ -110,7 +111,7 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
   "x5t#S256": Base64UrlSchema.optional(),
 
   /** Critical header parameter (optional) */
-  crit: z.array(z.string()).optional()
+  crit: z.array(z.string()).optional(),
 })
 
 /**
@@ -145,7 +146,7 @@ const JwePerRecipientUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> =
     "x5t#S256": Base64UrlSchema.optional(),
 
     /** Critical header parameter (optional) */
-    crit: z.array(z.string()).optional()
+    crit: z.array(z.string()).optional(),
   })
 
 /**
@@ -158,7 +159,7 @@ const JweRecipientSchema: Shape<JweRecipient> = z.object({
   header: JwePerRecipientUnprotectedHeaderSchema.optional(),
 
   /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema
+  encrypted_key: Base64UrlSchema,
 })
 
 /**
@@ -180,7 +181,7 @@ export const JweCompactSerializationSchema = z.object({
   ciphertext: Base64UrlSchema,
 
   /** JWE Authentication Tag (base64url encoded) */
-  tag: Base64UrlSchema
+  tag: Base64UrlSchema,
 })
 
 /**
@@ -208,7 +209,7 @@ export const JweJsonSerializationSchema: Shape<JweGeneralJson> = z.object({
   aad: Base64UrlSchema.optional(),
 
   /** JWE Recipients */
-  recipients: z.array(JweRecipientSchema)
+  recipients: z.array(JweRecipientSchema),
 })
 
 /**
@@ -240,7 +241,7 @@ export const JweFlattenedJsonSerializationSchema: Shape<JweFlattenedJson> =
     tag: Base64UrlSchema,
 
     /** JWE Additional Authenticated Data (base64url encoded, optional) */
-    aad: Base64UrlSchema.optional()
+    aad: Base64UrlSchema.optional(),
   })
 
 /**
@@ -252,7 +253,7 @@ export const JweFlattenedJsonSerializationSchema: Shape<JweFlattenedJson> =
 export const JweStringSchema = z
   .string()
   .regex(
-    /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/
+    /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
   )
   .transform((jwe) => {
     const parts = jwe.split(".")
@@ -261,7 +262,7 @@ export const JweStringSchema = z
       encrypted_key: parts[1],
       iv: parts[2],
       ciphertext: parts[3],
-      tag: parts[4]
+      tag: parts[4],
     }
   })
 
@@ -287,5 +288,5 @@ export const JweObjectSchema = z.object({
   ciphertext: Base64UrlSchema,
 
   /** JWE Authentication Tag (base64url encoded) */
-  tag: Base64UrlSchema
+  tag: Base64UrlSchema,
 })

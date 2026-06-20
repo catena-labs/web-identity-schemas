@@ -6,8 +6,7 @@ import type { BaseCredential, CredentialSubject, StatusPurpose } from "../core"
  * BitstringStatusList credential subject.
  * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/#bitstringstatuslistcredential}
  */
-export interface BitstringStatusListCredentialSubject
-  extends CredentialSubject {
+export interface BitstringStatusListCredentialSubject extends CredentialSubject {
   /** Type of the credential subject */
   type: "BitstringStatusList"
 
@@ -29,11 +28,10 @@ export interface BitstringStatusListCredentialSubject
   ],
  * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/#bitstringstatuslistcredential}
  */
-export interface BitstringStatusListCredential
-  extends BaseCredential<
-    BitstringStatusListCredentialSubject,
-    "BitstringStatusListCredential"
-  > {
+export interface BitstringStatusListCredential extends BaseCredential<
+  BitstringStatusListCredentialSubject,
+  "BitstringStatusListCredential"
+> {
   /** Valid from date (V2) */
   validFrom?: DateTimeStamp
 
