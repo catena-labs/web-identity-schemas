@@ -13,15 +13,13 @@ export const VpTypeLiteralSchema = z.literal("VerifiablePresentation")
 /**
  * Relaxed Verifiable Presentation type schema that accepts both string and array formats.
  */
-export const VpTypeSchema = presentationTypeSchema()
+export const VpTypeSchema = vpTypeSchema()
 
 /**
  * Creates a presentation type schema that accepts a specific presentation type or array of types.
  * @param types The expected type value(s)
  */
-export function presentationTypeSchema<TTypes extends string | string[]>(
-  types?: TTypes,
-) {
+export function vpTypeSchema<TTypes extends string | string[]>(types?: TTypes) {
   if (types) {
     if (typeof types === "string") {
       return z.tuple([z.literal(types)]).rest(z.string())
@@ -61,7 +59,7 @@ export const PresentationSchema = z.object({
   id: z.string().optional(),
 
   /** Presentation type */
-  type: presentationTypeSchema(),
+  type: vpTypeSchema(),
 
   /** Presentation holder */
   holder: IdOrObjectSchema.optional(),
@@ -75,6 +73,12 @@ export const PresentationSchema = z.object({
     ])
     .optional(),
 })
+
+/**
+ * Alias for {@link vpTypeSchema}, kept for naming parity with prior releases.
+ * @deprecated Use {@link vpTypeSchema} instead.
+ */
+export const presentationTypeSchema = vpTypeSchema
 
 /**
  * Verifiable Presentation schema (with required proof).
