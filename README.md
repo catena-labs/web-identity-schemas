@@ -10,13 +10,44 @@ TypeScript types and validation schemas for Web Identity and JOSE standards, inc
 - JSON Web Signatures (JWS)
 - [See the full list](#available-schemas)
 
-This library provides both Valibot and Zod (v4) validation implementations with comprehensive type safety.
+This library provides both Valibot and Zod (v4) validation implementations with
+comprehensive type safety. Both implementations expose the
+[Standard Schema](https://github.com/standard-schema/standard-schema) interface,
+so they also work with any Standard Schema-compatible tooling.
+
+See [`VISION.md`](./VISION.md) for the project's goals and scope.
 
 ## Installation
 
 ```bash
 npm install web-identity-schemas
 ```
+
+Valibot and Zod are **optional peer dependencies** — install whichever validator
+you use (or neither, if you only need the types):
+
+```bash
+npm install valibot   # for web-identity-schemas/valibot
+npm install zod       # for web-identity-schemas/zod
+```
+
+## Package entry points
+
+This package has three independent entry points:
+
+| Import path                    | Contents                                            |
+| ------------------------------ | --------------------------------------------------- |
+| `web-identity-schemas`         | **Types only** (and constants). No runtime schemas. |
+| `web-identity-schemas/valibot` | Valibot schemas + the same types and constants.     |
+| `web-identity-schemas/zod`     | Zod (v4) schemas + the same types and constants.    |
+
+Importing `/valibot` never pulls in Zod, and `/zod` never pulls in Valibot. The
+root entry pulls in neither, so it is safe to use for types alone.
+
+> [!NOTE]
+> This is an ESM-only package. Consumers should use a modern module resolution
+> setting (`"moduleResolution": "bundler"` or `"node16"`/`"nodenext"`) so the
+> `./valibot` and `./zod` subpath exports resolve correctly.
 
 ## Quick Start
 
@@ -26,8 +57,8 @@ npm install web-identity-schemas
 import * as v from "valibot"
 import {
   DidSchema,
-  JwkSchema,
-  VerifiableCredentialSchema
+  JsonWebKeySchema,
+  VerifiableCredentialSchema,
 } from "web-identity-schemas/valibot"
 
 // Validate a DID
@@ -41,8 +72,8 @@ const validVc = v.parse(VerifiableCredentialSchema, {
   issuanceDate: "2023-01-01T00:00:00Z",
   credentialSubject: {
     id: "did:example:subject",
-    degree: "Bachelor of Science"
-  }
+    degree: "Bachelor of Science",
+  },
 })
 
 // Validate cryptographic keys
@@ -50,7 +81,7 @@ const validKey = v.parse(JsonWebKeySchema, {
   kty: "EC",
   crv: "P-256",
   x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-  y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+  y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
 })
 ```
 
@@ -60,8 +91,8 @@ const validKey = v.parse(JsonWebKeySchema, {
 import * as z from "zod"
 import {
   DidSchema,
-  JwkSchema,
-  VerifiableCredentialSchema
+  JsonWebKeySchema,
+  VerifiableCredentialSchema,
 } from "web-identity-schemas/zod"
 
 // Validate a DID
@@ -75,8 +106,8 @@ const validVc = VerifiableCredentialSchema.parse({
   issuanceDate: "2023-01-01T00:00:00Z",
   credentialSubject: {
     id: "did:example:subject",
-    degree: "Bachelor of Science"
-  }
+    degree: "Bachelor of Science",
+  },
 })
 
 // Validate cryptographic keys
@@ -84,7 +115,7 @@ const validKey = JsonWebKeySchema.parse({
   kty: "EC",
   crv: "P-256",
   x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-  y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
+  y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
 })
 ```
 
@@ -237,13 +268,50 @@ This library exports comprehensive schemas for Web Identity and JOSE standards. 
 - **`DateTimeStampSchema`** - ISO 8601 datetime strings
   - [Types](./src/types/shared/json-ld.ts) | [Valibot](./src/valibot/shared/json-ld.ts) | [Zod](./src/zod/shared/json-ld.ts)
 
+## Using with Standard Schema
+
+Every exported schema (Valibot or Zod) implements the
+[Standard Schema](https://github.com/standard-schema/standard-schema) interface,
+so you can validate without importing the underlying validator and use the
+schemas with any Standard Schema-compatible library:
+
+```typescript
+import { DidSchema } from "web-identity-schemas/valibot" // or /zod
+
+const result = await DidSchema["~standard"].validate("did:web:example.com")
+if (result.issues) {
+  // handle validation issues
+} else {
+  result.value // typed as Did
+}
+```
+
 ## Contributing
 
 Contributions are welcome.
 
-This library maintains strict type safety and comprehensive test coverage. Both Valibot and Zod implementations must pass identical test suites to ensure consistency.
+This library maintains strict type safety and comprehensive test coverage. Both
+Valibot and Zod implementations must pass identical test suites to ensure
+consistency.
 
-See [`CLAUDE.md`](./CLAUDE.md) for detailed development guidelines and schema patterns.
+### Development
+
+This project uses [oxlint](https://oxc.rs/docs/guide/usage/linter) (with
+type-aware linting via `oxlint-tsgolint`) and [oxfmt](https://oxc.rs) for
+formatting.
+
+```bash
+pnpm install        # install dependencies
+pnpm test           # run the test suite (valibot + zod)
+pnpm run typecheck  # type-check with tsc
+pnpm run lint       # lint with oxlint (type-aware)
+pnpm run format     # format with oxfmt
+pnpm run check      # format:check + lint + typecheck + test
+pnpm run build      # build with tsdown
+```
+
+See [`CLAUDE.md`](./CLAUDE.md) for detailed development guidelines and schema
+patterns.
 
 ## License (MIT)
 
