@@ -3,6 +3,7 @@ import * as z from "zod"
 import type {
   JweProtectedHeader,
   JweUnprotectedHeader,
+  JwePerRecipientUnprotectedHeader,
   JweRecipient,
   JweFlattenedJson,
   JweGeneralJson,
@@ -119,7 +120,7 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
  * Contains per-recipient unprotected header parameters for JWE.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-4.1.3}
  */
-const JwePerRecipientUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> =
+const JwePerRecipientUnprotectedHeaderSchema: Shape<JwePerRecipientUnprotectedHeader> =
   z.object({
     /** Algorithm used for key management for this recipient */
     alg: JweKeyManagementAlgorithmSchema.optional(),
@@ -158,8 +159,8 @@ const JweRecipientSchema: Shape<JweRecipient> = z.object({
   /** Per-recipient unprotected header (optional) */
   header: JwePerRecipientUnprotectedHeaderSchema.optional(),
 
-  /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** Encrypted key for this recipient (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: Base64UrlSchema.optional(),
 })
 
 /**
@@ -228,8 +229,8 @@ export const JweFlattenedJsonSerializationSchema: Shape<JweFlattenedJson> =
     /** JWE Per-Recipient Unprotected Header (optional) */
     header: JwePerRecipientUnprotectedHeaderSchema.optional(),
 
-    /** JWE Encrypted Key (base64url encoded) */
-    encrypted_key: Base64UrlSchema,
+    /** JWE Encrypted Key (base64url encoded, optional for dir/ECDH-ES) */
+    encrypted_key: Base64UrlSchema.optional(),
 
     /** JWE Initialization Vector (base64url encoded) */
     iv: Base64UrlSchema,

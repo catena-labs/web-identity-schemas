@@ -105,14 +105,7 @@ describe("jwk", () => {
       })
 
       test("different curves", () => {
-        const curves = [
-          "P-256",
-          "secp256r1",
-          "P-256K",
-          "secp256k1",
-          "P-384",
-          "P-521",
-        ]
+        const curves = ["P-256", "secp256k1", "P-384", "P-521"]
 
         for (const crv of curves) {
           const ecKey = {

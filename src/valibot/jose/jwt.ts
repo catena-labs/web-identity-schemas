@@ -1,6 +1,13 @@
 import * as v from "valibot"
 
+import type {
+  JwtHeaderUnsecured,
+  JwtHeaderSigned,
+  JwtObjectUnsecured,
+  JwtObjectSigned,
+} from "../../types/jose/jwt"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import {
   JoseSignatureAlgorithmSchema,
   JoseUnsecuredAlgorithmSchema,
@@ -18,8 +25,8 @@ const UnixTimestampSchema = v.pipe(
  * Contains cryptographic parameters excluding the algorithm.
  */
 const JwtHeaderBaseSchema = v.object({
-  /** Type of the token (optional, typically "JWT") */
-  typ: v.optional(v.literal("JWT")),
+  /** Type of the token (optional, typically "JWT"; RFC 7519 allows other media types) */
+  typ: v.optional(v.string()),
 
   /** Content type (optional) */
   cty: v.optional(v.string()),
@@ -57,7 +64,7 @@ const JwtHeaderUnsecuredSchema = v.object({
   /** Algorithm used to sign the JWT */
   alg: JoseUnsecuredAlgorithmSchema,
   ...JwtHeaderBaseSchema.entries,
-})
+} satisfies Shape<JwtHeaderUnsecured>)
 
 /**
  * JWT header schema for signed JWS/JWT (all algorithms except "none").
@@ -67,7 +74,17 @@ export const JwtHeaderSignedSchema = v.object({
   /** Algorithm used to sign the JWT */
   alg: JoseSignatureAlgorithmSchema,
   ...JwtHeaderBaseSchema.entries,
-})
+} satisfies Shape<JwtHeaderSigned>)
+
+/**
+ * JWT header schema union for all algorithms.
+ * Contains algorithm and other cryptographic parameters.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-5}
+ */
+export const JwtHeaderSchema = v.union([
+  JwtHeaderUnsecuredSchema,
+  JwtHeaderSignedSchema,
+])
 
 /**
  * JWT payload (claims) schema.
@@ -111,7 +128,7 @@ export const JwtObjectUnsecuredSchema = v.object({
 
   /** JWT signature (empty string for Unsecured JWS/JWT) */
   signature: v.literal(""),
-})
+} satisfies Shape<JwtObjectUnsecured>)
 
 /**
  * JWT object schema for signed JWS/JWT (all algorithms except "none").
@@ -127,7 +144,7 @@ export const JwtObjectSignedSchema = v.object({
 
   /** JWT signature (base64url encoded) */
   signature: Base64UrlSchema,
-})
+} satisfies Shape<JwtObjectSigned>)
 
 /**
  * JWT object schema with separate header, payload, and signature.
