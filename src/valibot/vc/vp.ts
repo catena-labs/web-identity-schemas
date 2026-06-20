@@ -37,6 +37,12 @@ export const vpTypeSchema = (type?: string | string[]) => {
 export const VpTypeSchema = vpTypeSchema()
 
 /**
+ * Alias for {@link vpTypeSchema}, kept for naming parity with the zod module.
+ * @deprecated Use {@link vpTypeSchema} instead.
+ */
+export const presentationTypeSchema = vpTypeSchema
+
+/**
  * Presentation schema (unsigned, no proof).
  * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
  */
