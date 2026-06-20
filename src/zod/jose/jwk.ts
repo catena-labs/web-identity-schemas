@@ -62,10 +62,10 @@ export const BaseJwkSchema = z.object({
   x5c: z.array(Base64Schema).optional(),
 
   /** X.509 certificate SHA-1 thumbprint (base64url-encoded) */
-  x5t: z.string().optional(),
+  x5t: Base64UrlSchema.optional(),
 
   /** X.509 certificate SHA-256 thumbprint (base64url-encoded) */
-  "x5t#S256": z.string().optional(),
+  "x5t#S256": Base64UrlSchema.optional(),
 
   /** URL pointing to X.509 certificate */
   x5u: z.url().optional(),

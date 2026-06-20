@@ -159,7 +159,7 @@ export const JwsFlattenedJsonSerializationSchema: Shape<JwsFlattenedJson> =
  */
 export const JwsStringSchema = z
   .string()
-  .regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+$/)
+  .regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/)
   .pipe(z.custom<JwsString>())
 
 /**

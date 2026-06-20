@@ -1,6 +1,14 @@
 import * as v from "valibot"
 
+import type {
+  JwsProtectedHeader,
+  JwsUnprotectedHeader,
+  JwsSignature,
+  JwsGeneralJson,
+  JwsFlattenedJson,
+} from "../../types/jose/jws"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import { JoseAlgorithmSchema } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -42,7 +50,7 @@ export const JwsProtectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+} satisfies Shape<JwsProtectedHeader>)
 
 /**
  * JWS Unprotected Header Schema.
@@ -73,7 +81,7 @@ export const JwsUnprotectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+} satisfies Shape<JwsUnprotectedHeader>)
 
 /**
  * JWS Signature Schema.
@@ -89,7 +97,7 @@ export const JwsSignatureSchema = v.object({
 
   /** JWS Signature (base64url encoded) */
   signature: Base64UrlSchema,
-})
+} satisfies Shape<JwsSignature>)
 
 /**
  * JWS Compact Serialization Schema.
@@ -123,7 +131,7 @@ export const JwsJsonSerializationSchema = v.object({
 
   /** JWS Signatures */
   signatures: v.array(JwsSignatureSchema),
-})
+} satisfies Shape<JwsGeneralJson>)
 
 /**
  * JWS Flattened JSON Serialization Schema.
@@ -142,7 +150,7 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
 
   /** JWS Signature (base64url encoded) */
   signature: Base64UrlSchema,
-})
+} satisfies Shape<JwsFlattenedJson>)
 
 /**
  * JWS String Format Schema.
@@ -152,7 +160,7 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
  */
 export const JwsStringSchema = v.pipe(
   v.string(),
-  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+$/),
+  v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/),
 )
 
 /**

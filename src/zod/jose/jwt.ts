@@ -29,8 +29,8 @@ const UnixTimestampSchema = z
  * Contains cryptographic parameters excluding the algorithm.
  */
 const JwtHeaderBaseSchema = z.object({
-  /** Type of the token (optional, typically "JWT") */
-  typ: z.literal("JWT").optional(),
+  /** Type of the token (optional, typically "JWT"; RFC 7519 allows other media types) */
+  typ: z.string().optional(),
 
   /** Content type (optional) */
   cty: z.string().optional(),
@@ -125,7 +125,7 @@ export const JwtPayloadSchema: Shape<JwtPayload> = z
  * The signature must be an empty string for Unsecured JWS/JWT.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-3}
  */
-const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
+export const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
   /** JWT header containing algorithm and cryptographic parameters */
   header: JwtHeaderUnsecuredSchema,
 
@@ -141,7 +141,7 @@ const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
  * The signature must be a valid base64url-encoded string.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-3}
  */
-const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
+export const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
   /** JWT header containing algorithm and cryptographic parameters */
   header: JwtHeaderSignedSchema,
 

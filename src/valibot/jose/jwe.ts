@@ -1,6 +1,15 @@
 import * as v from "valibot"
 
+import type {
+  JweProtectedHeader,
+  JweUnprotectedHeader,
+  JwePerRecipientUnprotectedHeader,
+  JweRecipient,
+  JweGeneralJson,
+  JweFlattenedJson,
+} from "../../types/jose/jwe"
 import { Base64UrlSchema, Base64Schema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
@@ -73,7 +82,7 @@ const JweProtectedHeaderSchema = v.object({
 
   /** PBES2 Count (optional, for PBES2) */
   p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
-})
+} satisfies Shape<JweProtectedHeader>)
 
 /**
  * JWE Unprotected Header Schema.
@@ -104,7 +113,7 @@ const JweUnprotectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+} satisfies Shape<JweUnprotectedHeader>)
 
 /**
  * JWE Per-Recipient Unprotected Header Schema.
@@ -138,7 +147,7 @@ const JwePerRecipientUnprotectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+} satisfies Shape<JwePerRecipientUnprotectedHeader>)
 
 /**
  * JWE Recipient Schema.
@@ -149,9 +158,9 @@ const JweRecipientSchema = v.object({
   /** Per-recipient unprotected header (optional) */
   header: v.optional(JwePerRecipientUnprotectedHeaderSchema),
 
-  /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
-})
+  /** Encrypted key for this recipient (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: v.optional(Base64UrlSchema),
+} satisfies Shape<JweRecipient>)
 
 /**
  * JWE Compact Serialization Schema.
@@ -201,7 +210,7 @@ export const JweJsonSerializationSchema = v.object({
 
   /** JWE Recipients */
   recipients: v.array(JweRecipientSchema),
-})
+} satisfies Shape<JweGeneralJson>)
 
 /**
  * JWE Flattened JSON Serialization Schema.
@@ -218,8 +227,8 @@ export const JweFlattenedJsonSerializationSchema = v.object({
   /** JWE Per-Recipient Unprotected Header (optional) */
   header: v.optional(JwePerRecipientUnprotectedHeaderSchema),
 
-  /** JWE Encrypted Key (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** JWE Encrypted Key (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: v.optional(Base64UrlSchema),
 
   /** JWE Initialization Vector (base64url encoded) */
   iv: Base64UrlSchema,
@@ -232,7 +241,7 @@ export const JweFlattenedJsonSerializationSchema = v.object({
 
   /** JWE Additional Authenticated Data (base64url encoded, optional) */
   aad: v.optional(Base64UrlSchema),
-})
+} satisfies Shape<JweFlattenedJson>)
 
 /**
  * JWE String Format Schema.
