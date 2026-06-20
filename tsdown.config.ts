@@ -5,6 +5,5 @@ export default defineConfig({
   outDir: "dist",
   format: ["esm"],
   dts: true,
-  minify: true,
-  external: ["valibot", "zod"]
+  fixedExtension: false,
 })
