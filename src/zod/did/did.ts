@@ -21,7 +21,7 @@ import type {
   LegacyVerificationMethodType,
 } from "../../types/did"
 import { JsonWebKeySchema } from "../jose/jwk"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DidContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 
@@ -207,7 +207,7 @@ export const ServiceSchema: Shape<Service> = z.object({
  */
 export const DidDocumentSchema: Shape<DidDocument> = z.object({
   /** JSON-LD context */
-  "@context": jsonLdContextSchema("https://www.w3.org/ns/did/v1"),
+  "@context": DidContextSchema,
 
   /** The DID subject */
   id: DidSchema,
