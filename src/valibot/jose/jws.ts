@@ -1,3 +1,13 @@
+/**
+ * JWS schemas validate structure only — they do not verify signatures.
+ *
+ * An empty signature is accepted because it is the shape of an unsecured JWS
+ * (`alg: "none"`, RFC 7515 Appendix A.5). Because the protected header is an
+ * opaque base64url string at this layer, the schemas do not cross-check that an
+ * empty signature implies `alg: "none"` (nor that a present signature is
+ * cryptographically valid). Verifying signature presence/authenticity and
+ * rejecting `alg: "none"` downgrade attacks is the caller's responsibility.
+ */
 import * as v from "valibot"
 
 import type {
@@ -96,8 +106,8 @@ export const JwsSignatureSchema = v.object({
   /** JWS Unprotected Header (optional) */
   header: v.optional(JwsUnprotectedHeaderSchema),
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: v.union([Base64UrlSchema, v.literal("")]),
 } satisfies Shape<JwsSignature>)
 
 /**
@@ -112,8 +122,8 @@ export const JwsCompactSerializationSchema = v.object({
   /** JWS Payload (base64url encoded) */
   payload: Base64UrlSchema,
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: v.union([Base64UrlSchema, v.literal("")]),
 })
 
 /**
@@ -144,8 +154,8 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
   /** JWS Unprotected Header (optional) */
   header: v.optional(JwsUnprotectedHeaderSchema),
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: v.union([Base64UrlSchema, v.literal("")]),
 } satisfies Shape<JwsFlattenedJson>)
 
 /**
@@ -195,8 +205,8 @@ export const JwsObjectSchema = v.object({
   /** JWS Payload (base64url encoded) */
   payload: Base64UrlSchema,
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: v.union([Base64UrlSchema, v.literal("")]),
 })
 
 /**
@@ -208,4 +218,5 @@ export const JwsObjectSchema = v.object({
 export const DetachedJwsStringSchema = v.pipe(
   v.string(),
   v.regex(/^[A-Za-z0-9_-]+\.\.[A-Za-z0-9_-]+$/),
+  v.custom<JwsString>(() => true),
 )

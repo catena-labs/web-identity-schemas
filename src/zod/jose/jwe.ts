@@ -113,6 +113,27 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
 
   /** Critical header parameter (optional) */
   crit: z.array(z.string()).optional(),
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk: JsonWebKeySchema.optional(),
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu: Base64UrlSchema.optional(),
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv: Base64UrlSchema.optional(),
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv: Base64UrlSchema.optional(),
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag: Base64UrlSchema.optional(),
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s: Base64UrlSchema.optional(),
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c: z.number().int().min(1).optional(),
 })
 
 /**
@@ -148,6 +169,27 @@ const JwePerRecipientUnprotectedHeaderSchema: Shape<JwePerRecipientUnprotectedHe
 
     /** Critical header parameter (optional) */
     crit: z.array(z.string()).optional(),
+
+    /** Ephemeral public key (optional, for ECDH-ES) */
+    epk: JsonWebKeySchema.optional(),
+
+    /** Agreement PartyUInfo (optional, for ECDH-ES) */
+    apu: Base64UrlSchema.optional(),
+
+    /** Agreement PartyVInfo (optional, for ECDH-ES) */
+    apv: Base64UrlSchema.optional(),
+
+    /** Initialization Vector (optional, for AES GCM key wrapping) */
+    iv: Base64UrlSchema.optional(),
+
+    /** Authentication Tag (optional, for AES GCM key wrapping) */
+    tag: Base64UrlSchema.optional(),
+
+    /** PBES2 Salt Input (optional, for PBES2) */
+    p2s: Base64UrlSchema.optional(),
+
+    /** PBES2 Count (optional, for PBES2) */
+    p2c: z.number().int().min(1).optional(),
   })
 
 /**
