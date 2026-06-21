@@ -1,21 +1,6 @@
 import * as z from "zod"
 
 /**
- * Transform a schema to accept both a single value and an array of values.
- * @example
- * ```ts
- * const schema = flatArray(z.string())
- * schema.parse("foo") // ["foo"]
- * schema.parse(["foo", "bar"]) // ["foo", "bar"]
- * ```
- * @param schema - The schema to transform.
- * @returns A new schema that accepts both a single value and an array of values.
- */
-export function flatArray<T extends z.ZodTypeAny>(schema: T) {
-  return z.array(schema).transform((val) => val.flat() as z.infer<T>[])
-}
-
-/**
  * Create a schema that accepts either a single value or an array of values of
  * the given type, and always returns a flat array.
  * @example
@@ -35,7 +20,7 @@ export function flatArray<T extends z.ZodTypeAny>(schema: T) {
 export function oneOrMany<T extends z.ZodTypeAny>(schema: T) {
   return z
     .union([schema, z.array(schema)])
-    .transform((val) => [val].flat() as z.infer<T>[])
+    .transform((val) => (Array.isArray(val) ? val : [val]))
 }
 
 /**

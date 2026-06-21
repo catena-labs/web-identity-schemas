@@ -1,10 +1,17 @@
 import type { Uri } from "./uri"
 
 /**
- * JSON-LD context.
+ * JSON-LD context (full spec: URI, array of URIs, or inline context object).
  * @see {@link https://www.w3.org/TR/json-ld/#contexts}
  */
 export type JsonLdContext = Uri | Uri[] | Record<string, Uri>
+
+/**
+ * VC-specific context (URI or array of URIs; inline context objects are not
+ * accepted as standalone @context values for VC credentials per the spec,
+ * which requires specific context URIs to be present).
+ */
+export type VcContext = Uri | Uri[]
 
 /**
  * JSON-LD DateTimeStamp type.

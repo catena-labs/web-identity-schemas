@@ -27,5 +27,7 @@ export const Base64UrlSchema = z
  */
 export const Base64Schema = z
   .string()
-  .regex(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/)
+  .regex(
+    /^(?:[A-Za-z0-9+/]{4})+(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$|^(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)$/,
+  )
   .pipe(z.custom<Base64>())
