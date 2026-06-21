@@ -198,8 +198,6 @@ export const ServiceEndpointMapSchema: v.GenericSchema<ServiceEndpointMap> =
     v.union([
       v.string(),
       v.array(v.string()),
-      UriSchema,
-      v.array(UriSchema),
       v.lazy(() => ServiceEndpointMapSchema),
     ]),
   )

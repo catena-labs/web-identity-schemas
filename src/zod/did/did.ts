@@ -171,8 +171,6 @@ export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
   z.union([
     z.string(),
     z.array(z.string()),
-    UriSchema,
-    z.array(UriSchema),
     z.lazy(() => ServiceEndpointMapSchema),
   ]),
 )

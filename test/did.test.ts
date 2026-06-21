@@ -26,6 +26,9 @@ describe("did", () => {
           "did:jwk:eyJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImtleV9vcHMiOlsidmVyaWZ5Il0sImNydiI6InNlY3AyNTZrMSIsImtpZCI6IlVubDY5aXZNcERzT0YtN21wZHJPQ0drSTU1QTdBMVVrcEFaRzl3aDRHVUEiLCJrdHkiOiJFQyIsIngiOiJKU0Y5X29zeFN3dGdGLWhKZmZGdEl4Y2VEZGRURUQ4SmE1RG02eGxGcUZjIiwieSI6InBfWlJyVzRULW9zWHJQNktMOE1hUTlKZ3NLWVBoc3lVUXlycWJ5UWlETVEifQ",
           "did:pkh:eip155:1:0x1234567890abcdef1234567890abcdef12345678",
           "did:method:specific-identifier_with-dashes.and_underscores",
+          // pct-encoded characters allowed in method-specific-id
+          "did:method:abc%20def",
+          "did:method:abc%41def",
         ] as const
 
         for (const did of validDids) {
