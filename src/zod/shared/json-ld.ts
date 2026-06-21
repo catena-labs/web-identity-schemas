@@ -1,14 +1,35 @@
 import * as z from "zod"
 
 import type { Uri } from "../../types"
-import type { DateTimeStamp, JsonLdContext } from "../../types/shared/json-ld"
+import type {
+  DateTimeStamp,
+  JsonLdContext,
+  VcContext,
+} from "../../types/shared/json-ld"
 import { UriSchema } from "./uri"
+
+/**
+ * Generic JSON-LD context schema matching the `JsonLdContext` type.
+ * Accepts a URI, an array of URIs, or an inline context object (map of string -> URI).
+ * @see {@link https://www.w3.org/TR/json-ld/#contexts}
+ */
+export const JsonLdContextSchema: z.ZodType<JsonLdContext> = z
+  .union([
+    UriSchema,
+    z.array(UriSchema),
+    z.record(z.string(), z.union([UriSchema, z.string()])),
+  ])
+  .pipe(z.custom<JsonLdContext>())
 
 /**
  * JSON-LD context schema.
  * @see {@link https://www.w3.org/TR/json-ld/#contexts}
  */
-export function jsonLdContextSchema(context: Uri | Uri[]) {
+export function jsonLdContextSchema(
+  context: Uri | Uri[],
+  options?: { requireFirst?: boolean },
+) {
+  const requireFirst = options?.requireFirst ?? true
   const contexts = Array.isArray(context) ? context : [context]
   const literals = contexts.map((c) => z.literal(c))
 
@@ -19,27 +40,20 @@ export function jsonLdContextSchema(context: Uri | Uri[]) {
     .array(UriSchema)
     .refine(
       (arr) =>
-        arr[0] === contexts[0] && contexts.every((ctx) => arr.includes(ctx)),
+        (!requireFirst || arr[0] === contexts[0]) &&
+        contexts.every((ctx) => arr.includes(ctx)),
       {
-        message: `Array must start with ${contexts[0]} and contain all required contexts: ${contexts.join(", ")}`,
+        message: requireFirst
+          ? `Array must start with ${contexts[0]} and contain all required contexts: ${contexts.join(", ")}`
+          : `Array must contain all required contexts: ${contexts.join(", ")}`,
       },
     )
 
-  // JSON-LD allows an inline context object (a map of string -> URI). Arrays are
-  // handled by `arrayContaining`; this branch must not greedily match them.
-  const recordSchema = z.custom<Record<string, Uri>>(
-    (input) =>
-      typeof input === "object" &&
-      input !== null &&
-      !Array.isArray(input) &&
-      Object.values(input).every((value) => typeof value === "string"),
-  )
-
   const validSchemas = singleStringSchema
-    ? [singleStringSchema, arrayContaining, recordSchema]
-    : [arrayContaining, recordSchema]
+    ? [singleStringSchema, arrayContaining]
+    : [arrayContaining]
 
-  return z.union(validSchemas).pipe(z.custom<JsonLdContext>())
+  return z.union(validSchemas).pipe(z.custom<VcContext>())
 }
 
 /**
