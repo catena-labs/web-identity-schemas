@@ -6,7 +6,6 @@ import {
   statusPurposes,
 } from "../../constants/vc"
 import type { ArrayContaining } from "../../types"
-import type { JwsString } from "../../types/jose/jws"
 import {
   type CredentialStatusType,
   type StatusPurpose,
@@ -18,7 +17,7 @@ import {
   type Verifiable,
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import { JwsStringSchema } from "../jose/jws"
+import { JwsStringSchema, DetachedJwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema, JsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
@@ -111,13 +110,8 @@ export const ProofSchema = v.object({
   /** Nonce */
   nonce: v.optional(v.string()),
 
-  /** JWS signature (for JsonWebSignature2020) */
-  jws: v.optional(
-    v.pipe(
-      JwsStringSchema,
-      v.custom<JwsString>(() => true),
-    ),
-  ),
+  /** JWS signature (for JsonWebSignature2020; compact or detached form) */
+  jws: v.optional(v.union([JwsStringSchema, DetachedJwsStringSchema])),
 
   /** Signature value (for other proof types) */
   signatureValue: v.optional(v.string()),

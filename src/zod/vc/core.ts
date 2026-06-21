@@ -17,7 +17,7 @@ import type {
   Verifiable,
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import { JwsStringSchema } from "../jose/jws"
+import { JwsStringSchema, DetachedJwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema, JsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
@@ -111,8 +111,8 @@ export const ProofSchema: Shape<Proof> = z.object({
   /** Nonce */
   nonce: z.string().optional(),
 
-  /** JWS signature (for JsonWebSignature2020) */
-  jws: JwsStringSchema.optional(),
+  /** JWS signature (for JsonWebSignature2020; compact or detached form) */
+  jws: z.union([JwsStringSchema, DetachedJwsStringSchema]).optional(),
 
   /** Signature value (for other proof types) */
   signatureValue: z.string().optional(),
