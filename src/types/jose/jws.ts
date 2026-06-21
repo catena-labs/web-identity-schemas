@@ -84,8 +84,8 @@ export interface JwsSignature {
   /** Unprotected header */
   header?: JwsUnprotectedHeader
 
-  /** Signature (base64url-encoded) */
-  signature: Base64Url
+  /** Signature (base64url-encoded, empty for unsecured JWS) */
+  signature: Base64Url | ""
 }
 
 /**
@@ -114,8 +114,8 @@ export interface JwsFlattenedJson {
   /** Unprotected header */
   header?: JwsUnprotectedHeader
 
-  /** Signature (base64url-encoded) */
-  signature: Base64Url
+  /** Signature (base64url-encoded, empty for unsecured JWS) */
+  signature: Base64Url | ""
 }
 
 /**
@@ -137,8 +137,8 @@ export interface JwsCompactSerialization {
   /** Payload (base64url-encoded) */
   payload: Base64Url
 
-  /** Signature (base64url-encoded) */
-  signature: Base64Url
+  /** Signature (base64url-encoded, empty for unsecured JWS) */
+  signature: Base64Url | ""
 }
 
 /**
@@ -171,8 +171,8 @@ export interface JwsObject {
   /** Payload (base64url-encoded) */
   payload: Base64Url
 
-  /** Signature (base64url-encoded) */
-  signature: Base64Url
+  /** Signature (base64url-encoded, empty for unsecured JWS) */
+  signature: Base64Url | ""
 }
 
 /**

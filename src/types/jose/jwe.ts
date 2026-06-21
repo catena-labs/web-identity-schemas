@@ -102,6 +102,27 @@ export interface JweUnprotectedHeader {
 
   /** Critical header parameter (optional) */
   crit?: string[]
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk?: JsonWebKey
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu?: Base64Url
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv?: Base64Url
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv?: Base64Url
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag?: Base64Url
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s?: Base64Url
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c?: number
 }
 
 /**
