@@ -106,6 +106,64 @@ describe("jwe", () => {
         expect(general).toMatchSchema(schemas.JweJsonSerializationSchema)
       })
 
+      test("per-recipient header preserves ECDH-ES key-management params", () => {
+        const general = {
+          protected: protectedHeader,
+          iv,
+          ciphertext,
+          tag,
+          recipients: [
+            {
+              header: {
+                alg: "ECDH-ES",
+                kid: "key-1",
+                epk: {
+                  kty: "EC",
+                  crv: "P-256",
+                  x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
+                  y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+                },
+                apu: "QWxpY2U",
+                apv: "Qm9i",
+              },
+            },
+          ],
+        }
+
+        expect(general).toMatchSchema(
+          schemas.JweJsonSerializationSchema,
+          (parsed) => {
+            const [recipient] = (
+              parsed as {
+                recipients: { header?: { epk?: unknown; apu?: string } }[]
+              }
+            ).recipients
+            expect(recipient?.header?.epk).toBeDefined()
+            expect(recipient?.header?.apu).toBe("QWxpY2U")
+          },
+        )
+      })
+
+      test("shared unprotected header carries key-management params", () => {
+        const general = {
+          protected: "eyJlbmMiOiJBMTI4R0NNIn0",
+          unprotected: { alg: "ECDH-ES", apu: "QWxpY2U", apv: "Qm9i" },
+          iv,
+          ciphertext,
+          tag,
+          recipients: [{ header: { kid: "key-1" } }],
+        }
+
+        expect(general).toMatchSchema(
+          schemas.JweJsonSerializationSchema,
+          (parsed) => {
+            const unprotected = (parsed as { unprotected?: { apu?: string } })
+              .unprotected
+            expect(unprotected?.apu).toBe("QWxpY2U")
+          },
+        )
+      })
+
       test("general serialization with dir (absent encrypted_key)", () => {
         const general = {
           protected: "eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4R0NNIn0",

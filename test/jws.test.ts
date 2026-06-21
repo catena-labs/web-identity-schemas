@@ -112,6 +112,16 @@ describe("jws", () => {
           schemas.JwsCompactSerializationSchema,
         )
       })
+
+      test("accepts empty signature (unsecured JWS)", () => {
+        const unsecured = {
+          protected: "eyJhbGciOiJub25lIn0",
+          payload: "eyJpc3MiOiJ0ZXN0In0",
+          signature: "",
+        }
+
+        expect(unsecured).toMatchSchema(schemas.JwsCompactSerializationSchema)
+      })
     })
 
     describe("JwsObjectSchema", () => {
@@ -149,6 +159,23 @@ describe("jws", () => {
           ],
         }
 
+        expect(general).toMatchSchema(schemas.JwsJsonSerializationSchema)
+      })
+
+      test("unsecured JWS (empty signature) in flattened and general forms", () => {
+        const flattened = {
+          payload,
+          protected: "eyJhbGciOiJub25lIn0",
+          signature: "",
+        }
+        expect(flattened).toMatchSchema(
+          schemas.JwsFlattenedJsonSerializationSchema,
+        )
+
+        const general = {
+          payload,
+          signatures: [{ protected: "eyJhbGciOiJub25lIn0", signature: "" }],
+        }
         expect(general).toMatchSchema(schemas.JwsJsonSerializationSchema)
       })
 
