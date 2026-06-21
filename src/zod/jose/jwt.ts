@@ -64,7 +64,7 @@ const JwtHeaderBaseSchema = z.object({
  * JWT header schema for Unsecured JWS/JWT (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-5}
  */
-const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
+export const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
   alg: JoseUnsecuredAlgorithmSchema,
@@ -78,7 +78,7 @@ export const JwtHeaderSignedSchema: Shape<JwtHeaderSigned> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
   alg: JoseSignatureAlgorithmSchema,
-}) satisfies Shape<JwtHeaderSigned>
+})
 
 /**
  * JWT header schema union for all algorithms.

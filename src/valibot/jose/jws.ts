@@ -6,6 +6,7 @@ import type {
   JwsSignature,
   JwsGeneralJson,
   JwsFlattenedJson,
+  JwsString,
 } from "../../types/jose/jws"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import type { Shape } from "../shared/shape"
@@ -104,11 +105,6 @@ export const JwsSignatureSchema = v.object({
  * Represents JWS in compact serialization format.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
-/**
- * JWS Compact Serialization Schema.
- * Represents JWS in compact serialization format.
- * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
- */
 export const JwsCompactSerializationSchema = v.object({
   /** JWS Protected Header (base64url encoded) */
   protected: Base64UrlSchema,
@@ -154,13 +150,14 @@ export const JwsFlattenedJsonSerializationSchema = v.object({
 
 /**
  * JWS String Format Schema.
- * Validates JWS compact serialization string format.
- * Must contain exactly 3 parts separated by periods.
+ * Validates JWS compact serialization string format (header.payload.signature).
+ * The signature part may be empty for unsecured JWS (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
 export const JwsStringSchema = v.pipe(
   v.string(),
   v.regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/),
+  v.custom<JwsString>(() => true),
 )
 
 /**
@@ -171,11 +168,14 @@ export const JwsStringSchema = v.pipe(
 export const JwsParsedSchema = v.pipe(
   JwsStringSchema,
   v.transform((jws) => {
-    const parts = jws.split(".")
+    const [protectedHeader, payload, signature] = jws.split(".")
+    if (!protectedHeader || !payload) {
+      throw new Error("Invalid JWS string")
+    }
     return {
-      protected: parts[0],
-      payload: parts[1],
-      signature: parts[2],
+      protected: protectedHeader,
+      payload,
+      signature: signature ?? "",
     }
   }),
 )

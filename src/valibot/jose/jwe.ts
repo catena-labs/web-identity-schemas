@@ -171,8 +171,8 @@ export const JweCompactSerializationSchema = v.object({
   /** JWE Protected Header (base64url encoded) */
   protected: Base64UrlSchema,
 
-  /** JWE Encrypted Key (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** JWE Encrypted Key (base64url encoded, empty for dir/ECDH-ES) */
+  encrypted_key: v.union([Base64UrlSchema, v.literal("")]),
 
   /** JWE Initialization Vector (base64url encoded) */
   iv: Base64UrlSchema,
@@ -245,8 +245,8 @@ export const JweFlattenedJsonSerializationSchema = v.object({
 
 /**
  * JWE String Format Schema.
- * Validates JWE compact serialization string format.
- * Must contain exactly 5 parts separated by periods.
+ * Validates JWE compact serialization string format (5 parts: header.encrypted_key.iv.ciphertext.tag).
+ * The encrypted_key part may be empty for direct key management (dir/ECDH-ES).
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
  */
 export const JweStringSchema = v.pipe(
@@ -255,13 +255,16 @@ export const JweStringSchema = v.pipe(
     /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
   ),
   v.transform((jwe) => {
-    const parts = jwe.split(".")
+    const [protectedHeader, encryptedKey, iv, ciphertext, tag] = jwe.split(".")
+    if (!protectedHeader || !iv || !ciphertext || !tag) {
+      throw new Error("Invalid JWE string")
+    }
     return {
-      protected: parts[0],
-      encrypted_key: parts[1],
-      iv: parts[2],
-      ciphertext: parts[3],
-      tag: parts[4],
+      protected: protectedHeader,
+      encrypted_key: encryptedKey ?? "",
+      iv,
+      ciphertext,
+      tag,
     }
   }),
 )

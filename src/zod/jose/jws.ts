@@ -153,8 +153,8 @@ export const JwsFlattenedJsonSerializationSchema: Shape<JwsFlattenedJson> =
 
 /**
  * JWS String Format Schema.
- * Validates JWS compact serialization string format.
- * Must contain exactly 3 parts separated by periods.
+ * Validates JWS compact serialization string format (header.payload.signature).
+ * The signature part may be empty for unsecured JWS (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
 export const JwsStringSchema = z
@@ -168,11 +168,14 @@ export const JwsStringSchema = z
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
 export const JwsParsedSchema = JwsStringSchema.transform((jws) => {
-  const parts = jws.split(".")
+  const [protectedHeader, payload, signature] = jws.split(".")
+  if (!protectedHeader || !payload) {
+    throw new Error("Invalid JWS string")
+  }
   return {
-    protected: parts[0],
-    payload: parts[1],
-    signature: parts[2],
+    protected: protectedHeader,
+    payload,
+    signature: signature ?? "",
   }
 })
 

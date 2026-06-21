@@ -12,6 +12,34 @@ const namespaces = {
 
 describe("jws", () => {
   describe.each(Object.entries(namespaces))("%s", (namespace, schemas) => {
+    describe("JwsStringSchema", () => {
+      test("valid JWS strings", () => {
+        const validStrings = [
+          "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
+          "a.b.c",
+          "a.b.", // Unsecured JWS (empty signature)
+        ]
+
+        for (const jws of validStrings) {
+          expect(jws).toMatchSchema(schemas.JwsStringSchema)
+        }
+      })
+
+      test("invalid JWS strings", () => {
+        const invalidStrings = [
+          "",
+          "a.b",
+          "a.b.c.d",
+          ".b.c",
+          "a..c", // Empty payload not allowed
+        ]
+
+        for (const jws of invalidStrings) {
+          expect(jws).not.toMatchSchema(schemas.JwsStringSchema)
+        }
+      })
+    })
+
     describe("JwsParsedSchema (compact serialization string)", () => {
       test("valid compact JWS strings", () => {
         const validJws = [
