@@ -106,6 +106,21 @@ describe("vc", () => {
         })
       })
 
+      test("valid proof with detached JWS (JsonWebSignature2020)", () => {
+        const validProof = {
+          type: "JsonWebSignature2020",
+          created: "2023-01-01T00:00:00Z",
+          verificationMethod: "did:example:123#key-1",
+          proofPurpose: "assertionMethod",
+          // Detached JWS: empty payload (header..signature)
+          jws: "eyJhbGciOiJFUzI1NiJ9..signature",
+        }
+
+        expect(validProof).toMatchSchema(schemas.ProofSchema, (parsed) => {
+          expect(parsed.jws as string).toBe(validProof.jws)
+        })
+      })
+
       test("valid proof with signatureValue", () => {
         const validProof = {
           type: "Ed25519Signature2020",

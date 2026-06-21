@@ -52,6 +52,8 @@ describe("did", () => {
           "did:method:identifier with space", // Space in identifier
           "",
           "did:method:identifier#", // Fragment should be in DidUrlSchema
+          "did:example:abc%ZZdef", // Malformed pct-encoding (non-hex digits)
+          "did:example:abc%4", // Truncated pct-encoding
         ]
 
         for (const did of invalidDids) {
@@ -419,6 +421,39 @@ describe("did", () => {
         expect(didDocumentWithMultipleContexts).toMatchSchema(
           schemas.DidDocumentSchema,
         )
+      })
+
+      test("with inline context object as a later array member", () => {
+        const didDocumentWithInlineContext = {
+          "@context": [
+            "https://www.w3.org/ns/did/v1",
+            // Real-world inline context with object-valued term definitions
+            {
+              schema: "https://schema.org/",
+              Ed25519VerificationKey2020: {
+                "@id": "https://w3id.org/security#Ed25519VerificationKey2020",
+                "@type": "@id",
+              },
+            },
+          ],
+          id: "did:example:123456789abcdefghi",
+        }
+
+        expect(didDocumentWithInlineContext).toMatchSchema(
+          schemas.DidDocumentSchema,
+        )
+      })
+
+      test("rejects @context array not beginning with the DID v1 context", () => {
+        const badContext = {
+          "@context": [
+            "https://w3id.org/security/v2",
+            "https://www.w3.org/ns/did/v1",
+          ],
+          id: "did:example:123456789abcdefghi",
+        }
+
+        expect(badContext).not.toMatchSchema(schemas.DidDocumentSchema)
       })
 
       test("authentication with embedded verification method", () => {
