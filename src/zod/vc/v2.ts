@@ -3,6 +3,7 @@ import * as z from "zod"
 import { vcV2CoreContext } from "../../constants/vc"
 import type { Uri } from "../../types"
 import { DateTimeStampSchema, jsonLdContextSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 import {
   BaseCredentialSchema,
   makeVerifiable,
@@ -23,7 +24,7 @@ export const VcV2CoreContextSchema = z.literal(vcV2CoreContext)
 export const VcV2ContextSchema = z.union([
   VcV2CoreContextSchema,
   z
-    .array(z.string())
+    .array(UriSchema)
     .nonempty()
     .refine(
       (contexts) => contexts[0] === vcV2CoreContext,

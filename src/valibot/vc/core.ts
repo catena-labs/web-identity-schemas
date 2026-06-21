@@ -19,7 +19,7 @@ import {
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
 import { JwsStringSchema } from "../jose/jws"
-import { DateTimeStampSchema } from "../shared/json-ld"
+import { DateTimeStampSchema, JsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 import { includesAll, oneOrMany } from "../shared/utils"
@@ -180,9 +180,9 @@ export const CredentialSchemaTypeSchema = v.object({
  * Generic resource schema for evidence, refresh services, and terms of use.
  * @see {@link https://www.w3.org/TR/vc-data-model/}
  */
-export const GenericResourceSchema = v.object({
+export const GenericResourceSchema = v.looseObject({
   /** Resource identifier (optional) */
-  id: v.optional(v.union([UriSchema, v.string()])),
+  id: v.optional(v.string()),
 
   /** Resource type */
   type: v.union([v.string(), v.array(v.string())]),
@@ -194,7 +194,7 @@ export const GenericResourceSchema = v.object({
 export const IdOrObjectSchema = v.pipe(
   v.union([
     UriSchema,
-    v.object({
+    v.looseObject({
       id: UriSchema,
     }),
   ]),
@@ -208,7 +208,7 @@ export const IdOrObjectSchema = v.pipe(
 export const CredentialSubjectSchema = v.pipe(
   v.looseObject({
     /** Subject identifier (optional) */
-    id: v.optional(v.union([UriSchema, v.string()])),
+    id: v.optional(v.string()),
   }),
   v.custom<CredentialSubject>(() => true),
 )
@@ -218,6 +218,9 @@ export const CredentialSubjectSchema = v.pipe(
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export const BaseCredentialSchema = v.looseObject({
+  /** JSON-LD context */
+  "@context": JsonLdContextSchema,
+
   /** Credential identifier (optional) */
   id: v.optional(UriSchema),
 

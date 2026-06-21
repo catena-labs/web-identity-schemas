@@ -1,5 +1,5 @@
 import type { JwtString } from "../jose"
-import type { JsonLdContext } from "../shared/json-ld"
+import type { VcContext } from "../shared/json-ld"
 import type { Uri } from "../shared/uri"
 import type { ArrayContaining, OneOrMany, LooseObject } from "../shared/utils"
 import type { Proof } from "./proof"
@@ -142,7 +142,7 @@ export interface BaseCredential<
   TType extends CredentialType = CredentialType,
 > extends LooseObject<{
   /** JSON-LD context */
-  "@context": JsonLdContext
+  "@context": VcContext
 
   /** Credential identifier (optional) */
   id?: Uri
@@ -181,7 +181,7 @@ export interface BasePresentation<
   TType extends CredentialType = CredentialType,
 > {
   /** JSON-LD context (V1) */
-  "@context": JsonLdContext
+  "@context": VcContext
 
   /** Presentation identifier (optional) */
   id?: Uri

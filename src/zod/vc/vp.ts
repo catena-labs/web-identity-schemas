@@ -19,60 +19,52 @@ export const VpTypeSchema = vpTypeSchema()
  * Creates a presentation type schema that accepts a specific presentation type or array of types.
  * @param types The expected type value(s)
  */
-export function vpTypeSchema<TTypes extends string | string[]>(types?: TTypes) {
+export function vpTypeSchema(types?: string | string[]) {
   if (types) {
-    if (typeof types === "string") {
-      return z.tuple([z.literal(types)]).rest(z.string())
-    } else {
-      if (types.length === 0) {
-        return z.never()
-      } else if (types.length === 1) {
-        return z.tuple([z.literal(types[0])])
-      } else {
-        const [first, ...rest] = types
-        return z.tuple([z.literal(first), ...rest.map((t) => z.literal(t))])
-      }
+    const additional: string[] = Array.isArray(types) ? types : [types]
+    if (additional.length === 0) {
+      return z.tuple([VpTypeLiteralSchema])
     }
-  } else {
-    return z.union([
-      z.literal("VerifiablePresentation"),
-      z
-        .array(z.string())
-        .min(1)
-        .refine(
-          (value) => value[0] === "VerifiablePresentation",
-          "First type must be VerifiablePresentation",
-        ),
-    ])
+    return z
+      .tuple([VpTypeLiteralSchema, ...additional.map((t) => z.literal(t))])
+      .rest(z.string())
   }
+  return z.union([
+    VpTypeLiteralSchema,
+    z
+      .array(z.string())
+      .min(1)
+      .refine(
+        (value) => value[0] === "VerifiablePresentation",
+        "First type must be VerifiablePresentation",
+      ),
+  ])
 }
 
 /**
  * Presentation schema (unsigned, no proof).
  * @see {@link https://www.w3.org/TR/vc-data-model/#presentations}
  */
-export const PresentationSchema = z.object({
-  /** JSON-LD context */
-  "@context": z.union([VcContextSchema, z.array(VcContextSchema)]),
+export const PresentationSchema = z
+  .object({
+    /** JSON-LD context */
+    "@context": z.union([VcContextSchema, z.array(VcContextSchema)]),
 
-  /** Presentation identifier */
-  id: z.string().optional(),
+    /** Presentation identifier */
+    id: z.string().optional(),
 
-  /** Presentation type */
-  type: vpTypeSchema(),
+    /** Presentation type */
+    type: vpTypeSchema(),
 
-  /** Presentation holder */
-  holder: IdOrObjectSchema.optional(),
+    /** Presentation holder */
+    holder: IdOrObjectSchema.optional(),
 
-  /** Verifiable credentials (credential objects or enveloped JWT strings) */
-  verifiableCredential: z
-    .union([
-      W3CCredentialSchema,
-      JwtStringSchema,
-      z.array(z.union([W3CCredentialSchema, JwtStringSchema])),
-    ])
-    .optional(),
-})
+    /** Verifiable credentials (credential objects or enveloped JWT strings) */
+    verifiableCredential: z
+      .array(z.union([W3CCredentialSchema, JwtStringSchema]))
+      .optional(),
+  })
+  .loose()
 
 /**
  * Alias for {@link vpTypeSchema}, kept for naming parity with prior releases.
@@ -87,4 +79,4 @@ export const presentationTypeSchema = vpTypeSchema
 export const VerifiablePresentationSchema = PresentationSchema.extend({
   /** Proof (required for verifiable presentations) */
   proof: z.union([ProofSchema, z.array(ProofSchema)]),
-})
+}).loose()

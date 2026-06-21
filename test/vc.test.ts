@@ -479,8 +479,13 @@ describe("vc", () => {
 
         expect(statusListCredential).toMatchSchema(
           schemas.StatusList2021CredentialSchema,
-          (parsed: { credentialSubject: { type: string } }) => {
-            expect(parsed.credentialSubject.type).toBe("StatusList2021")
+          (parsed: {
+            credentialSubject: { type: string } | { type: string }[]
+          }) => {
+            const subject = Array.isArray(parsed.credentialSubject)
+              ? parsed.credentialSubject[0]!
+              : parsed.credentialSubject
+            expect(subject.type).toBe("StatusList2021")
           },
         )
       })
@@ -527,8 +532,13 @@ describe("vc", () => {
 
       expect(bitstringCredential).toMatchSchema(
         schemas.BitstringStatusListCredentialSchema,
-        (parsed: { credentialSubject: { type: string } }) => {
-          expect(parsed.credentialSubject.type).toBe("BitstringStatusList")
+        (parsed: {
+          credentialSubject: { type: string } | { type: string }[]
+        }) => {
+          const subject = Array.isArray(parsed.credentialSubject)
+            ? parsed.credentialSubject[0]!
+            : parsed.credentialSubject
+          expect(subject.type).toBe("BitstringStatusList")
         },
       )
     })
@@ -651,6 +661,266 @@ describe("vc", () => {
           },
           schemas.PresentationSchema,
         )
+      })
+
+      test("presentation rejects a bare (non-array) verifiableCredential", () => {
+        const presentation = {
+          "@context": "https://www.w3.org/2018/credentials/v1",
+          type: "VerifiablePresentation",
+          verifiableCredential:
+            "eyJhbGciOiJFUzI1NiJ9.eyJpc3MiOiJ0ZXN0In0.signature",
+        }
+        expect(presentation).not.toMatchSchema(schemas.PresentationSchema)
+      })
+
+      test("vpTypeSchema with types requires VerifiablePresentation first (parity)", () => {
+        const typedSchema = schemas.vpTypeSchema("CustomType")
+        // Must include VerifiablePresentation as first element
+        expect(["VerifiablePresentation", "CustomType"]).toMatchSchema(
+          typedSchema as never,
+        )
+        // Missing VerifiablePresentation should be rejected
+        expect(["CustomType"]).not.toMatchSchema(typedSchema as never)
+        // Bare string should be rejected when types are specified
+        expect("CustomType").not.toMatchSchema(typedSchema as never)
+      })
+
+      test("vpTypeSchema with array of types requires VerifiablePresentation first (parity)", () => {
+        const typedSchema = schemas.vpTypeSchema(["CustomType1", "CustomType2"])
+        expect([
+          "VerifiablePresentation",
+          "CustomType1",
+          "CustomType2",
+        ]).toMatchSchema(typedSchema as never)
+        expect(["CustomType1", "CustomType2"]).not.toMatchSchema(
+          typedSchema as never,
+        )
+      })
+
+      test("V2 credential requires core context first (V2 spec requirement)", () => {
+        // V2 spec says first context must be the V2 core context
+        expect({
+          ...baseV2,
+          "@context": [
+            "https://example.com/custom/v1",
+            "https://www.w3.org/ns/credentials/v2",
+          ],
+        }).not.toMatchSchema(schemas.CredentialV2Schema as never)
+      })
+
+      test("V2 credential still requires V2 core context to be present", () => {
+        expect({
+          ...baseV2,
+          "@context": ["https://example.com/custom/v1"],
+        }).not.toMatchSchema(schemas.CredentialV2Schema)
+      })
+
+      test("V1 credential requires core context first (V1 spec requirement)", () => {
+        // V1 spec says first context must be the V1 core context
+        expect({
+          ...baseV1,
+          "@context": [
+            "https://example.com/custom/v1",
+            "https://www.w3.org/2018/credentials/v1",
+          ],
+        }).not.toMatchSchema(schemas.CredentialV1Schema as never)
+      })
+
+      test("issuer object preserves extra keys (IdOrObject passthrough)", () => {
+        const credential = {
+          ...baseV1,
+          issuer: {
+            id: "did:example:issuer",
+            name: "Example University",
+            description: "A university",
+          },
+        }
+        expect(credential).toMatchSchema(
+          schemas.CredentialV1Schema,
+          (parsed: {
+            issuer:
+              | string
+              | { id?: string; name?: string; description?: string }
+          }) => {
+            const issuer =
+              typeof parsed.issuer === "object" ? parsed.issuer : {}
+            expect(issuer.name).toBe("Example University")
+            expect(issuer.description).toBe("A university")
+          },
+        )
+      })
+
+      test("status list subject id accepts URL (not restricted to DIDs)", () => {
+        const statusListCredential = {
+          "@context": [
+            "https://www.w3.org/ns/credentials/v2",
+            "https://www.w3.org/ns/credentials/status/v1",
+          ],
+          id: "https://example.com/status/1",
+          type: ["VerifiableCredential", "BitstringStatusListCredential"],
+          issuer: "did:example:123",
+          validFrom: "2023-01-01T00:00:00Z",
+          credentialSubject: {
+            id: "https://example.com/status/1",
+            type: "BitstringStatusList",
+            statusPurpose: "revocation",
+            encodedList:
+              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+          },
+        }
+
+        expect(statusListCredential).toMatchSchema(
+          schemas.BitstringStatusListCredentialSchema,
+        )
+      })
+
+      test("status list credential rejects missing specific type (parity)", () => {
+        const bitstringWithoutType = {
+          "@context": [
+            "https://www.w3.org/ns/credentials/v2",
+            "https://www.w3.org/ns/credentials/status/v1",
+          ],
+          id: "did:example:status:2",
+          type: ["VerifiableCredential"], // Missing BitstringStatusListCredential
+          issuer: "did:example:123",
+          validFrom: "2023-01-01T00:00:00Z",
+          credentialSubject: {
+            id: "did:example:status:2",
+            type: "BitstringStatusList",
+            statusPurpose: "suspension",
+            encodedList:
+              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+          },
+        }
+
+        expect(bitstringWithoutType).not.toMatchSchema(
+          schemas.BitstringStatusListCredentialSchema,
+        )
+
+        const statusListWithoutType = {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://w3id.org/vc/status-list/2021/v1",
+          ],
+          id: "did:example:status:1",
+          type: ["VerifiableCredential"], // Missing StatusList2021Credential
+          issuer: "did:example:123",
+          issuanceDate: "2023-01-01T00:00:00Z",
+          credentialSubject: {
+            id: "did:example:status:1",
+            type: "StatusList2021",
+            statusPurpose: "revocation",
+            encodedList:
+              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+          },
+        }
+
+        expect(statusListWithoutType).not.toMatchSchema(
+          schemas.StatusList2021CredentialSchema,
+        )
+      })
+
+      test("status list context requires V2 core context first (parity)", () => {
+        const bitstringReversedContext = {
+          "@context": [
+            "https://www.w3.org/ns/credentials/status/v1",
+            "https://www.w3.org/ns/credentials/v2",
+          ],
+          id: "did:example:status:2",
+          type: ["VerifiableCredential", "BitstringStatusListCredential"],
+          issuer: "did:example:123",
+          validFrom: "2023-01-01T00:00:00Z",
+          credentialSubject: {
+            id: "did:example:status:2",
+            type: "BitstringStatusList",
+            statusPurpose: "suspension",
+            encodedList:
+              "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+          },
+        }
+
+        expect(bitstringReversedContext).not.toMatchSchema(
+          schemas.BitstringStatusListCredentialSchema,
+        )
+      })
+
+      test("BaseCredentialSchema requires @context", () => {
+        const noContext = {
+          id: "http://example.edu/credentials/1872",
+          type: ["VerifiableCredential"],
+          issuer: "did:example:565049",
+          credentialSubject: { id: "did:example:subject" },
+        }
+        expect(noContext).not.toMatchSchema(schemas.BaseCredentialSchema)
+      })
+
+      test("createCredentialSchema accepts contextSchema parameter (parity)", () => {
+        const customSchema = schemas.createCredentialSchema(
+          schemas.CredentialSubjectSchema as never,
+          undefined,
+          "https://example.com/custom-context/v1",
+        )
+        const credential = {
+          "@context": [
+            "https://www.w3.org/2018/credentials/v1",
+            "https://example.com/custom-context/v1",
+          ],
+          type: "VerifiableCredential",
+          issuer: "did:example:123",
+          issuanceDate: "2023-01-01T00:00:00Z",
+          credentialSubject: { id: "did:example:subject" },
+        }
+        expect(credential).toMatchSchema(customSchema as never)
+      })
+
+      test("DateTimeStampSchema is exported", () => {
+        expect(schemas.DateTimeStampSchema).toBeDefined()
+        expect("2023-01-01T00:00:00Z").toMatchSchema(
+          schemas.DateTimeStampSchema,
+        )
+        expect("not-a-date").not.toMatchSchema(schemas.DateTimeStampSchema)
+      })
+
+      test("jsonLdContextSchema is exported", () => {
+        expect(schemas.jsonLdContextSchema).toBeDefined()
+        const ctxSchema = schemas.jsonLdContextSchema(
+          "https://www.w3.org/ns/credentials/v2",
+        )
+        expect("https://www.w3.org/ns/credentials/v2").toMatchSchema(
+          ctxSchema as never,
+        )
+        expect(["https://www.w3.org/ns/credentials/v2"]).toMatchSchema(
+          ctxSchema as never,
+        )
+      })
+
+      test("JwtHeaderUnsecuredSchema is exported", () => {
+        expect(schemas.JwtHeaderUnsecuredSchema).toBeDefined()
+      })
+
+      test("jsonLdContextSchema preserves detailed error messages", async () => {
+        const ctxSchema = schemas.jsonLdContextSchema([
+          "https://www.w3.org/ns/credentials/v2",
+          "https://www.w3.org/ns/credentials/status/v1",
+        ])
+        const badContext = ["https://example.com/custom"]
+
+        const standard = (
+          ctxSchema as never as {
+            "~standard": {
+              validate: (
+                v: unknown,
+              ) => Promise<
+                { issues?: { message: string }[] } | { value: unknown }
+              >
+            }
+          }
+        )["~standard"]
+        const result = await standard.validate(badContext)
+        const issues = "issues" in result ? result.issues : undefined
+
+        expect(issues).toBeDefined()
+        expect(issues![0]!.message).toContain("required contexts")
       })
     })
   })

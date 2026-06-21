@@ -25,8 +25,8 @@ export const VcV2ContextSchema = v.union([
   v.pipe(
     v.tupleWithRest([VcV2CoreContextSchema], v.string()),
     v.check(
-      (contexts) => contexts.includes(vcV2CoreContext),
-      "Array must contain V2 core context",
+      (contexts) => contexts[0] === vcV2CoreContext,
+      "First context must be the V2 core context",
     ),
   ),
 ])

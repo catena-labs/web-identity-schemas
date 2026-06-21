@@ -9,10 +9,10 @@ import type {
   StatusList2021CredentialSubject,
   StatusList2021Credential,
 } from "../../../types/vc/status/statuslist2021"
-import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
 import type { Shape } from "../../shared/shape"
+import { UriSchema } from "../../shared/uri"
 import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
@@ -26,8 +26,8 @@ export const StatusList2021ContextSchema = v.literal(statusList2021Context)
  * @see {@link https://www.w3.org/TR/vc-status-list/#statuslist2021credential}
  */
 export const StatusList2021CredentialSubjectSchema = v.object({
-  /** Credential subject identifier */
-  id: v.optional(DidSchema),
+  /** Credential subject identifier (URL per spec, not restricted to DIDs) */
+  id: v.optional(UriSchema),
 
   /** Type of the credential subject */
   type: v.literal("StatusList2021"),
@@ -42,7 +42,7 @@ export const StatusList2021CredentialSubjectSchema = v.object({
 /**
  * StatusList2021 credential schema (V1).
  */
-export const StatusList2021CredentialSchema = v.strictObject({
+export const StatusList2021CredentialSchema = v.looseObject({
   ...BaseCredentialSchema.entries,
 
   /** JSON-LD context (V1 + StatusList2021) */
