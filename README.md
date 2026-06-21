@@ -35,11 +35,11 @@ npm install zod       # for web-identity-schemas/zod
 
 This package has three independent entry points:
 
-| Import path                    | Contents                                            |
-| ------------------------------ | --------------------------------------------------- |
-| `web-identity-schemas`         | **Types only** (and constants). No runtime schemas. |
-| `web-identity-schemas/valibot` | Valibot schemas + the same types and constants.     |
-| `web-identity-schemas/zod`     | Zod (v4) schemas + the same types and constants.    |
+| Import path                    | Contents                                         |
+| ------------------------------ | ------------------------------------------------ |
+| `web-identity-schemas`         | **Types only.** No runtime schemas or constants. |
+| `web-identity-schemas/valibot` | Valibot schemas + the same types and constants.  |
+| `web-identity-schemas/zod`     | Zod (v4) schemas + the same types and constants. |
 
 Importing `/valibot` never pulls in Zod, and `/zod` never pulls in Valibot. The
 root entry pulls in neither, so it is safe to use for types alone.
