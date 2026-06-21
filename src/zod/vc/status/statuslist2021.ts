@@ -5,12 +5,15 @@ import {
   statusPurposes,
   vcV1CoreContext,
 } from "../../../constants/vc"
-import type { StatusList2021CredentialSubject } from "../../../types/vc/status/statuslist2021"
-import { DidSchema } from "../../did"
+import type {
+  StatusList2021CredentialSubject,
+  StatusList2021Credential,
+} from "../../../types/vc/status/statuslist2021"
 import { Base64UrlSchema } from "../../shared/base-64"
+import { jsonLdContextSchema } from "../../shared/json-ld"
 import type { Shape } from "../../shared/shape"
-import { BaseCredentialSchema } from "../core"
-import { VcV1CoreContextSchema } from "../v1"
+import { UriSchema } from "../../shared/uri"
+import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
  * StatusList2021 context (for V1 credentials).
@@ -24,8 +27,8 @@ export const StatusList2021ContextSchema = z.literal(statusList2021Context)
  */
 export const StatusList2021CredentialSubjectSchema: Shape<StatusList2021CredentialSubject> =
   z.object({
-    /** Credential subject identifier */
-    id: DidSchema.optional(),
+    /** Credential subject identifier (URL per spec, not restricted to DIDs) */
+    id: UriSchema.optional(),
 
     /** Type of the credential subject */
     type: z.literal("StatusList2021"),
@@ -38,34 +41,22 @@ export const StatusList2021CredentialSubjectSchema: Shape<StatusList2021Credenti
   })
 
 /**
- * StatusList2021 context schema: requires V1 core context + StatusList2021 context.
- */
-const StatusList2021CredentialContextSchema = z.union([
-  z.tuple([VcV1CoreContextSchema, StatusList2021ContextSchema]),
-  z
-    .array(z.string())
-    .nonempty()
-    .refine(
-      (contexts) =>
-        contexts.includes(vcV1CoreContext) &&
-        contexts.includes(statusList2021Context),
-      "Array must contain both V1 core context and StatusList2021 context",
-    ),
-])
-
-/**
  * StatusList2021 credential schema (V1).
  */
-export const StatusList2021CredentialSchema = BaseCredentialSchema.extend({
-  /** JSON-LD context (V1 + StatusList2021) */
-  "@context": StatusList2021CredentialContextSchema,
+export const StatusList2021CredentialSchema: Shape<StatusList2021Credential> =
+  BaseCredentialSchema.extend({
+    /** JSON-LD context (V1 + StatusList2021) */
+    "@context": jsonLdContextSchema([vcV1CoreContext, statusList2021Context]),
 
-  /** Issuance date (V1) */
-  issuanceDate: z.iso.datetime(),
+    /** Credential types */
+    type: credentialTypeSchema("StatusList2021Credential"),
 
-  /** Expiration date (V1) */
-  expirationDate: z.iso.datetime().optional(),
+    /** Issuance date (V1) */
+    issuanceDate: z.iso.datetime(),
 
-  /** Credential subject */
-  credentialSubject: StatusList2021CredentialSubjectSchema,
-}).strict()
+    /** Expiration date (V1) */
+    expirationDate: z.iso.datetime().optional(),
+
+    /** Credential subject */
+    credentialSubject: StatusList2021CredentialSubjectSchema,
+  }).loose()

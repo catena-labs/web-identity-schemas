@@ -5,12 +5,15 @@ import {
   statusPurposes,
   vcV2CoreContext,
 } from "../../../constants/vc"
-import type { BitstringStatusListCredentialSubject } from "../../../types/vc/status/bitstring"
-import { DidSchema } from "../../did"
+import type {
+  BitstringStatusListCredentialSubject,
+  BitstringStatusListCredential,
+} from "../../../types/vc/status/bitstring"
 import { Base64UrlSchema } from "../../shared/base-64"
+import { jsonLdContextSchema } from "../../shared/json-ld"
 import type { Shape } from "../../shared/shape"
-import { BaseCredentialSchema } from "../core"
-import { VcV2CoreContextSchema } from "../v2"
+import { UriSchema } from "../../shared/uri"
+import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
  * BitstringStatusList context (for V2 credentials).
@@ -26,8 +29,8 @@ export const BitstringStatusListContextSchema = z.literal(
  */
 export const BitstringStatusListCredentialSubjectSchema: Shape<BitstringStatusListCredentialSubject> =
   z.object({
-    /** Credential subject identifier */
-    id: DidSchema.optional(),
+    /** Credential subject identifier (URL per spec, not restricted to DIDs) */
+    id: UriSchema.optional(),
 
     /** Type of the credential subject */
     type: z.literal("BitstringStatusList"),
@@ -43,34 +46,25 @@ export const BitstringStatusListCredentialSubjectSchema: Shape<BitstringStatusLi
   })
 
 /**
- * BitstringStatusList context schema: requires V2 core context + BitstringStatusList context.
- */
-const BitstringStatusListCredentialContextSchema = z.union([
-  z.tuple([VcV2CoreContextSchema, BitstringStatusListContextSchema]),
-  z
-    .array(z.string())
-    .nonempty()
-    .refine(
-      (contexts) =>
-        contexts.includes(vcV2CoreContext) &&
-        contexts.includes(bitstringStatusListContext),
-      "Array must contain both V2 core context and BitstringStatusList context",
-    ),
-])
-
-/**
  * BitstringStatusList credential schema (V2).
  */
-export const BitstringStatusListCredentialSchema = BaseCredentialSchema.extend({
-  /** JSON-LD context (V2 + BitstringStatusList) */
-  "@context": BitstringStatusListCredentialContextSchema,
+export const BitstringStatusListCredentialSchema: Shape<BitstringStatusListCredential> =
+  BaseCredentialSchema.extend({
+    /** JSON-LD context (V2 + BitstringStatusList) */
+    "@context": jsonLdContextSchema([
+      vcV2CoreContext,
+      bitstringStatusListContext,
+    ]),
 
-  /** Valid from date (V2) */
-  validFrom: z.iso.datetime().optional(),
+    /** Credential types */
+    type: credentialTypeSchema("BitstringStatusListCredential"),
 
-  /** Valid until date (V2) */
-  validUntil: z.iso.datetime().optional(),
+    /** Valid from date (V2) */
+    validFrom: z.iso.datetime().optional(),
 
-  /** Credential subject */
-  credentialSubject: BitstringStatusListCredentialSubjectSchema,
-}).strict()
+    /** Valid until date (V2) */
+    validUntil: z.iso.datetime().optional(),
+
+    /** Credential subject */
+    credentialSubject: BitstringStatusListCredentialSubjectSchema,
+  }).loose()
