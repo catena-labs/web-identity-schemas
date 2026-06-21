@@ -127,6 +127,55 @@ export interface JwsFlattenedJson {
 export type JwsString = `${string}.${string}.${string}`
 
 /**
+ * JWS Compact Serialization (parsed object form).
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
+ */
+export interface JwsCompactSerialization {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Payload (base64url-encoded) */
+  payload: Base64Url
+
+  /** Signature (base64url-encoded) */
+  signature: Base64Url
+}
+
+/**
+ * JWS parsed from compact string into base64url-encoded parts.
+ * The signature may be empty for unsecured JWS (alg: "none").
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
+ */
+export interface JwsParsed {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Payload (base64url-encoded) */
+  payload: Base64Url
+
+  /** Signature (base64url-encoded, empty for unsecured JWS) */
+  signature: Base64Url | ""
+}
+
+/**
+ * JWS object with decoded protected header.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-3}
+ */
+export interface JwsObject {
+  /** Decoded protected header */
+  protected: JwsProtectedHeader
+
+  /** Unprotected header (optional) */
+  unprotected?: JwsUnprotectedHeader
+
+  /** Payload (base64url-encoded) */
+  payload: Base64Url
+
+  /** Signature (base64url-encoded) */
+  signature: Base64Url
+}
+
+/**
  * JWS Compact Serialization.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */

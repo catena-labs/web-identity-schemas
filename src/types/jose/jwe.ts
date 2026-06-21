@@ -193,6 +193,73 @@ export interface JweFlattenedJson {
 }
 
 /**
+ * JWE Compact Serialization (parsed object form).
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
+ */
+export interface JweCompactSerialization {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Encrypted key (base64url-encoded, empty string for dir/ECDH-ES) */
+  encrypted_key: Base64Url | ""
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
+}
+
+/**
+ * JWE parsed from compact string into base64url-encoded parts.
+ * The encrypted key may be empty for direct key management (dir/ECDH-ES).
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
+ */
+export interface JweParsed {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Encrypted key (base64url-encoded, empty for dir/ECDH-ES) */
+  encrypted_key: Base64Url | ""
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
+}
+
+/**
+ * JWE object with decoded protected header.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-3}
+ */
+export interface JweObject {
+  /** Decoded protected header */
+  protected: JweProtectedHeader
+
+  /** Unprotected header (optional) */
+  unprotected?: JweUnprotectedHeader
+
+  /** Encrypted key (base64url-encoded) */
+  encrypted_key: Base64Url
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
+}
+
+/**
  * JWE Compact Serialization.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
  */

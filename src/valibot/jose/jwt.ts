@@ -60,7 +60,7 @@ const JwtHeaderBaseSchema = v.object({
  * JWT header schema for Unsecured JWS/JWT (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-5}
  */
-const JwtHeaderUnsecuredSchema = v.object({
+export const JwtHeaderUnsecuredSchema = v.object({
   /** Algorithm used to sign the JWT */
   alg: JoseUnsecuredAlgorithmSchema,
   ...JwtHeaderBaseSchema.entries,

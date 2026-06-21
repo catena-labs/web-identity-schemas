@@ -191,7 +191,9 @@ export const OctJwkSchema = z.object({
  *   "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
  * }
  */
-export const OkpJwkSchema = BaseJwkSchema.extend({
+export const OkpJwkSchema = z.object({
+  ...BaseJwkSchema.shape,
+
   /** Key type: Octet Key Pair */
   kty: z.literal("OKP"),
 
