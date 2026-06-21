@@ -9,21 +9,32 @@ import type {
 import { UriSchema } from "./uri"
 
 /**
+ * Inline JSON-LD context object. Term definitions are open-ended, so values are
+ * intentionally unconstrained.
+ * @see {@link https://www.w3.org/TR/json-ld/#context-definitions}
+ */
+const JsonLdContextObjectSchema = v.record(v.string(), v.unknown())
+
+/**
  * Generic JSON-LD context schema matching the `JsonLdContext` type.
- * Accepts a URI, an array of URIs, or an inline context object (map of string -> URI).
+ * Accepts a URI, an inline context object, or a mix of both in an array.
  * @see {@link https://www.w3.org/TR/json-ld/#contexts}
  */
 export const JsonLdContextSchema = v.pipe(
   v.union([
     UriSchema,
-    v.array(UriSchema),
-    v.record(v.string(), v.union([UriSchema, v.string()])),
+    // Array before the bare object branch: v.record matches arrays (they are
+    // objects) and would coerce them to plain objects, dropping array-ness.
+    v.array(v.union([UriSchema, JsonLdContextObjectSchema])),
+    JsonLdContextObjectSchema,
   ]),
   v.custom<JsonLdContext>(() => true),
 )
 
 /**
- * JSON-LD context schema.
+ * JSON-LD context schema (VC contexts: URIs only, required contexts enforced).
+ * For DID documents, which may also carry inline context objects, use
+ * {@link DidContextSchema}.
  * @see {@link https://www.w3.org/TR/json-ld/#contexts}
  */
 export function jsonLdContextSchema(
@@ -65,6 +76,24 @@ export function jsonLdContextSchema(
     v.custom<VcContext>(() => true),
   )
 }
+
+const DID_V1_CONTEXT = "https://www.w3.org/ns/did/v1"
+
+/**
+ * DID document `@context` schema. The DID Core v1 context must be present as the
+ * sole string value or the first array member; later array members may be URIs
+ * or inline context objects.
+ * @see {@link https://www.w3.org/TR/did-core/#did-documents}
+ */
+export const DidContextSchema = v.pipe(
+  JsonLdContextSchema,
+  v.check(
+    (ctx: JsonLdContext) =>
+      ctx === DID_V1_CONTEXT ||
+      (Array.isArray(ctx) && ctx[0] === DID_V1_CONTEXT),
+    `@context must be "${DID_V1_CONTEXT}" or an array beginning with it`,
+  ),
+)
 
 /**
  * JSON-LD DateTimeStamp schema.

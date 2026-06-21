@@ -23,7 +23,7 @@ import type {
   VerificationMethodLegacy,
 } from "../../types/did"
 import { JsonWebKeySchema } from "../jose/jwk"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DidContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 
@@ -237,7 +237,7 @@ export const ServiceSchema = v.object({
  */
 export const DidDocumentSchema = v.object({
   /** JSON-LD context */
-  "@context": jsonLdContextSchema("https://www.w3.org/ns/did/v1"),
+  "@context": DidContextSchema,
 
   /** The DID subject */
   id: DidSchema,
