@@ -8,6 +8,12 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
+      // Type-only modules (no runtime to execute) and barrel re-exports.
+      exclude: [
+        "src/types/**",
+        "src/**/index.ts",
+        "src/{index,valibot,zod}.ts",
+      ],
       reporter: ["text", "html"],
     },
   },
