@@ -16,7 +16,7 @@
 
 ### Patch Changes
 
-- 97f1594: Update isDidWithMethod to accpet method as first argument
+- 97f1594: Update isDidWithMethod to accept method as first argument
 
 ## 0.1.5
 
