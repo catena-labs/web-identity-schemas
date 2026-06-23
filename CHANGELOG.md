@@ -1,10 +1,18 @@
 # web-identity-schemas
 
+## 0.3.0
+
+### Minor Changes
+
+- Fix spec conformance and improve Valibot/Zod parity across DID, VC, and JOSE
+  schemas, and modernize tooling (oxlint/oxfmt), dependencies, and docs.
+
 ## 0.2.0
 
 ### Minor Changes
 
-- c4076c2: Update Credentials to have a Credential type and a Verifiable<> type, which includes a proof.
+- c4076c2: Update Credentials to have a Credential type and a Verifiable<> type,
+  which includes a proof.
 
   Update Credential "type" fields to allow any order of the types, per the spec
 
@@ -22,5 +30,5 @@
 
 ### Patch Changes
 
-- 4caf053: Add missing createDidSchema() method to zod.
-  Add isDid(), isDidWithMethod() helpers to valibot and zod
+- 4caf053: Add missing createDidSchema() method to zod. Add isDid(),
+  isDidWithMethod() helpers to valibot and zod
