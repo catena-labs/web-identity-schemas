@@ -495,6 +495,42 @@ describe("did", () => {
       })
     })
 
+    describe("VerificationMethodTypeSchema", () => {
+      test("accepts current verification method types", () => {
+        expect("JsonWebKey").toMatchSchema(schemas.VerificationMethodTypeSchema)
+        expect("Multikey").toMatchSchema(schemas.VerificationMethodTypeSchema)
+      })
+
+      test("rejects legacy and unknown types", () => {
+        expect("JsonWebKey2020").not.toMatchSchema(
+          schemas.VerificationMethodTypeSchema,
+        )
+        expect("NotAType").not.toMatchSchema(
+          schemas.VerificationMethodTypeSchema,
+        )
+      })
+    })
+
+    describe("LegacyVerificationMethodTypeSchema", () => {
+      test("accepts legacy verification method types", () => {
+        expect("Ed25519VerificationKey2018").toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+        expect("JsonWebKey2020").toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+      })
+
+      test("rejects current and unknown types", () => {
+        expect("Multikey").not.toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+        expect("NotAType").not.toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+      })
+    })
+
     test("fixture-based validation tests", () => {
       // Test valid DID Key string from fixture
       expect(didKeyValid).toMatchSchema(schemas.DidSchema)

@@ -712,6 +712,59 @@ describe("vc", () => {
         )
       })
 
+      test("vpTypeSchema with an empty array requires only VerifiablePresentation", () => {
+        const emptySchema = schemas.vpTypeSchema([])
+        expect(["VerifiablePresentation"]).toMatchSchema(emptySchema as never)
+        expect([]).not.toMatchSchema(emptySchema as never)
+        expect(["CustomType"]).not.toMatchSchema(emptySchema as never)
+      })
+
+      test("jsonLdContextSchema with requireFirst:false accepts any ordering", () => {
+        const ctxSchema = schemas.jsonLdContextSchema(
+          [
+            "https://www.w3.org/ns/credentials/v2",
+            "https://www.w3.org/ns/credentials/status/v1",
+          ],
+          { requireFirst: false },
+        )
+        // Required contexts present but not in the canonical order: still valid.
+        expect([
+          "https://www.w3.org/ns/credentials/status/v1",
+          "https://www.w3.org/ns/credentials/v2",
+        ]).toMatchSchema(ctxSchema as never)
+        // Missing a required context is still rejected.
+        expect(["https://www.w3.org/ns/credentials/v2"]).not.toMatchSchema(
+          ctxSchema as never,
+        )
+      })
+
+      test("jsonLdContextSchema with requireFirst:false uses an order-agnostic error message", async () => {
+        const ctxSchema = schemas.jsonLdContextSchema(
+          [
+            "https://www.w3.org/ns/credentials/v2",
+            "https://www.w3.org/ns/credentials/status/v1",
+          ],
+          { requireFirst: false },
+        )
+        const standard = (
+          ctxSchema as never as {
+            "~standard": {
+              validate: (
+                v: unknown,
+              ) => Promise<
+                { issues?: { message: string }[] } | { value: unknown }
+              >
+            }
+          }
+        )["~standard"]
+        const result = await standard.validate(["https://example.com/custom"])
+        const issues = "issues" in result ? result.issues : undefined
+
+        expect(issues).toBeDefined()
+        expect(issues![0]!.message).toContain("required contexts")
+        expect(issues![0]!.message).not.toContain("start with")
+      })
+
       test("V2 credential requires core context first (V2 spec requirement)", () => {
         // V2 spec says first context must be the V2 core context
         expect({
