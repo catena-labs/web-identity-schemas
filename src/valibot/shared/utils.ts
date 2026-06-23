@@ -1,24 +1,6 @@
 import * as v from "valibot"
 
 /**
- * Transform a schema to accept both a single value and an array of values.
- * @example
- * ```ts
- * const schema = flatArray(v.string())
- * schema.parse("foo") // ["foo"]
- * schema.parse(["foo", "bar"]) // ["foo", "bar"]
- * ```
- * @param schema - The schema to transform.
- * @returns A new schema that accepts both a single value and an array of values.
- */
-export function flatArray<T>(schema: v.GenericSchema<T>) {
-  return v.pipe(
-    schema,
-    v.transform((val) => [val].flat() as T[]),
-  )
-}
-
-/**
  * Create a schema that accepts either a single value or an array of values of
  * the given type, and always returns a flat array.
  * @example
@@ -38,7 +20,7 @@ export function flatArray<T>(schema: v.GenericSchema<T>) {
 export function oneOrMany<T>(schema: v.GenericSchema<T>) {
   return v.pipe(
     v.union([schema, v.array(schema)]),
-    v.transform((val) => [val].flat()),
+    v.transform((val) => (Array.isArray(val) ? val : [val])),
   )
 }
 

@@ -6,7 +6,6 @@ import {
   statusPurposes,
 } from "../../constants/vc"
 import type { ArrayContaining } from "../../types"
-import type { JwsString } from "../../types/jose/jws"
 import type {
   CredentialStatusType,
   StatusPurpose,
@@ -18,8 +17,8 @@ import type {
   Verifiable,
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import { JwsStringSchema } from "../jose/jws"
-import { DateTimeStampSchema } from "../shared/json-ld"
+import { JwsStringSchema, DetachedJwsStringSchema } from "../jose/jws"
+import { DateTimeStampSchema, JsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 import { includesAll, oneOrMany } from "../shared/utils"
@@ -57,7 +56,9 @@ export function credentialTypeSchema<
   return z
     .pipe(
       oneOrMany(z.string()),
-      z.array(z.string()).refine(includesAll(requiredTypes)),
+      z.array(z.string()).refine(includesAll(requiredTypes), {
+        message: `Must include all of: ${requiredTypes.join(", ")}`,
+      }),
     )
     .pipe(
       z.custom<
@@ -110,10 +111,8 @@ export const ProofSchema: Shape<Proof> = z.object({
   /** Nonce */
   nonce: z.string().optional(),
 
-  /** JWS signature (for JsonWebSignature2020) */
-  jws: z
-    .custom<JwsString>((val) => JwsStringSchema.safeParse(val).success)
-    .optional(),
+  /** JWS signature (for JsonWebSignature2020; compact or detached form) */
+  jws: z.union([JwsStringSchema, DetachedJwsStringSchema]).optional(),
 
   /** Signature value (for other proof types) */
   signatureValue: z.string().optional(),
@@ -175,22 +174,26 @@ export const CredentialSchemaTypeSchema: Shape<CredentialSchemaType> = z.object(
  * Generic resource schema for evidence, refresh services, and terms of use.
  * @see {@link https://www.w3.org/TR/vc-data-model/}
  */
-export const GenericResourceSchema: Shape<GenericResource> = z.object({
-  /** Resource identifier (optional) */
-  id: z.union([UriSchema, z.string()]).optional(),
+export const GenericResourceSchema: Shape<GenericResource> = z
+  .object({
+    /** Resource identifier (optional) */
+    id: z.string().optional(),
 
-  /** Resource type */
-  type: z.union([z.string(), z.array(z.string())]),
-})
+    /** Resource type */
+    type: z.union([z.string(), z.array(z.string())]),
+  })
+  .loose()
 
 /**
  * ID or object schema for issuer, holder, etc.
  */
 export const IdOrObjectSchema: Shape<IdOrObject> = z.union([
   UriSchema,
-  z.object({
-    id: UriSchema,
-  }),
+  z
+    .object({
+      id: UriSchema,
+    })
+    .loose(),
 ])
 
 /**
@@ -200,7 +203,7 @@ export const IdOrObjectSchema: Shape<IdOrObject> = z.union([
 export const CredentialSubjectSchema: Shape<CredentialSubject> = z
   .object({
     /** Subject identifier (optional) */
-    id: z.union([UriSchema, z.string()]).optional(),
+    id: z.string().optional(),
   })
   .loose()
 
@@ -210,6 +213,9 @@ export const CredentialSubjectSchema: Shape<CredentialSubject> = z
  */
 export const BaseCredentialSchema = z
   .object({
+    /** JSON-LD context */
+    "@context": JsonLdContextSchema,
+
     /** Credential identifier (optional) */
     id: UriSchema.optional(),
 

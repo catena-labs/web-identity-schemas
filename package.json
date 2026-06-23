@@ -63,23 +63,24 @@
   },
   "scripts": {
     "build": "tsdown",
-    "check": "pnpm run format:check && pnpm run lint && pnpm run typecheck && pnpm test",
+    "check": "pnpm run format:check && pnpm run lint && pnpm test",
     "clean": "git clean -xdf dist node_modules/.cache",
     "fix": "pnpm run format && pnpm run lint:fix",
-    "format": "oxfmt --write .",
-    "format:check": "oxfmt --check .",
-    "lint": "oxlint --type-aware",
-    "lint:fix": "oxlint --type-aware --fix --fix-suggestions",
+    "format": "oxfmt",
+    "format:check": "pnpm format --check",
+    "lint": "oxlint",
+    "lint:fix": "pnpm lint --fix --fix-suggestions",
     "nuke": "pnpm run clean && git clean -xdf node_modules",
     "outdated": "pnpm dlx npm-check-updates --interactive --format group",
-    "prepublishOnly": "pnpm run build",
+    "prepublishOnly": "pnpm run build && pnpm run publint",
     "publint": "pnpm dlx publint@latest",
     "test": "vitest",
-    "typecheck": "tsc --noEmit"
+    "test:coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@changesets/cli": "2.31.0",
     "@types/node": "26.0.0",
+    "@vitest/coverage-v8": "4.1.9",
     "oxfmt": "0.55.0",
     "oxlint": "1.70.0",
     "oxlint-tsgolint": "0.23.0",
@@ -106,5 +107,5 @@
     "node": ">=22",
     "pnpm": ">=10"
   },
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@11.8.0"
 }

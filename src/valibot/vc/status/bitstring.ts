@@ -9,10 +9,10 @@ import type {
   BitstringStatusListCredentialSubject,
   BitstringStatusListCredential,
 } from "../../../types/vc/status/bitstring"
-import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
 import type { Shape } from "../../shared/shape"
+import { UriSchema } from "../../shared/uri"
 import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
@@ -28,8 +28,8 @@ export const BitstringStatusListContextSchema = v.literal(
  * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/#bitstringstatuslistcredential}
  */
 export const BitstringStatusListCredentialSubjectSchema = v.object({
-  /** Credential subject identifier */
-  id: v.optional(DidSchema),
+  /** Credential subject identifier (URL per spec, not restricted to DIDs) */
+  id: v.optional(UriSchema),
 
   /** Type of the credential subject */
   type: v.literal("BitstringStatusList"),
@@ -47,7 +47,7 @@ export const BitstringStatusListCredentialSubjectSchema = v.object({
 /**
  * BitstringStatusList credential schema (V2).
  */
-export const BitstringStatusListCredentialSchema = v.strictObject({
+export const BitstringStatusListCredentialSchema = v.looseObject({
   ...BaseCredentialSchema.entries,
 
   /** JSON-LD context (V2 + BitstringStatusList) */

@@ -1,5 +1,7 @@
 import * as v from "valibot"
 
+import type { JsonWebKeySet } from "../../types/jose/jwks"
+import type { Shape } from "../shared/shape"
 import { JsonWebKeySchema } from "./jwk"
 
 /**
@@ -15,4 +17,4 @@ import { JsonWebKeySchema } from "./jwk"
  */
 export const JsonWebKeySetSchema = v.object({
   keys: v.array(JsonWebKeySchema),
-})
+} satisfies Shape<JsonWebKeySet>)

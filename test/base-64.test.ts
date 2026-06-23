@@ -118,10 +118,37 @@ describe("Base64 utils", () => {
         const validInputs = [
           "SGVsbG8gV29ybGQ=", // "Hello World"
           "U29tZSBkYXRhLw==", // "Some data/"
+          "SGVsbG8=", // "Hello"
+          "YWJjZA==", // "abcd"
+          "YWJjZGVmZ2g=", // "abcdefgh"
+          "AAA=", // 3 zero bytes
+          "ABCD", // No padding
+          "ABCDEFGH", // No padding, 8 chars
         ]
 
         for (const input of validInputs) {
           expect(input).toMatchSchema(schemas.Base64Schema)
+        }
+      })
+
+      test("rejects empty string", () => {
+        expect("").not.toMatchSchema(schemas.Base64Schema)
+      })
+
+      test("rejects invalid base64", () => {
+        const invalidInputs = [
+          "A", // Too short (not multiple of 4)
+          "AB", // Too short
+          "ABC", // Too short
+          "ABCDE", // Not multiple of 4
+          "AB==CD", // Padding in middle
+          "ABCD=", // Invalid padding (4 chars + single =)
+          "!@#$", // Invalid characters
+          "SGVsbG8gV29ybGQ", // Missing padding (12 chars, should be "SGVsbG8gV29ybGQ=")
+        ]
+
+        for (const input of invalidInputs) {
+          expect(input).not.toMatchSchema(schemas.Base64Schema)
         }
       })
     })

@@ -6,7 +6,6 @@ import {
   statusPurposes,
 } from "../../constants/vc"
 import type { ArrayContaining } from "../../types"
-import type { JwsString } from "../../types/jose/jws"
 import {
   type CredentialStatusType,
   type StatusPurpose,
@@ -18,8 +17,8 @@ import {
   type Verifiable,
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import { JwsStringSchema } from "../jose/jws"
-import { DateTimeStampSchema } from "../shared/json-ld"
+import { JwsStringSchema, DetachedJwsStringSchema } from "../jose/jws"
+import { DateTimeStampSchema, JsonLdContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 import { includesAll, oneOrMany } from "../shared/utils"
@@ -111,13 +110,8 @@ export const ProofSchema = v.object({
   /** Nonce */
   nonce: v.optional(v.string()),
 
-  /** JWS signature (for JsonWebSignature2020) */
-  jws: v.optional(
-    v.pipe(
-      JwsStringSchema,
-      v.custom<JwsString>(() => true),
-    ),
-  ),
+  /** JWS signature (for JsonWebSignature2020; compact or detached form) */
+  jws: v.optional(v.union([JwsStringSchema, DetachedJwsStringSchema])),
 
   /** Signature value (for other proof types) */
   signatureValue: v.optional(v.string()),
@@ -180,9 +174,9 @@ export const CredentialSchemaTypeSchema = v.object({
  * Generic resource schema for evidence, refresh services, and terms of use.
  * @see {@link https://www.w3.org/TR/vc-data-model/}
  */
-export const GenericResourceSchema = v.object({
+export const GenericResourceSchema = v.looseObject({
   /** Resource identifier (optional) */
-  id: v.optional(v.union([UriSchema, v.string()])),
+  id: v.optional(v.string()),
 
   /** Resource type */
   type: v.union([v.string(), v.array(v.string())]),
@@ -194,7 +188,7 @@ export const GenericResourceSchema = v.object({
 export const IdOrObjectSchema = v.pipe(
   v.union([
     UriSchema,
-    v.object({
+    v.looseObject({
       id: UriSchema,
     }),
   ]),
@@ -208,7 +202,7 @@ export const IdOrObjectSchema = v.pipe(
 export const CredentialSubjectSchema = v.pipe(
   v.looseObject({
     /** Subject identifier (optional) */
-    id: v.optional(v.union([UriSchema, v.string()])),
+    id: v.optional(v.string()),
   }),
   v.custom<CredentialSubject>(() => true),
 )
@@ -218,6 +212,9 @@ export const CredentialSubjectSchema = v.pipe(
  * @see {@link https://www.w3.org/TR/vc-data-model/#credentials}
  */
 export const BaseCredentialSchema = v.looseObject({
+  /** JSON-LD context */
+  "@context": JsonLdContextSchema,
+
   /** Credential identifier (optional) */
   id: v.optional(UriSchema),
 

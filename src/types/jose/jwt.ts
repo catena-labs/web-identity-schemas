@@ -16,8 +16,8 @@ export type UnixTimestamp = number
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-5}
  */
 export interface JwtHeaderBase {
-  /** Type of the token (optional, typically "JWT") */
-  typ?: "JWT"
+  /** Type of the token (optional, typically "JWT"; RFC 7519 allows other media types like "at+jwt") */
+  typ?: string
 
   /** Content type (optional) */
   cty?: string

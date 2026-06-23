@@ -19,9 +19,12 @@ export const verificationMethodTypes: VerificationMethodType[] = [
   "Multikey",
 ]
 
-export const didRegex = /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]$/
+export const didRegex =
+  /^did:[a-z0-9]+:(?:[a-zA-Z0-9._-]|%[0-9A-Fa-f]{2}|:)*(?:[a-zA-Z0-9._-]|%[0-9A-Fa-f]{2})$/
 
 export const didUrlRegex =
-  /^did:[a-z0-9]+:[a-zA-Z0-9.\-_:%]*[a-zA-Z0-9.\-_]([/?#][^]*)?$/
+  /^did:[a-z0-9]+:(?:[a-zA-Z0-9._-]|%[0-9A-Fa-f]{2}|:)*(?:[a-zA-Z0-9._-]|%[0-9A-Fa-f]{2})([/?#](?:[a-zA-Z0-9._~!$&'()*+,;=:@/?#-]|%[0-9A-Fa-f]{2})*)?$/
 
 export const didMethodRegex = /^[a-z0-9]+$/
+
+export const base58btcMultibaseRegex = /^z[1-9A-HJ-NP-Za-km-z]+$/

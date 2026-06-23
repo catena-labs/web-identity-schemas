@@ -2,7 +2,8 @@ import * as z from "zod"
 
 import { vcV2CoreContext } from "../../constants/vc"
 import type { Uri } from "../../types"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DateTimeStampSchema, jsonLdContextSchema } from "../shared/json-ld"
+import { UriSchema } from "../shared/uri"
 import {
   BaseCredentialSchema,
   makeVerifiable,
@@ -23,11 +24,11 @@ export const VcV2CoreContextSchema = z.literal(vcV2CoreContext)
 export const VcV2ContextSchema = z.union([
   VcV2CoreContextSchema,
   z
-    .array(z.string())
+    .array(UriSchema)
     .nonempty()
     .refine(
-      (contexts) => contexts.includes(vcV2CoreContext),
-      "Array must contain V2 core context",
+      (contexts) => contexts[0] === vcV2CoreContext,
+      "First context must be the V2 core context",
     ),
 ])
 
@@ -52,17 +53,17 @@ export const createCredentialV2Schema = (
     type: credentialTypeSchema(additionalTypes),
 
     /** Valid from date (V2) */
-    validFrom: z.iso.datetime().optional(),
+    validFrom: DateTimeStampSchema.optional(),
 
     /** Valid until date (V2) */
-    validUntil: z.iso.datetime().optional(),
+    validUntil: DateTimeStampSchema.optional(),
 
     /** Credential subject */
     credentialSubject: z.union([
       credentialSubjectSchema,
       z.array(credentialSubjectSchema),
     ]),
-  }).strict()
+  }).loose()
 
 /**
  * Generic V2 verifiable credential schema (with required proof).

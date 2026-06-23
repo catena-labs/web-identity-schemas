@@ -1,6 +1,15 @@
 import * as v from "valibot"
 
+import type {
+  JweProtectedHeader,
+  JweUnprotectedHeader,
+  JwePerRecipientUnprotectedHeader,
+  JweRecipient,
+  JweGeneralJson,
+  JweFlattenedJson,
+} from "../../types/jose/jwe"
 import { Base64UrlSchema, Base64Schema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import {
   JweKeyManagementAlgorithmSchema,
   JweContentEncryptionAlgorithmSchema,
@@ -73,7 +82,7 @@ const JweProtectedHeaderSchema = v.object({
 
   /** PBES2 Count (optional, for PBES2) */
   p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
-})
+} satisfies Shape<JweProtectedHeader>)
 
 /**
  * JWE Unprotected Header Schema.
@@ -104,7 +113,28 @@ const JweUnprotectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk: v.optional(JsonWebKeySchema),
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu: v.optional(Base64UrlSchema),
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv: v.optional(Base64UrlSchema),
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv: v.optional(Base64UrlSchema),
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag: v.optional(Base64UrlSchema),
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s: v.optional(Base64UrlSchema),
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+} satisfies Shape<JweUnprotectedHeader>)
 
 /**
  * JWE Per-Recipient Unprotected Header Schema.
@@ -138,7 +168,28 @@ const JwePerRecipientUnprotectedHeaderSchema = v.object({
 
   /** Critical header parameter (optional) */
   crit: v.optional(v.array(v.string())),
-})
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk: v.optional(JsonWebKeySchema),
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu: v.optional(Base64UrlSchema),
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv: v.optional(Base64UrlSchema),
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv: v.optional(Base64UrlSchema),
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag: v.optional(Base64UrlSchema),
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s: v.optional(Base64UrlSchema),
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c: v.optional(v.pipe(v.number(), v.integer(), v.minValue(1))),
+} satisfies Shape<JwePerRecipientUnprotectedHeader>)
 
 /**
  * JWE Recipient Schema.
@@ -149,9 +200,9 @@ const JweRecipientSchema = v.object({
   /** Per-recipient unprotected header (optional) */
   header: v.optional(JwePerRecipientUnprotectedHeaderSchema),
 
-  /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
-})
+  /** Encrypted key for this recipient (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: v.optional(Base64UrlSchema),
+} satisfies Shape<JweRecipient>)
 
 /**
  * JWE Compact Serialization Schema.
@@ -162,8 +213,8 @@ export const JweCompactSerializationSchema = v.object({
   /** JWE Protected Header (base64url encoded) */
   protected: Base64UrlSchema,
 
-  /** JWE Encrypted Key (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** JWE Encrypted Key (base64url encoded, empty for dir/ECDH-ES) */
+  encrypted_key: v.union([Base64UrlSchema, v.literal("")]),
 
   /** JWE Initialization Vector (base64url encoded) */
   iv: Base64UrlSchema,
@@ -201,7 +252,7 @@ export const JweJsonSerializationSchema = v.object({
 
   /** JWE Recipients */
   recipients: v.array(JweRecipientSchema),
-})
+} satisfies Shape<JweGeneralJson>)
 
 /**
  * JWE Flattened JSON Serialization Schema.
@@ -218,8 +269,8 @@ export const JweFlattenedJsonSerializationSchema = v.object({
   /** JWE Per-Recipient Unprotected Header (optional) */
   header: v.optional(JwePerRecipientUnprotectedHeaderSchema),
 
-  /** JWE Encrypted Key (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** JWE Encrypted Key (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: v.optional(Base64UrlSchema),
 
   /** JWE Initialization Vector (base64url encoded) */
   iv: Base64UrlSchema,
@@ -232,12 +283,12 @@ export const JweFlattenedJsonSerializationSchema = v.object({
 
   /** JWE Additional Authenticated Data (base64url encoded, optional) */
   aad: v.optional(Base64UrlSchema),
-})
+} satisfies Shape<JweFlattenedJson>)
 
 /**
  * JWE String Format Schema.
- * Validates JWE compact serialization string format.
- * Must contain exactly 5 parts separated by periods.
+ * Validates JWE compact serialization string format (5 parts: header.encrypted_key.iv.ciphertext.tag).
+ * The encrypted_key part may be empty for direct key management (dir/ECDH-ES).
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
  */
 export const JweStringSchema = v.pipe(
@@ -246,13 +297,16 @@ export const JweStringSchema = v.pipe(
     /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
   ),
   v.transform((jwe) => {
-    const parts = jwe.split(".")
+    const [protectedHeader, encryptedKey, iv, ciphertext, tag] = jwe.split(".")
+    if (!protectedHeader || !iv || !ciphertext || !tag) {
+      throw new Error("Invalid JWE string")
+    }
     return {
-      protected: parts[0],
-      encrypted_key: parts[1],
-      iv: parts[2],
-      ciphertext: parts[3],
-      tag: parts[4],
+      protected: protectedHeader,
+      encrypted_key: encryptedKey ?? "",
+      iv,
+      ciphertext,
+      tag,
     }
   }),
 )

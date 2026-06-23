@@ -3,6 +3,7 @@ import * as z from "zod"
 import type {
   JweProtectedHeader,
   JweUnprotectedHeader,
+  JwePerRecipientUnprotectedHeader,
   JweRecipient,
   JweFlattenedJson,
   JweGeneralJson,
@@ -112,6 +113,27 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
 
   /** Critical header parameter (optional) */
   crit: z.array(z.string()).optional(),
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk: JsonWebKeySchema.optional(),
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu: Base64UrlSchema.optional(),
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv: Base64UrlSchema.optional(),
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv: Base64UrlSchema.optional(),
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag: Base64UrlSchema.optional(),
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s: Base64UrlSchema.optional(),
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c: z.number().int().min(1).optional(),
 })
 
 /**
@@ -119,7 +141,7 @@ const JweUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> = z.object({
  * Contains per-recipient unprotected header parameters for JWE.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-4.1.3}
  */
-const JwePerRecipientUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> =
+const JwePerRecipientUnprotectedHeaderSchema: Shape<JwePerRecipientUnprotectedHeader> =
   z.object({
     /** Algorithm used for key management for this recipient */
     alg: JweKeyManagementAlgorithmSchema.optional(),
@@ -147,6 +169,27 @@ const JwePerRecipientUnprotectedHeaderSchema: Shape<JweUnprotectedHeader> =
 
     /** Critical header parameter (optional) */
     crit: z.array(z.string()).optional(),
+
+    /** Ephemeral public key (optional, for ECDH-ES) */
+    epk: JsonWebKeySchema.optional(),
+
+    /** Agreement PartyUInfo (optional, for ECDH-ES) */
+    apu: Base64UrlSchema.optional(),
+
+    /** Agreement PartyVInfo (optional, for ECDH-ES) */
+    apv: Base64UrlSchema.optional(),
+
+    /** Initialization Vector (optional, for AES GCM key wrapping) */
+    iv: Base64UrlSchema.optional(),
+
+    /** Authentication Tag (optional, for AES GCM key wrapping) */
+    tag: Base64UrlSchema.optional(),
+
+    /** PBES2 Salt Input (optional, for PBES2) */
+    p2s: Base64UrlSchema.optional(),
+
+    /** PBES2 Count (optional, for PBES2) */
+    p2c: z.number().int().min(1).optional(),
   })
 
 /**
@@ -158,8 +201,8 @@ const JweRecipientSchema: Shape<JweRecipient> = z.object({
   /** Per-recipient unprotected header (optional) */
   header: JwePerRecipientUnprotectedHeaderSchema.optional(),
 
-  /** Encrypted key for this recipient (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** Encrypted key for this recipient (base64url encoded, optional for dir/ECDH-ES) */
+  encrypted_key: Base64UrlSchema.optional(),
 })
 
 /**
@@ -171,8 +214,8 @@ export const JweCompactSerializationSchema = z.object({
   /** JWE Protected Header (base64url encoded) */
   protected: Base64UrlSchema,
 
-  /** JWE Encrypted Key (base64url encoded) */
-  encrypted_key: Base64UrlSchema,
+  /** JWE Encrypted Key (base64url encoded, empty for dir/ECDH-ES) */
+  encrypted_key: z.union([Base64UrlSchema, z.literal("")]),
 
   /** JWE Initialization Vector (base64url encoded) */
   iv: Base64UrlSchema,
@@ -228,8 +271,8 @@ export const JweFlattenedJsonSerializationSchema: Shape<JweFlattenedJson> =
     /** JWE Per-Recipient Unprotected Header (optional) */
     header: JwePerRecipientUnprotectedHeaderSchema.optional(),
 
-    /** JWE Encrypted Key (base64url encoded) */
-    encrypted_key: Base64UrlSchema,
+    /** JWE Encrypted Key (base64url encoded, optional for dir/ECDH-ES) */
+    encrypted_key: Base64UrlSchema.optional(),
 
     /** JWE Initialization Vector (base64url encoded) */
     iv: Base64UrlSchema,
@@ -246,8 +289,8 @@ export const JweFlattenedJsonSerializationSchema: Shape<JweFlattenedJson> =
 
 /**
  * JWE String Format Schema.
- * Validates JWE compact serialization string format.
- * Must contain exactly 5 parts separated by periods.
+ * Validates JWE compact serialization string format (5 parts: header.encrypted_key.iv.ciphertext.tag).
+ * The encrypted_key part may be empty for direct key management (dir/ECDH-ES).
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
  */
 export const JweStringSchema = z
@@ -256,13 +299,16 @@ export const JweStringSchema = z
     /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/,
   )
   .transform((jwe) => {
-    const parts = jwe.split(".")
+    const [protectedHeader, encryptedKey, iv, ciphertext, tag] = jwe.split(".")
+    if (!protectedHeader || !iv || !ciphertext || !tag) {
+      throw new Error("Invalid JWE string")
+    }
     return {
-      protected: parts[0],
-      encrypted_key: parts[1],
-      iv: parts[2],
-      ciphertext: parts[3],
-      tag: parts[4],
+      protected: protectedHeader,
+      encrypted_key: encryptedKey ?? "",
+      iv,
+      ciphertext,
+      tag,
     }
   })
 

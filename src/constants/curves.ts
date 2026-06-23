@@ -9,8 +9,6 @@
  */
 export const ellipticCurves = [
   "P-256", // secp256r1
-  "secp256r1", // sometimes used instead of P-256
-  "P-256K", // sometimes used instead of secp256k1
   "secp256k1", // bitcoin/ethereum
   "P-384", // secp384r1
   "P-521", // secp521r1

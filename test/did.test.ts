@@ -26,6 +26,9 @@ describe("did", () => {
           "did:jwk:eyJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImtleV9vcHMiOlsidmVyaWZ5Il0sImNydiI6InNlY3AyNTZrMSIsImtpZCI6IlVubDY5aXZNcERzT0YtN21wZHJPQ0drSTU1QTdBMVVrcEFaRzl3aDRHVUEiLCJrdHkiOiJFQyIsIngiOiJKU0Y5X29zeFN3dGdGLWhKZmZGdEl4Y2VEZGRURUQ4SmE1RG02eGxGcUZjIiwieSI6InBfWlJyVzRULW9zWHJQNktMOE1hUTlKZ3NLWVBoc3lVUXlycWJ5UWlETVEifQ",
           "did:pkh:eip155:1:0x1234567890abcdef1234567890abcdef12345678",
           "did:method:specific-identifier_with-dashes.and_underscores",
+          // pct-encoded characters allowed in method-specific-id
+          "did:method:abc%20def",
+          "did:method:abc%41def",
         ] as const
 
         for (const did of validDids) {
@@ -49,6 +52,8 @@ describe("did", () => {
           "did:method:identifier with space", // Space in identifier
           "",
           "did:method:identifier#", // Fragment should be in DidUrlSchema
+          "did:example:abc%ZZdef", // Malformed pct-encoding (non-hex digits)
+          "did:example:abc%4", // Truncated pct-encoding
         ]
 
         for (const did of invalidDids) {
@@ -104,6 +109,21 @@ describe("did", () => {
 
         for (const didUrl of validDidUrls) {
           expect(didUrl).toMatchSchema(schemas.DidUrlSchema)
+        }
+      })
+
+      test("invalid DID URLs", () => {
+        const invalidDidUrls = [
+          "did:example:123456789abcdefghi#frag ment", // Space in fragment
+          "did:example:123456789abcdefghi#frag\tment", // Tab in fragment
+          "did:example:123456789abcdefghi#frag\nment", // Newline in fragment
+          'did:example:123456789abcdefghi#"quoted"', // Quotes in fragment
+          "did:example:123456789abcdefghi?q=a b", // Space in query
+          "did:example:123456789abcdefghi/pa th", // Space in path
+        ]
+
+        for (const didUrl of invalidDidUrls) {
+          expect(didUrl).not.toMatchSchema(schemas.DidUrlSchema)
         }
       })
     })
@@ -231,6 +251,41 @@ describe("did", () => {
           schemas.VerificationMethodSchema,
         )
       })
+
+      test("rejects non-base58btc publicKeyMultibase", () => {
+        const emptyMultibase = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Multikey",
+          controller: "did:example:123456789abcdefghi",
+          publicKeyMultibase: "",
+        }
+
+        const nonBase58BtcMultibase = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Multikey",
+          controller: "did:example:123456789abcdefghi",
+          // base64 multibase prefix 'm', not base58btc 'z'
+          publicKeyMultibase: "mQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC",
+        }
+
+        const multibaseWithInvalidChar = {
+          id: "did:example:123456789abcdefghi#keys-1",
+          type: "Ed25519VerificationKey2020",
+          controller: "did:example:123456789abcdefghi",
+          // contains '0' which is not in the base58btc alphabet
+          publicKeyMultibase: "z0H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
+        }
+
+        expect(emptyMultibase).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+        expect(nonBase58BtcMultibase).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+        expect(multibaseWithInvalidChar).not.toMatchSchema(
+          schemas.VerificationMethodSchema,
+        )
+      })
     })
 
     describe("ServiceSchema", () => {
@@ -268,6 +323,48 @@ describe("did", () => {
         } as const
 
         expect(serviceWithObjectEndpoint).toMatchSchema(schemas.ServiceSchema)
+      })
+
+      test("accepts a valid DWN-style nested map endpoint", () => {
+        const serviceWithNestedMap = {
+          id: "did:example:123456789abcdefghi#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            nodes: ["https://dwn.example.com", "https://dwn2.example.com"],
+            auth: "bearer",
+            messaging: {
+              endpoint: "https://dwn.example.com/messages",
+              protocols: ["https://example.com/protocol"],
+            },
+          },
+        }
+
+        expect(serviceWithNestedMap).toMatchSchema(schemas.ServiceSchema)
+        expect(serviceWithNestedMap.serviceEndpoint).toMatchSchema(
+          schemas.ServiceEndpointMapSchema,
+        )
+      })
+
+      test("rejects a map endpoint with an invalid value type", () => {
+        const serviceWithInvalidEndpointValue = {
+          id: "did:example:123456789abcdefghi#dwn",
+          type: "DecentralizedWebNode",
+          serviceEndpoint: {
+            // numbers are not a valid service endpoint map value
+            port: 8080,
+          },
+        }
+
+        const mapWithBooleanValue = {
+          enabled: true,
+        }
+
+        expect(serviceWithInvalidEndpointValue).not.toMatchSchema(
+          schemas.ServiceSchema,
+        )
+        expect(mapWithBooleanValue).not.toMatchSchema(
+          schemas.ServiceEndpointMapSchema,
+        )
       })
     })
 
@@ -326,6 +423,39 @@ describe("did", () => {
         )
       })
 
+      test("with inline context object as a later array member", () => {
+        const didDocumentWithInlineContext = {
+          "@context": [
+            "https://www.w3.org/ns/did/v1",
+            // Real-world inline context with object-valued term definitions
+            {
+              schema: "https://schema.org/",
+              Ed25519VerificationKey2020: {
+                "@id": "https://w3id.org/security#Ed25519VerificationKey2020",
+                "@type": "@id",
+              },
+            },
+          ],
+          id: "did:example:123456789abcdefghi",
+        }
+
+        expect(didDocumentWithInlineContext).toMatchSchema(
+          schemas.DidDocumentSchema,
+        )
+      })
+
+      test("rejects @context array not beginning with the DID v1 context", () => {
+        const badContext = {
+          "@context": [
+            "https://w3id.org/security/v2",
+            "https://www.w3.org/ns/did/v1",
+          ],
+          id: "did:example:123456789abcdefghi",
+        }
+
+        expect(badContext).not.toMatchSchema(schemas.DidDocumentSchema)
+      })
+
       test("authentication with embedded verification method", () => {
         const didDocumentWithEmbeddedAuth = {
           "@context": "https://www.w3.org/ns/did/v1",
@@ -362,6 +492,42 @@ describe("did", () => {
         for (const doc of invalidDidDocuments) {
           expect(doc).not.toMatchSchema(schemas.DidDocumentSchema)
         }
+      })
+    })
+
+    describe("VerificationMethodTypeSchema", () => {
+      test("accepts current verification method types", () => {
+        expect("JsonWebKey").toMatchSchema(schemas.VerificationMethodTypeSchema)
+        expect("Multikey").toMatchSchema(schemas.VerificationMethodTypeSchema)
+      })
+
+      test("rejects legacy and unknown types", () => {
+        expect("JsonWebKey2020").not.toMatchSchema(
+          schemas.VerificationMethodTypeSchema,
+        )
+        expect("NotAType").not.toMatchSchema(
+          schemas.VerificationMethodTypeSchema,
+        )
+      })
+    })
+
+    describe("LegacyVerificationMethodTypeSchema", () => {
+      test("accepts legacy verification method types", () => {
+        expect("Ed25519VerificationKey2018").toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+        expect("JsonWebKey2020").toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+      })
+
+      test("rejects current and unknown types", () => {
+        expect("Multikey").not.toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
+        expect("NotAType").not.toMatchSchema(
+          schemas.LegacyVerificationMethodTypeSchema,
+        )
       })
     })
 

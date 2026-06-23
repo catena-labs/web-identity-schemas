@@ -50,6 +50,27 @@ export interface JweProtectedHeader {
 
   /** Critical header parameter (optional) */
   crit?: string[]
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk?: JsonWebKey
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu?: Base64Url
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv?: Base64Url
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv?: Base64Url
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag?: Base64Url
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s?: Base64Url
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c?: number
 }
 
 /**
@@ -81,6 +102,38 @@ export interface JweUnprotectedHeader {
 
   /** Critical header parameter (optional) */
   crit?: string[]
+
+  /** Ephemeral public key (optional, for ECDH-ES) */
+  epk?: JsonWebKey
+
+  /** Agreement PartyUInfo (optional, for ECDH-ES) */
+  apu?: Base64Url
+
+  /** Agreement PartyVInfo (optional, for ECDH-ES) */
+  apv?: Base64Url
+
+  /** Initialization Vector (optional, for AES GCM key wrapping) */
+  iv?: Base64Url
+
+  /** Authentication Tag (optional, for AES GCM key wrapping) */
+  tag?: Base64Url
+
+  /** PBES2 Salt Input (optional, for PBES2) */
+  p2s?: Base64Url
+
+  /** PBES2 Count (optional, for PBES2) */
+  p2c?: number
+}
+
+/**
+ * JWE Per-Recipient Unprotected Header.
+ * Like the unprotected header, but may also carry the key management algorithm
+ * for the recipient.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-4.1.3}
+ */
+export interface JwePerRecipientUnprotectedHeader extends JweUnprotectedHeader {
+  /** Algorithm used for key management for this recipient (optional) */
+  alg?: JweKeyManagementAlgorithm
 }
 
 /**
@@ -89,10 +142,14 @@ export interface JweUnprotectedHeader {
  */
 export interface JweRecipient {
   /** Unprotected header for this recipient */
-  header?: JweUnprotectedHeader
+  header?: JwePerRecipientUnprotectedHeader
 
-  /** Encrypted key for this recipient (base64url-encoded) */
-  encrypted_key: Base64Url
+  /**
+   * Encrypted key for this recipient (base64url-encoded).
+   * Optional/absent when there is no encrypted key (e.g. "dir" or "ECDH-ES").
+   * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.2.1}
+   */
+  encrypted_key?: Base64Url
 }
 
 /**
@@ -134,10 +191,14 @@ export interface JweFlattenedJson {
   unprotected?: JweUnprotectedHeader
 
   /** Recipient header */
-  header?: JweUnprotectedHeader
+  header?: JwePerRecipientUnprotectedHeader
 
-  /** Encrypted key (base64url-encoded) */
-  encrypted_key: Base64Url
+  /**
+   * Encrypted key (base64url-encoded).
+   * Optional/absent when there is no encrypted key (e.g. "dir" or "ECDH-ES").
+   * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.2.2}
+   */
+  encrypted_key?: Base64Url
 
   /** Initialization vector (base64url-encoded) */
   iv: Base64Url
@@ -150,6 +211,73 @@ export interface JweFlattenedJson {
 
   /** Additional authenticated data (base64url-encoded, optional) */
   aad?: Base64Url
+}
+
+/**
+ * JWE Compact Serialization (parsed object form).
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
+ */
+export interface JweCompactSerialization {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Encrypted key (base64url-encoded, empty string for dir/ECDH-ES) */
+  encrypted_key: Base64Url | ""
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
+}
+
+/**
+ * JWE parsed from compact string into base64url-encoded parts.
+ * The encrypted key may be empty for direct key management (dir/ECDH-ES).
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-7.1}
+ */
+export interface JweParsed {
+  /** Protected header (base64url-encoded) */
+  protected: Base64Url
+
+  /** Encrypted key (base64url-encoded, empty for dir/ECDH-ES) */
+  encrypted_key: Base64Url | ""
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
+}
+
+/**
+ * JWE object with decoded protected header.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7516#section-3}
+ */
+export interface JweObject {
+  /** Decoded protected header */
+  protected: JweProtectedHeader
+
+  /** Unprotected header (optional) */
+  unprotected?: JweUnprotectedHeader
+
+  /** Encrypted key (base64url-encoded) */
+  encrypted_key: Base64Url
+
+  /** Initialization vector (base64url-encoded) */
+  iv: Base64Url
+
+  /** Ciphertext (base64url-encoded) */
+  ciphertext: Base64Url
+
+  /** Authentication tag (base64url-encoded) */
+  tag: Base64Url
 }
 
 /**

@@ -1,3 +1,13 @@
+/**
+ * JWS schemas validate structure only — they do not verify signatures.
+ *
+ * An empty signature is accepted because it is the shape of an unsecured JWS
+ * (`alg: "none"`, RFC 7515 Appendix A.5). Because the protected header is an
+ * opaque base64url string at this layer, the schemas do not cross-check that an
+ * empty signature implies `alg: "none"` (nor that a present signature is
+ * cryptographically valid). Verifying signature presence/authenticity and
+ * rejecting `alg: "none"` downgrade attacks is the caller's responsibility.
+ */
 import * as z from "zod"
 
 import type {
@@ -98,8 +108,8 @@ export const JwsSignatureSchema: Shape<JwsSignature> = z.object({
   /** JWS Unprotected Header (optional) */
   header: JwsUnprotectedHeaderSchema.optional(),
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: z.union([Base64UrlSchema, z.literal("")]),
 })
 
 /**
@@ -114,8 +124,8 @@ export const JwsCompactSerializationSchema = z.object({
   /** JWS Payload (base64url encoded) */
   payload: Base64UrlSchema,
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: z.union([Base64UrlSchema, z.literal("")]),
 })
 
 /**
@@ -147,19 +157,19 @@ export const JwsFlattenedJsonSerializationSchema: Shape<JwsFlattenedJson> =
     /** JWS Unprotected Header (optional) */
     header: JwsUnprotectedHeaderSchema.optional(),
 
-    /** JWS Signature (base64url encoded) */
-    signature: Base64UrlSchema,
+    /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+    signature: z.union([Base64UrlSchema, z.literal("")]),
   })
 
 /**
  * JWS String Format Schema.
- * Validates JWS compact serialization string format.
- * Must contain exactly 3 parts separated by periods.
+ * Validates JWS compact serialization string format (header.payload.signature).
+ * The signature part may be empty for unsecured JWS (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
 export const JwsStringSchema = z
   .string()
-  .regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*\.[A-Za-z0-9_-]+$/)
+  .regex(/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/)
   .pipe(z.custom<JwsString>())
 
 /**
@@ -168,11 +178,14 @@ export const JwsStringSchema = z
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7515#section-7.1}
  */
 export const JwsParsedSchema = JwsStringSchema.transform((jws) => {
-  const parts = jws.split(".")
+  const [protectedHeader, payload, signature] = jws.split(".")
+  if (!protectedHeader || !payload) {
+    throw new Error("Invalid JWS string")
+  }
   return {
-    protected: parts[0],
-    payload: parts[1],
-    signature: parts[2],
+    protected: protectedHeader,
+    payload,
+    signature: signature ?? "",
   }
 })
 
@@ -185,6 +198,7 @@ export const JwsParsedSchema = JwsStringSchema.transform((jws) => {
 export const DetachedJwsStringSchema = z
   .string()
   .regex(/^[A-Za-z0-9_-]+\.\.[A-Za-z0-9_-]+$/)
+  .pipe(z.custom<JwsString>())
 
 /**
  * JWS Object Schema.
@@ -201,6 +215,6 @@ export const JwsObjectSchema = z.object({
   /** JWS Payload (base64url encoded) */
   payload: Base64UrlSchema,
 
-  /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema,
+  /** JWS Signature (base64url encoded, empty for unsecured JWS) */
+  signature: z.union([Base64UrlSchema, z.literal("")]),
 })

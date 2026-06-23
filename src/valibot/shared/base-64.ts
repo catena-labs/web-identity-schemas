@@ -28,6 +28,8 @@ export const Base64UrlSchema = v.pipe(
  */
 export const Base64Schema = v.pipe(
   v.string(),
-  v.regex(/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/),
+  v.regex(
+    /^(?:[A-Za-z0-9+/]{4})+(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$|^(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)$/,
+  ),
   v.custom<Base64>(() => true),
 )

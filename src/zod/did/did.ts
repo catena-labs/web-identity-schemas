@@ -1,6 +1,7 @@
 import * as z from "zod"
 
 import {
+  base58btcMultibaseRegex,
   didMethodRegex,
   didRegex,
   didUrlRegex,
@@ -20,7 +21,7 @@ import type {
   LegacyVerificationMethodType,
 } from "../../types/did"
 import { JsonWebKeySchema } from "../jose/jwk"
-import { jsonLdContextSchema } from "../shared/json-ld"
+import { DidContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 
@@ -97,6 +98,17 @@ export const LegacyVerificationMethodTypeSchema: Shape<LegacyVerificationMethodT
   z.enum(legacyVerificationMethodTypes)
 
 /**
+ * Base58btc multibase-encoded public key (starts with 'z').
+ * @see {@link https://datatracker.ietf.org/doc/html/draft-multiformats-multibase}
+ */
+const Base58BtcMultibaseSchema = z
+  .string()
+  .regex(
+    base58btcMultibaseRegex,
+    "Must be a base58btc multibase-encoded value (starts with 'z')",
+  )
+
+/**
  * Base verification method schema with common properties.
  */
 const VerificationMethodBaseSchema = z.object({
@@ -124,8 +136,8 @@ export const VerificationMethodMultikeySchema = z.object({
   /** The verification method type */
   type: z.literal("Multikey"),
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: z.string(),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: Base58BtcMultibaseSchema,
 })
 
 export const VerificationMethodLegacySchema = z.object({
@@ -133,8 +145,8 @@ export const VerificationMethodLegacySchema = z.object({
   /** The verification method type */
   type: LegacyVerificationMethodTypeSchema,
 
-  /** Multibase-encoded public key */
-  publicKeyMultibase: z.string().optional(),
+  /** Multibase-encoded public key (base58btc) */
+  publicKeyMultibase: Base58BtcMultibaseSchema.optional(),
 
   /** JSON Web Key */
   publicKeyJwk: JsonWebKeySchema.optional(),
@@ -159,8 +171,6 @@ export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
   z.union([
     z.string(),
     z.array(z.string()),
-    UriSchema,
-    z.array(UriSchema),
     z.lazy(() => ServiceEndpointMapSchema),
   ]),
 )
@@ -197,7 +207,7 @@ export const ServiceSchema: Shape<Service> = z.object({
  */
 export const DidDocumentSchema: Shape<DidDocument> = z.object({
   /** JSON-LD context */
-  "@context": jsonLdContextSchema("https://www.w3.org/ns/did/v1"),
+  "@context": DidContextSchema,
 
   /** The DID subject */
   id: DidSchema,

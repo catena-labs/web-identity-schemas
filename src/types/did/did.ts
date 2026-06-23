@@ -1,3 +1,4 @@
+import type { JsonWebKey } from "../jose"
 import type { JsonLdContext } from "../shared"
 import type { Uri } from "../shared/uri"
 
@@ -58,7 +59,7 @@ interface VerificationMethodBase {
 export interface VerificationMethodJsonWebKey extends VerificationMethodBase {
   type: "JsonWebKey"
   /** A map representing a JSON Web Key that conforms to [RFC7517]. */
-  publicKeyJwk: unknown
+  publicKeyJwk: JsonWebKey
 }
 
 export interface VerificationMethodMultikey extends VerificationMethodBase {
@@ -70,7 +71,7 @@ export interface VerificationMethodMultikey extends VerificationMethodBase {
 export interface VerificationMethodLegacy extends VerificationMethodBase {
   type: LegacyVerificationMethodType
   publicKeyMultibase?: string
-  publicKeyJwk?: unknown
+  publicKeyJwk?: JsonWebKey
   /** @deprecated usa {@link publicKeyMultibase} or {@link publicKeyJwk} instead */
   publicKeyBase58?: string
 }

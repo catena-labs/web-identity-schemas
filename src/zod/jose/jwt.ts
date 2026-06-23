@@ -29,8 +29,8 @@ const UnixTimestampSchema = z
  * Contains cryptographic parameters excluding the algorithm.
  */
 const JwtHeaderBaseSchema = z.object({
-  /** Type of the token (optional, typically "JWT") */
-  typ: z.literal("JWT").optional(),
+  /** Type of the token (optional, typically "JWT"; RFC 7519 allows other media types) */
+  typ: z.string().optional(),
 
   /** Content type (optional) */
   cty: z.string().optional(),
@@ -64,7 +64,7 @@ const JwtHeaderBaseSchema = z.object({
  * JWT header schema for Unsecured JWS/JWT (alg: "none").
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-5}
  */
-const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
+export const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
   alg: JoseUnsecuredAlgorithmSchema,
@@ -78,7 +78,7 @@ export const JwtHeaderSignedSchema: Shape<JwtHeaderSigned> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
   alg: JoseSignatureAlgorithmSchema,
-}) satisfies Shape<JwtHeaderSigned>
+})
 
 /**
  * JWT header schema union for all algorithms.
@@ -125,7 +125,7 @@ export const JwtPayloadSchema: Shape<JwtPayload> = z
  * The signature must be an empty string for Unsecured JWS/JWT.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-3}
  */
-const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
+export const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
   /** JWT header containing algorithm and cryptographic parameters */
   header: JwtHeaderUnsecuredSchema,
 
@@ -141,7 +141,7 @@ const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
  * The signature must be a valid base64url-encoded string.
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7519#section-3}
  */
-const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
+export const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
   /** JWT header containing algorithm and cryptographic parameters */
   header: JwtHeaderSignedSchema,
 
