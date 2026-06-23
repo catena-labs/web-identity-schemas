@@ -1,4 +1,5 @@
 import * as v from "valibot"
+
 import { DidSchema } from "../did"
 import { ProofSchema } from "./core"
 import { W3CCredentialSchema, VcContextSchema } from "./vc"
@@ -13,7 +14,7 @@ export const vpTypeSchema = (type?: string | string[]) => {
   if (type) {
     return v.tuple([
       VpTypeLiteralSchema,
-      ...[type].flat().map((t) => v.literal(t))
+      ...[type].flat().map((t) => v.literal(t)),
     ])
   } else {
     return v.union([
@@ -23,9 +24,9 @@ export const vpTypeSchema = (type?: string | string[]) => {
         v.minLength(1),
         v.check(
           (types) => types[0] === "VerifiablePresentation",
-          "First type must be VerifiablePresentation"
-        )
-      )
+          "First type must be VerifiablePresentation",
+        ),
+      ),
     ])
   }
 }
@@ -54,8 +55,8 @@ export const PresentationSchema = v.object({
 
   /** Verifiable credentials */
   verifiableCredential: v.optional(
-    v.union([W3CCredentialSchema, v.array(W3CCredentialSchema)])
-  )
+    v.union([W3CCredentialSchema, v.array(W3CCredentialSchema)]),
+  ),
 })
 
 /**
@@ -65,5 +66,5 @@ export const PresentationSchema = v.object({
 export const VerifiablePresentationSchema = v.object({
   ...PresentationSchema.entries,
   /** Proof (required for verifiable presentations) */
-  proof: v.union([ProofSchema, v.array(ProofSchema)])
+  proof: v.union([ProofSchema, v.array(ProofSchema)]),
 })

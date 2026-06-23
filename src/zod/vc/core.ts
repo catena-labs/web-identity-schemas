@@ -1,3 +1,10 @@
+import * as z from "zod"
+
+import {
+  proofPurposes,
+  credentialStatusTypes,
+  statusPurposes,
+} from "../../constants/vc"
 import type { ArrayContaining } from "../../types"
 import type { JwsString } from "../../types/jose/jws"
 import type {
@@ -8,18 +15,12 @@ import type {
   CredentialSubject,
   IdOrObject,
   GenericResource,
-  Verifiable
+  Verifiable,
 } from "../../types/vc/core"
 import type { ProofPurpose, Proof } from "../../types/vc/proof"
-import type { Shape } from "../shared/shape"
-import * as z from "zod"
-import {
-  proofPurposes,
-  credentialStatusTypes,
-  statusPurposes
-} from "../../constants/vc"
 import { JwsStringSchema } from "../jose/jws"
 import { DateTimeStampSchema } from "../shared/json-ld"
+import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 import { includesAll, oneOrMany } from "../shared/utils"
 
@@ -47,7 +48,7 @@ export const VcTypeSchema = credentialTypeSchema()
  * VerifiableCredential, all additional types, and any other strings.
  */
 export function credentialTypeSchema<
-  TAdditionalTypes extends string | readonly string[] = never
+  TAdditionalTypes extends string | readonly string[] = never,
 >(additionalTypes?: TAdditionalTypes) {
   const requiredTypes = additionalTypes
     ? ["VerifiableCredential", ...[additionalTypes].flat()]
@@ -56,7 +57,7 @@ export function credentialTypeSchema<
   return z
     .pipe(
       oneOrMany(z.string()),
-      z.array(z.string()).refine(includesAll(requiredTypes))
+      z.array(z.string()).refine(includesAll(requiredTypes)),
     )
     .pipe(
       z.custom<
@@ -67,11 +68,11 @@ export function credentialTypeSchema<
               ? TAdditionalTypes
               : TAdditionalTypes extends string
                 ? [TAdditionalTypes]
-                : never)
+                : never),
           ],
           string
         >
-      >(() => true)
+      >(() => true),
     )
 }
 
@@ -118,7 +119,7 @@ export const ProofSchema: Shape<Proof> = z.object({
   signatureValue: z.string().optional(),
 
   /** Proof value (generic) */
-  proofValue: z.string().optional()
+  proofValue: z.string().optional(),
 })
 
 /**
@@ -128,7 +129,7 @@ export const ProofSchema: Shape<Proof> = z.object({
 export const CredentialStatusTypeSchema = z
   .union([
     z.enum(credentialStatusTypes),
-    z.string() // Allow custom status types
+    z.string(), // Allow custom status types
   ])
   .pipe(z.custom<CredentialStatusType>())
 
@@ -153,7 +154,7 @@ export const CredentialStatusSchema: Shape<CredentialStatus> = z.object({
   statusPurpose: z
     .union([z.enum(statusPurposes), z.string()])
     .pipe(z.custom<StatusPurpose>())
-    .optional()
+    .optional(),
 })
 
 /**
@@ -166,8 +167,8 @@ export const CredentialSchemaTypeSchema: Shape<CredentialSchemaType> = z.object(
     id: UriSchema,
 
     /** Schema type */
-    type: z.string()
-  }
+    type: z.string(),
+  },
 )
 
 /**
@@ -179,7 +180,7 @@ export const GenericResourceSchema: Shape<GenericResource> = z.object({
   id: z.union([UriSchema, z.string()]).optional(),
 
   /** Resource type */
-  type: z.union([z.string(), z.array(z.string())])
+  type: z.union([z.string(), z.array(z.string())]),
 })
 
 /**
@@ -188,8 +189,8 @@ export const GenericResourceSchema: Shape<GenericResource> = z.object({
 export const IdOrObjectSchema: Shape<IdOrObject> = z.union([
   UriSchema,
   z.object({
-    id: UriSchema
-  })
+    id: UriSchema,
+  }),
 ])
 
 /**
@@ -199,7 +200,7 @@ export const IdOrObjectSchema: Shape<IdOrObject> = z.union([
 export const CredentialSubjectSchema: Shape<CredentialSubject> = z
   .object({
     /** Subject identifier (optional) */
-    id: z.union([UriSchema, z.string()]).optional()
+    id: z.union([UriSchema, z.string()]).optional(),
   })
   .loose()
 
@@ -231,7 +232,7 @@ export const BaseCredentialSchema = z
     /** Credential subject */
     credentialSubject: z.union([
       CredentialSubjectSchema,
-      z.array(CredentialSubjectSchema)
+      z.array(CredentialSubjectSchema),
     ]),
 
     /** Evidence (optional) */
@@ -247,7 +248,7 @@ export const BaseCredentialSchema = z
     /** Terms of use (optional) */
     termsOfUse: z
       .union([GenericResourceSchema, z.array(GenericResourceSchema)])
-      .optional()
+      .optional(),
   })
   .loose()
 
@@ -259,7 +260,7 @@ export const BaseCredentialSchema = z
 export function makeVerifiable(credentialSchema: z.ZodObject<z.ZodRawShape>) {
   return credentialSchema
     .extend({
-      proof: z.union([ProofSchema, z.array(ProofSchema)])
+      proof: z.union([ProofSchema, z.array(ProofSchema)]),
     })
     .loose()
     .pipe(z.custom<Verifiable<z.output<typeof credentialSchema>>>(() => true))

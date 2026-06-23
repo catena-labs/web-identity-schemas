@@ -1,11 +1,11 @@
+import type { DateTimeStamp } from "../shared/json-ld"
 import type {
   BasePresentation,
   BaseCredential,
   CredentialSubject,
   CredentialType,
-  Verifiable
+  Verifiable,
 } from "./core"
-import type { DateTimeStamp } from "../shared/json-ld"
 
 /**
  * V1 Credential (unsigned).
@@ -13,7 +13,7 @@ import type { DateTimeStamp } from "../shared/json-ld"
  */
 export interface CredentialV1<
   TSubject extends CredentialSubject = CredentialSubject,
-  TType extends CredentialType = CredentialType
+  TType extends CredentialType = CredentialType,
 > extends BaseCredential<TSubject, TType> {
   /** Issuance date (V1) */
   issuanceDate: DateTimeStamp
@@ -28,7 +28,7 @@ export interface CredentialV1<
  */
 export type VerifiableCredentialV1<
   TSubject extends CredentialSubject = CredentialSubject,
-  TType extends CredentialType = CredentialType
+  TType extends CredentialType = CredentialType,
 > = Verifiable<CredentialV1<TSubject, TType>>
 
 /**
@@ -37,7 +37,7 @@ export type VerifiableCredentialV1<
  */
 export interface PresentationV1<
   TCredential extends VerifiableCredentialV1 = VerifiableCredentialV1,
-  TType extends CredentialType = CredentialType
+  TType extends CredentialType = CredentialType,
 > extends BasePresentation<TCredential, TType> {}
 
 /**
@@ -46,5 +46,5 @@ export interface PresentationV1<
  */
 export type VerifiablePresentationV1<
   TCredential extends VerifiableCredentialV1 = VerifiableCredentialV1,
-  TType extends CredentialType = CredentialType
+  TType extends CredentialType = CredentialType,
 > = Verifiable<PresentationV1<TCredential, TType>>

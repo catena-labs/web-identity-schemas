@@ -1,4 +1,5 @@
 import * as z from "zod"
+
 import { DidSchema } from "../did"
 import { ProofSchema } from "./core"
 import { W3CCredentialSchema, VcContextSchema } from "./vc"
@@ -19,7 +20,7 @@ export const VpTypeSchema = presentationTypeSchema()
  * @param types The expected type value(s)
  */
 export function presentationTypeSchema<TTypes extends string | string[]>(
-  types?: TTypes
+  types?: TTypes,
 ) {
   if (types) {
     if (typeof types === "string") {
@@ -41,9 +42,9 @@ export function presentationTypeSchema<TTypes extends string | string[]>(
         .array(z.string())
         .min(1)
         .refine(
-          (types) => types[0] === "VerifiablePresentation",
-          "First type must be VerifiablePresentation"
-        )
+          (value) => value[0] === "VerifiablePresentation",
+          "First type must be VerifiablePresentation",
+        ),
     ])
   }
 }
@@ -68,7 +69,7 @@ export const PresentationSchema = z.object({
   /** Verifiable credentials */
   verifiableCredential: z
     .union([W3CCredentialSchema, z.array(W3CCredentialSchema)])
-    .optional()
+    .optional(),
 })
 
 /**
@@ -77,5 +78,5 @@ export const PresentationSchema = z.object({
  */
 export const VerifiablePresentationSchema = PresentationSchema.extend({
   /** Proof (required for verifiable presentations) */
-  proof: z.union([ProofSchema, z.array(ProofSchema)])
+  proof: z.union([ProofSchema, z.array(ProofSchema)]),
 })

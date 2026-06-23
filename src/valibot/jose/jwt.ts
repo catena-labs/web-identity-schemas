@@ -1,15 +1,16 @@
 import * as v from "valibot"
+
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import {
   JoseSignatureAlgorithmSchema,
-  JoseUnsecuredAlgorithmSchema
+  JoseUnsecuredAlgorithmSchema,
 } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
 const UnixTimestampSchema = v.pipe(
   v.number(),
   v.integer("Unix timestamp must be an integer"),
-  v.minValue(0, "Unix timestamp must be non-negative")
+  v.minValue(0, "Unix timestamp must be non-negative"),
 )
 
 /**
@@ -45,7 +46,7 @@ const JwtHeaderBaseSchema = v.object({
   "x5t#S256": v.optional(Base64UrlSchema),
 
   /** Critical header parameter (optional) */
-  crit: v.optional(v.array(v.string()))
+  crit: v.optional(v.array(v.string())),
 })
 
 /**
@@ -55,7 +56,7 @@ const JwtHeaderBaseSchema = v.object({
 const JwtHeaderUnsecuredSchema = v.object({
   /** Algorithm used to sign the JWT */
   alg: JoseUnsecuredAlgorithmSchema,
-  ...JwtHeaderBaseSchema.entries
+  ...JwtHeaderBaseSchema.entries,
 })
 
 /**
@@ -65,7 +66,7 @@ const JwtHeaderUnsecuredSchema = v.object({
 export const JwtHeaderSignedSchema = v.object({
   /** Algorithm used to sign the JWT */
   alg: JoseSignatureAlgorithmSchema,
-  ...JwtHeaderBaseSchema.entries
+  ...JwtHeaderBaseSchema.entries,
 })
 
 /**
@@ -93,7 +94,7 @@ export const JwtPayloadSchema = v.looseObject({
   iat: v.optional(UnixTimestampSchema),
 
   /** JWT ID - provides a unique identifier for the JWT */
-  jti: v.optional(v.string())
+  jti: v.optional(v.string()),
 })
 
 /**
@@ -109,7 +110,7 @@ export const JwtObjectUnsecuredSchema = v.object({
   payload: JwtPayloadSchema,
 
   /** JWT signature (empty string for Unsecured JWS/JWT) */
-  signature: v.literal("")
+  signature: v.literal(""),
 })
 
 /**
@@ -125,7 +126,7 @@ export const JwtObjectSignedSchema = v.object({
   payload: JwtPayloadSchema,
 
   /** JWT signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -136,5 +137,5 @@ export const JwtObjectSignedSchema = v.object({
  */
 export const JwtObjectSchema = v.union([
   JwtObjectUnsecuredSchema,
-  JwtObjectSignedSchema
+  JwtObjectSignedSchema,
 ])

@@ -1,15 +1,16 @@
-import type { Uri } from "../../types"
 import * as v from "valibot"
+
+import type { Uri } from "../../types"
 import { CredentialSubjectSchema } from "./core"
 import {
   createCredentialV1Schema,
   createVerifiableCredentialV1Schema,
-  VcV1ContextSchema
+  VcV1ContextSchema,
 } from "./v1"
 import {
   createCredentialV2Schema,
   createVerifiableCredentialV2Schema,
-  VcV2ContextSchema
+  VcV2ContextSchema,
 } from "./v2"
 
 /**
@@ -24,19 +25,19 @@ export const VcContextSchema = v.union([VcV1ContextSchema, VcV2ContextSchema])
 export const createCredentialSchema = (
   credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   v.union([
     createCredentialV1Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
+      contextSchema,
     ),
     createCredentialV2Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
-    )
+      contextSchema,
+    ),
   ])
 
 /**
@@ -45,19 +46,19 @@ export const createCredentialSchema = (
 export const createVerifiableCredentialSchema = (
   credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   v.union([
     createVerifiableCredentialV1Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
+      contextSchema,
     ),
     createVerifiableCredentialV2Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
-    )
+      contextSchema,
+    ),
   ])
 
 export const W3CCredentialSchema = createCredentialSchema()

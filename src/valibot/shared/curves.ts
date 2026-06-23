@@ -1,14 +1,15 @@
-import type {
-  EllipticCurve,
-  OctetKeyPairCurve,
-  CryptographicCurve
-} from "../../types/shared/curves"
 import * as v from "valibot"
+
 import {
   ellipticCurves,
   octetKeyPairCurves,
-  cryptographicCurves
+  cryptographicCurves,
 } from "../../constants/curves"
+import type {
+  EllipticCurve,
+  OctetKeyPairCurve,
+  CryptographicCurve,
+} from "../../types/shared/curves"
 
 /**
  * Elliptic Curve names.
@@ -16,7 +17,7 @@ import {
  */
 export const EllipticCurveSchema = v.pipe(
   v.picklist(ellipticCurves),
-  v.custom<EllipticCurve>(() => true)
+  v.custom<EllipticCurve>(() => true),
 )
 
 /**
@@ -25,7 +26,7 @@ export const EllipticCurveSchema = v.pipe(
  */
 export const OctetKeyPairCurveSchema = v.pipe(
   v.picklist(octetKeyPairCurves),
-  v.custom<OctetKeyPairCurve>(() => true)
+  v.custom<OctetKeyPairCurve>(() => true),
 )
 
 /**
@@ -33,5 +34,5 @@ export const OctetKeyPairCurveSchema = v.pipe(
  */
 export const CryptographicCurveSchema = v.pipe(
   v.picklist(cryptographicCurves),
-  v.custom<CryptographicCurve>(() => true)
+  v.custom<CryptographicCurve>(() => true),
 )

@@ -26,7 +26,7 @@ export const joseSignatureAlgorithms = [
   "PS384",
   "PS512",
   // EdDSA signature algorithms
-  "EdDSA"
+  "EdDSA",
 ] as const
 
 /**
@@ -40,7 +40,7 @@ export const joseUnsecuredAlgorithm = "none" as const
  */
 export const joseAlgorithms = [
   ...joseSignatureAlgorithms,
-  joseUnsecuredAlgorithm
+  joseUnsecuredAlgorithm,
 ] as const
 
 /**
@@ -59,7 +59,7 @@ export const jweContentEncryptionAlgorithms = [
   // AES using 192-bit key in CBC mode with HMAC SHA-384
   "A192CBC-HS384",
   // AES using 256-bit key in CBC mode with HMAC SHA-512
-  "A256CBC-HS512"
+  "A256CBC-HS512",
 ] as const
 
 /**
@@ -100,7 +100,7 @@ export const jweKeyManagementAlgorithms = [
   // PBES2 with HMAC SHA-384 and AES Key Wrap with a 192-bit key
   "PBES2-HS384+A192KW",
   // PBES2 with HMAC SHA-512 and AES Key Wrap with a 256-bit key
-  "PBES2-HS512+A256KW"
+  "PBES2-HS512+A256KW",
 ] as const
 
 /**
@@ -109,5 +109,5 @@ export const jweKeyManagementAlgorithms = [
  */
 export const joseCompressionAlgorithms = [
   // DEFLATE Compression Algorithm
-  "DEF"
+  "DEF",
 ] as const

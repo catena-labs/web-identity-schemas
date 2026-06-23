@@ -1,16 +1,17 @@
 import { test, expect, describe } from "vitest"
+
 import {
   joseAlgorithms,
   jweContentEncryptionAlgorithms,
   jweKeyManagementAlgorithms,
-  joseCompressionAlgorithms
+  joseCompressionAlgorithms,
 } from "../src/constants/algorithms"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("jwa", () => {
@@ -35,7 +36,7 @@ describe("jwa", () => {
           "RSA-PSS", // Different naming convention
           "ECDSA-P256", // Different naming convention
           "",
-          "none-insecure" // Invalid variant
+          "none-insecure", // Invalid variant
         ]
 
         for (const alg of invalidAlgorithms) {
@@ -59,12 +60,12 @@ describe("jwa", () => {
           "A256ECB", // ECB not secure
           "ChaCha20-Poly1305", // Not in JWE spec
           "HS256", // Signature algorithm
-          ""
+          "",
         ]
 
         for (const alg of invalidAlgorithms) {
           expect(alg).not.toMatchSchema(
-            schemas.JweContentEncryptionAlgorithmSchema
+            schemas.JweContentEncryptionAlgorithmSchema,
           )
         }
       })
@@ -83,7 +84,7 @@ describe("jwa", () => {
           "ECDH", // Missing variant
           "PBES2", // Missing hash and key wrap
           "HS256", // Signature algorithm
-          ""
+          "",
         ]
 
         for (const alg of invalidAlgorithms) {
@@ -106,7 +107,7 @@ describe("jwa", () => {
           "lz4", // Different compression
           "zstd", // Different compression
           "DEFLATE", // Wrong case
-          ""
+          "",
         ]
 
         for (const alg of invalidAlgorithms) {

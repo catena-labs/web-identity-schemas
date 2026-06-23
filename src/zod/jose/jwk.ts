@@ -1,9 +1,10 @@
-import type { KeyUse, KeyOperation, JsonWebKey } from "../../types/jose/jwk"
-import type { Shape } from "../shared/shape"
 import * as z from "zod"
+
 import { keyUses, keyOperations } from "../../constants/jwk"
+import type { KeyUse, KeyOperation, JsonWebKey } from "../../types/jose/jwk"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
+import type { Shape } from "../shared/shape"
 import { JoseAlgorithmSchema } from "./jwa"
 
 /**
@@ -67,7 +68,7 @@ export const BaseJwkSchema = z.object({
   "x5t#S256": z.string().optional(),
 
   /** URL pointing to X.509 certificate */
-  x5u: z.url().optional()
+  x5u: z.url().optional(),
 })
 
 /**
@@ -122,10 +123,10 @@ export const RsaJwkSchema = z.object({
         d: Base64UrlSchema,
 
         /** Additional factor CRT coefficient (base64url-encoded) */
-        t: Base64UrlSchema.optional()
-      })
+        t: Base64UrlSchema.optional(),
+      }),
     )
-    .optional()
+    .optional(),
 })
 
 /**
@@ -156,7 +157,7 @@ export const EcJwkSchema = z.object({
   y: Base64UrlSchema,
 
   /** EC private key (base64url-encoded) */
-  d: Base64UrlSchema.optional()
+  d: Base64UrlSchema.optional(),
 })
 
 /**
@@ -176,7 +177,7 @@ export const OctJwkSchema = z.object({
   kty: z.literal("oct"),
 
   /** Symmetric key material (base64url-encoded) */
-  k: Base64UrlSchema
+  k: Base64UrlSchema,
 })
 
 /**
@@ -201,7 +202,7 @@ export const OkpJwkSchema = BaseJwkSchema.extend({
   x: Base64UrlSchema,
 
   /** Private key (base64url-encoded) */
-  d: Base64UrlSchema.optional()
+  d: Base64UrlSchema.optional(),
 })
 
 /**
@@ -215,5 +216,5 @@ export const JsonWebKeySchema: Shape<JsonWebKey> = z.discriminatedUnion("kty", [
   RsaJwkSchema,
   EcJwkSchema,
   OctJwkSchema,
-  OkpJwkSchema
+  OkpJwkSchema,
 ])

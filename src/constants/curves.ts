@@ -13,7 +13,7 @@ export const ellipticCurves = [
   "P-256K", // sometimes used instead of secp256k1
   "secp256k1", // bitcoin/ethereum
   "P-384", // secp384r1
-  "P-521" // secp521r1
+  "P-521", // secp521r1
 ] as const
 
 /**
@@ -24,7 +24,7 @@ export const octetKeyPairCurves = [
   "Ed25519", // EdDSA signature
   "Ed448", // EdDSA signature
   "X25519", // ECDH key agreement
-  "X448" // ECDH key agreement
+  "X448", // ECDH key agreement
 ] as const
 
 /**
@@ -32,5 +32,5 @@ export const octetKeyPairCurves = [
  */
 export const cryptographicCurves = [
   ...ellipticCurves,
-  ...octetKeyPairCurves
+  ...octetKeyPairCurves,
 ] as const

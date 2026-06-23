@@ -1,4 +1,5 @@
 import { test, expect, describe } from "vitest"
+
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 import jwtInvalidNoneWithSignature from "./fixtures/jwt/invalid-none-with-signature.json"
@@ -7,7 +8,7 @@ import jwtObjectNoneValid from "./fixtures/jwt/object-none-valid.json"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("jwt", () => {
@@ -21,7 +22,7 @@ describe("jwt", () => {
 
       // Test invalid JWT with none algorithm but signature present
       expect(jwtInvalidNoneWithSignature).not.toMatchSchema(
-        schemas.JwtObjectSchema
+        schemas.JwtObjectSchema,
       )
     })
 
@@ -35,7 +36,7 @@ describe("jwt", () => {
           // Minimal valid format
           "a.b.c",
           "A.B.", // Empty signature
-          "123.456.789"
+          "123.456.789",
         ]
 
         for (const jwt of validJwts) {
@@ -61,7 +62,7 @@ describe("jwt", () => {
           "a.b.c.d", // Too many parts
           "part1.part2.part3.part4.part5", // Way too many parts
           "contains+invalid.base64/chars.signature=", // Invalid base64url chars
-          "contains spaces.in payload.signature" // Spaces not allowed
+          "contains spaces.in payload.signature", // Spaces not allowed
         ]
 
         for (const jwt of invalidJwts) {
@@ -77,7 +78,7 @@ describe("jwt", () => {
           true,
           {},
           [],
-          Symbol("jwt")
+          Symbol("jwt"),
         ]
 
         for (const input of nonStringInputs) {
@@ -91,7 +92,7 @@ describe("jwt", () => {
         const validJwtObject = {
           header: {
             alg: "HS256",
-            typ: "JWT"
+            typ: "JWT",
           },
           payload: {
             sub: "1234567890",
@@ -99,9 +100,9 @@ describe("jwt", () => {
             iat: 1516239022,
             exp: 1516242622,
             aud: "example.com",
-            iss: "https://example.com"
+            iss: "https://example.com",
           },
-          signature: "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+          signature: "SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
         }
 
         expect(validJwtObject).toMatchSchema(
@@ -110,24 +111,24 @@ describe("jwt", () => {
             expect(result.header.alg).toBe("HS256")
             expect(result.payload.sub).toBe("1234567890")
             expect(result.signature).toBe(validJwtObject.signature)
-          }
+          },
         )
       })
 
       test("minimal valid JWT object with unsecured algorithm", () => {
         const minimalJwtObject = {
           header: {
-            alg: "none"
+            alg: "none",
           },
           payload: {},
-          signature: ""
+          signature: "",
         }
 
         expect(minimalJwtObject).toMatchSchema(
           schemas.JwtObjectSchema,
           (result) => {
             expect(result.header.alg).toBe("none")
-          }
+          },
         )
       })
 
@@ -139,14 +140,14 @@ describe("jwt", () => {
           "RS256",
           "ES256",
           "PS256",
-          "EdDSA"
+          "EdDSA",
         ] as const
 
         for (const alg of signedAlgorithms) {
           const jwtObject = {
             header: { alg },
             payload: { test: true },
-            signature: "test-signature"
+            signature: "test-signature",
           }
 
           expect(jwtObject).toMatchSchema(schemas.JwtObjectSchema, (result) => {
@@ -159,7 +160,7 @@ describe("jwt", () => {
         const validUnsecuredJwt = {
           header: { alg: "none" },
           payload: { test: true },
-          signature: ""
+          signature: "",
         }
 
         expect(validUnsecuredJwt).toMatchSchema(
@@ -167,14 +168,14 @@ describe("jwt", () => {
           (result) => {
             expect(result.header.alg).toBe("none")
             expect(result.signature).toBe("")
-          }
+          },
         )
 
         // Test that unsecured algorithm with non-empty signature fails
         const invalidUnsecuredJwt = {
           header: { alg: "none" },
           payload: { test: true },
-          signature: "test-signature"
+          signature: "test-signature",
         }
 
         expect(invalidUnsecuredJwt).not.toMatchSchema(schemas.JwtObjectSchema)
@@ -186,14 +187,14 @@ describe("jwt", () => {
           "RS256",
           "ES256",
           "PS256",
-          "EdDSA"
+          "EdDSA",
         ] as const
 
         for (const alg of signedAlgorithms) {
           const invalidSignedJwt = {
             header: { alg },
             payload: { test: true },
-            signature: ""
+            signature: "",
           }
 
           expect(invalidSignedJwt).not.toMatchSchema(schemas.JwtObjectSchema)
@@ -207,11 +208,11 @@ describe("jwt", () => {
             jwk: {
               kty: "RSA",
               n: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
-              e: "AQAB"
-            }
+              e: "AQAB",
+            },
           },
           payload: { test: true },
-          signature: "test-signature"
+          signature: "test-signature",
         }
 
         expect(jwtWithJwk).toMatchSchema(schemas.JwtObjectSchema, (result) => {
@@ -233,9 +234,9 @@ describe("jwt", () => {
             // Custom claims
             email: "user@example.com",
             role: "admin",
-            permissions: ["read", "write"]
+            permissions: ["read", "write"],
           },
-          signature: "test-signature"
+          signature: "test-signature",
         }
 
         expect(jwtWithStandardClaims).toMatchSchema(
@@ -245,7 +246,7 @@ describe("jwt", () => {
             expect(result.payload.aud).toEqual(["app1", "app2"])
             expect(result.payload.exp).toBe(1516242622)
             expect(result.payload.email).toBe("user@example.com") // Custom claim
-          }
+          },
         )
       })
 
@@ -258,7 +259,7 @@ describe("jwt", () => {
           { header: { alg: "INVALID" }, payload: {}, signature: "" }, // Invalid algorithm
           { header: {}, payload: {}, signature: "" }, // Missing alg in header
           { header: { alg: "HS256" }, payload: {}, signature: 123 }, // Wrong signature type
-          { header: { alg: "HS256" }, payload: "not-object", signature: "" } // Wrong payload type
+          { header: { alg: "HS256" }, payload: "not-object", signature: "" }, // Wrong payload type
         ]
 
         for (const obj of invalidJwtObjects) {
@@ -271,14 +272,14 @@ describe("jwt", () => {
           { exp: -1 }, // Negative timestamp
           { nbf: 1.5 }, // Non-integer timestamp
           { iat: "not-a-number" }, // String instead of number
-          { exp: null } // Null timestamp
+          { exp: null }, // Null timestamp
         ]
 
         for (const claims of invalidTimestampClaims) {
           const jwtObject = {
             header: { alg: "HS256" },
             payload: claims,
-            signature: "test"
+            signature: "test",
           }
 
           expect(jwtObject).not.toMatchSchema(schemas.JwtObjectSchema)

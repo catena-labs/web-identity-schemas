@@ -1,14 +1,15 @@
+import * as z from "zod"
+
 import type {
   JwsProtectedHeader,
   JwsUnprotectedHeader,
   JwsSignature,
   JwsFlattenedJson,
   JwsGeneralJson,
-  JwsString
+  JwsString,
 } from "../../types/jose/jws"
-import type { Shape } from "../shared/shape"
-import * as z from "zod"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import { JoseAlgorithmSchema } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -49,7 +50,7 @@ export const JwsProtectedHeaderSchema: Shape<JwsProtectedHeader> = z.object({
   cty: z.string().optional(),
 
   /** Critical header parameter (optional) */
-  crit: z.array(z.string()).optional()
+  crit: z.array(z.string()).optional(),
 })
 
 /**
@@ -81,8 +82,8 @@ export const JwsUnprotectedHeaderSchema: Shape<JwsUnprotectedHeader> = z.object(
     "x5t#S256": Base64UrlSchema.optional(),
 
     /** Critical header parameter (optional) */
-    crit: z.array(z.string()).optional()
-  }
+    crit: z.array(z.string()).optional(),
+  },
 )
 
 /**
@@ -98,7 +99,7 @@ export const JwsSignatureSchema: Shape<JwsSignature> = z.object({
   header: JwsUnprotectedHeaderSchema.optional(),
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -114,7 +115,7 @@ export const JwsCompactSerializationSchema = z.object({
   payload: Base64UrlSchema,
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -127,7 +128,7 @@ export const JwsJsonSerializationSchema: Shape<JwsGeneralJson> = z.object({
   payload: Base64UrlSchema,
 
   /** JWS Signatures */
-  signatures: z.array(JwsSignatureSchema)
+  signatures: z.array(JwsSignatureSchema),
 })
 
 /**
@@ -147,7 +148,7 @@ export const JwsFlattenedJsonSerializationSchema: Shape<JwsFlattenedJson> =
     header: JwsUnprotectedHeaderSchema.optional(),
 
     /** JWS Signature (base64url encoded) */
-    signature: Base64UrlSchema
+    signature: Base64UrlSchema,
   })
 
 /**
@@ -171,7 +172,7 @@ export const JwsParsedSchema = JwsStringSchema.transform((jws) => {
   return {
     protected: parts[0],
     payload: parts[1],
-    signature: parts[2]
+    signature: parts[2],
   }
 })
 
@@ -201,5 +202,5 @@ export const JwsObjectSchema = z.object({
   payload: Base64UrlSchema,
 
   /** JWS Signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })

@@ -1,17 +1,18 @@
-import type {
-  BitstringStatusListCredentialSubject,
-  BitstringStatusListCredential
-} from "../../../types/vc/status/bitstring"
-import type { Shape } from "../../shared/shape"
 import * as v from "valibot"
+
 import {
   bitstringStatusListContext,
   statusPurposes,
-  vcV2CoreContext
+  vcV2CoreContext,
 } from "../../../constants/vc"
+import type {
+  BitstringStatusListCredentialSubject,
+  BitstringStatusListCredential,
+} from "../../../types/vc/status/bitstring"
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
+import type { Shape } from "../../shared/shape"
 import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
@@ -19,7 +20,7 @@ import { BaseCredentialSchema, credentialTypeSchema } from "../core"
  * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/}
  */
 export const BitstringStatusListContextSchema = v.literal(
-  bitstringStatusListContext
+  bitstringStatusListContext,
 )
 
 /**
@@ -40,7 +41,7 @@ export const BitstringStatusListCredentialSubjectSchema = v.object({
   encodedList: Base64UrlSchema,
 
   /** Time to live for the status list in seconds */
-  ttl: v.optional(v.number())
+  ttl: v.optional(v.number()),
 } satisfies Shape<BitstringStatusListCredentialSubject>)
 
 /**
@@ -52,15 +53,15 @@ export const BitstringStatusListCredentialSchema = v.strictObject({
   /** JSON-LD context (V2 + BitstringStatusList) */
   "@context": jsonLdContextSchema([
     vcV2CoreContext,
-    bitstringStatusListContext
+    bitstringStatusListContext,
   ]),
 
   /** Credential types */
   type: v.pipe(
     credentialTypeSchema("BitstringStatusListCredential"),
     v.custom<["VerifiableCredential", "BitstringStatusListCredential"]>(
-      () => true
-    )
+      () => true,
+    ),
   ),
 
   /** Valid from date (V2) */
@@ -70,5 +71,5 @@ export const BitstringStatusListCredentialSchema = v.strictObject({
   validUntil: v.optional(v.pipe(v.string(), v.isoTimestamp())),
 
   /** Credential subject */
-  credentialSubject: BitstringStatusListCredentialSubjectSchema
+  credentialSubject: BitstringStatusListCredentialSubjectSchema,
 } satisfies Shape<BitstringStatusListCredential>)

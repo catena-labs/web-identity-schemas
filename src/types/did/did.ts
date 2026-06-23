@@ -14,7 +14,7 @@ export type DidMethod = string
  */
 export type Did<
   TMethod extends DidMethod = DidMethod,
-  TIdentifier extends string = string
+  TIdentifier extends string = string,
 > = Uri<"did", `${TMethod}:${TIdentifier}`>
 
 /**

@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest"
+
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("json-web-key", () => {
@@ -14,7 +15,7 @@ describe("json-web-key", () => {
         const jwk = {
           kty: "RSA",
           n: "abc123_ABC-",
-          e: "AQAB"
+          e: "AQAB",
         }
 
         expect(jwk).toMatchSchema(schemas.JsonWebKeySchema)
@@ -25,7 +26,7 @@ describe("json-web-key", () => {
           kty: "EC",
           crv: "P-256",
           x: "abc123_ABC-",
-          y: "def456_DEF-"
+          y: "def456_DEF-",
         }
 
         expect(jwk).toMatchSchema(schemas.JsonWebKeySchema)
@@ -34,7 +35,7 @@ describe("json-web-key", () => {
       it("validates a valid oct (symmetric) JWK", () => {
         const jwk = {
           kty: "oct",
-          k: "abc123_ABC-"
+          k: "abc123_ABC-",
         }
 
         expect(jwk).toMatchSchema(schemas.JsonWebKeySchema)
@@ -44,7 +45,7 @@ describe("json-web-key", () => {
         const jwk = {
           kty: "OKP",
           crv: "Ed25519",
-          x: "abc123_ABC-"
+          x: "abc123_ABC-",
         }
 
         expect(jwk).toMatchSchema(schemas.JsonWebKeySchema)
@@ -52,7 +53,7 @@ describe("json-web-key", () => {
 
       it("fails for missing required RSA fields", () => {
         const jwk = {
-          kty: "RSA"
+          kty: "RSA",
           // missing n and e
         }
 
@@ -63,7 +64,7 @@ describe("json-web-key", () => {
         const jwk = {
           kty: "RSA",
           n: "bad$$value", // invalid base64url
-          e: "AQAB"
+          e: "AQAB",
         }
 
         expect(jwk).not.toMatchSchema(schemas.JsonWebKeySchema)
@@ -71,7 +72,7 @@ describe("json-web-key", () => {
 
       it("fails for unsupported kty value", () => {
         const jwk = {
-          kty: "FOO"
+          kty: "FOO",
         }
 
         expect(jwk).not.toMatchSchema(schemas.JsonWebKeySchema)
@@ -82,7 +83,7 @@ describe("json-web-key", () => {
           kty: "EC",
           crv: "P-999",
           x: "abc123_ABC-",
-          y: "def456_DEF-"
+          y: "def456_DEF-",
         }
 
         expect(jwk).not.toMatchSchema(schemas.JsonWebKeySchema)
@@ -92,7 +93,7 @@ describe("json-web-key", () => {
         const jwk = {
           kty: "OKP",
           crv: "BadCurve",
-          x: "abc123_ABC-"
+          x: "abc123_ABC-",
         }
 
         expect(jwk).not.toMatchSchema(schemas.JsonWebKeySchema)
@@ -100,7 +101,7 @@ describe("json-web-key", () => {
 
       it("fails for oct missing k", () => {
         const jwk = {
-          kty: "oct"
+          kty: "oct",
         }
 
         expect(jwk).not.toMatchSchema(schemas.JsonWebKeySchema)

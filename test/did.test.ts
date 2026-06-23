@@ -1,4 +1,5 @@
 import { test, expect, describe } from "vitest"
+
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
 import didKeyValid from "./fixtures/did/did-key-valid.json"
@@ -8,7 +9,7 @@ import invalidBadFormat from "./fixtures/did/invalid-bad-format.json"
 
 const namespaces = {
   valibot,
-  zod
+  zod,
 }
 
 describe("did", () => {
@@ -24,7 +25,7 @@ describe("did", () => {
           "did:ion:EiClkZMDxPKqC9c-umQfTkR8vvZ9JPhl_xLDI9Nfk38w5w",
           "did:jwk:eyJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImtleV9vcHMiOlsidmVyaWZ5Il0sImNydiI6InNlY3AyNTZrMSIsImtpZCI6IlVubDY5aXZNcERzT0YtN21wZHJPQ0drSTU1QTdBMVVrcEFaRzl3aDRHVUEiLCJrdHkiOiJFQyIsIngiOiJKU0Y5X29zeFN3dGdGLWhKZmZGdEl4Y2VEZGRURUQ4SmE1RG02eGxGcUZjIiwieSI6InBfWlJyVzRULW9zWHJQNktMOE1hUTlKZ3NLWVBoc3lVUXlycWJ5UWlETVEifQ",
           "did:pkh:eip155:1:0x1234567890abcdef1234567890abcdef12345678",
-          "did:method:specific-identifier_with-dashes.and_underscores"
+          "did:method:specific-identifier_with-dashes.and_underscores",
         ] as const
 
         for (const did of validDids) {
@@ -47,7 +48,7 @@ describe("did", () => {
           "did:method:identifier\\n", // Newline
           "did:method:identifier with space", // Space in identifier
           "",
-          "did:method:identifier#" // Fragment should be in DidUrlSchema
+          "did:method:identifier#", // Fragment should be in DidUrlSchema
         ]
 
         for (const did of invalidDids) {
@@ -63,10 +64,10 @@ describe("did", () => {
         expect("did:example:123456789abcdefghi").toMatchSchema(schema)
         expect("did:bad:123456789abcdefghi").not.toMatchSchema(schema)
         expect(
-          schemas.isDidWithMethod("example", "did:example:123456789abcdefghi")
+          schemas.isDidWithMethod("example", "did:example:123456789abcdefghi"),
         ).toBe(true)
         expect(
-          schemas.isDidWithMethod("example", "did:bad:123456789abcdefghi")
+          schemas.isDidWithMethod("example", "did:bad:123456789abcdefghi"),
         ).toBe(false)
       })
     })
@@ -98,7 +99,7 @@ describe("did", () => {
 
           // DID URLs with paths, queries, and fragments
           "did:web:example.com/user/alice?version=1#keys-1",
-          "did:example:123456789abcdefghi/path?query=value#fragment"
+          "did:example:123456789abcdefghi/path?query=value#fragment",
         ]
 
         for (const didUrl of validDidUrls) {
@@ -121,7 +122,7 @@ describe("did", () => {
           "method123",
           "123method",
           "a",
-          "z9"
+          "z9",
         ]
 
         for (const method of validMethods) {
@@ -139,7 +140,7 @@ describe("did", () => {
           "method:name", // Contains colon
           "method name", // Contains space
           "method@name", // Contains special character
-          ""
+          "",
         ]
 
         for (const method of invalidMethods) {
@@ -160,12 +161,12 @@ describe("did", () => {
             x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
             y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
             use: "sig",
-            alg: "ES256"
-          }
+            alg: "ES256",
+          },
         }
 
         expect(validVerificationMethod).toMatchSchema(
-          schemas.VerificationMethodSchema
+          schemas.VerificationMethodSchema,
         )
       })
 
@@ -174,11 +175,11 @@ describe("did", () => {
           id: "did:example:123456789abcdefghi#keys-1",
           type: "Multikey",
           controller: "did:example:123456789abcdefghi",
-          publicKeyMultibase: "zQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC"
+          publicKeyMultibase: "zQmWvQxTqbG2Z9HPJgG57jjwR2X9GrEJjQAC",
         }
 
         expect(verificationMethod).toMatchSchema(
-          schemas.VerificationMethodSchema
+          schemas.VerificationMethodSchema,
         )
       })
 
@@ -191,12 +192,12 @@ describe("did", () => {
             kty: "EC",
             crv: "P-256",
             x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
-          }
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+          },
         }
 
         expect(verificationMethod).toMatchSchema(
-          schemas.VerificationMethodSchema
+          schemas.VerificationMethodSchema,
         )
       })
 
@@ -209,12 +210,12 @@ describe("did", () => {
             kty: "EC",
             crv: "P-256",
             x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
-          }
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+          },
         }
 
         expect(verificationMethod).toMatchSchema(
-          schemas.VerificationMethodSchema
+          schemas.VerificationMethodSchema,
         )
       })
 
@@ -223,11 +224,11 @@ describe("did", () => {
           id: "did:example:123456789abcdefghi#keys-1",
           type: "Ed25519VerificationKey2020",
           controller: "did:example:123456789abcdefghi",
-          publicKeyBase58: "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
+          publicKeyBase58: "H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
         }
 
         expect(verificationMethod).toMatchSchema(
-          schemas.VerificationMethodSchema
+          schemas.VerificationMethodSchema,
         )
       })
     })
@@ -237,7 +238,7 @@ describe("did", () => {
         const validService = {
           id: "did:example:123456789abcdefghi#vcs",
           type: "VerifiableCredentialService",
-          serviceEndpoint: "https://example.com/vc"
+          serviceEndpoint: "https://example.com/vc",
         }
 
         expect(validService).toMatchSchema(schemas.ServiceSchema)
@@ -249,8 +250,8 @@ describe("did", () => {
           type: ["MessagingService", "DIDCommMessaging"],
           serviceEndpoint: [
             "https://example.com/messaging/1",
-            "https://example.com/messaging/2"
-          ]
+            "https://example.com/messaging/2",
+          ],
         }
 
         expect(serviceWithArrayEndpoint).toMatchSchema(schemas.ServiceSchema)
@@ -262,8 +263,8 @@ describe("did", () => {
           type: "DecentralizedWebNode",
           serviceEndpoint: {
             nodes: ["https://dwn.example.com", "https://dwn2.example.com"],
-            auth: "bearer"
-          }
+            auth: "bearer",
+          },
         } as const
 
         expect(serviceWithObjectEndpoint).toMatchSchema(schemas.ServiceSchema)
@@ -284,9 +285,9 @@ describe("did", () => {
                 kty: "EC",
                 crv: "P-256",
                 x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
-                y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM"
-              }
-            }
+                y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+              },
+            },
           ],
           authentication: ["did:example:123456789abcdefghi#keys-1"],
           assertionMethod: ["did:example:123456789abcdefghi#keys-1"],
@@ -294,9 +295,9 @@ describe("did", () => {
             {
               id: "did:example:123456789abcdefghi#vcs",
               type: "VerifiableCredentialService",
-              serviceEndpoint: "https://example.com/vc"
-            }
-          ]
+              serviceEndpoint: "https://example.com/vc",
+            },
+          ],
         }
 
         expect(validDidDocument).toMatchSchema(schemas.DidDocumentSchema)
@@ -305,7 +306,7 @@ describe("did", () => {
       test("minimal DID document", () => {
         const minimalDidDocument = {
           "@context": "https://www.w3.org/ns/did/v1",
-          id: "did:example:123456789abcdefghi"
+          id: "did:example:123456789abcdefghi",
         }
 
         expect(minimalDidDocument).toMatchSchema(schemas.DidDocumentSchema)
@@ -315,13 +316,13 @@ describe("did", () => {
         const didDocumentWithMultipleContexts = {
           "@context": [
             "https://www.w3.org/ns/did/v1",
-            "https://w3id.org/security/v2"
+            "https://w3id.org/security/v2",
           ],
-          id: "did:example:123456789abcdefghi"
+          id: "did:example:123456789abcdefghi",
         }
 
         expect(didDocumentWithMultipleContexts).toMatchSchema(
-          schemas.DidDocumentSchema
+          schemas.DidDocumentSchema,
         )
       })
 
@@ -335,13 +336,13 @@ describe("did", () => {
               type: "Ed25519VerificationKey2020",
               controller: "did:example:123456789abcdefghi",
               publicKeyMultibase:
-                "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
-            }
-          ]
+                "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV",
+            },
+          ],
         }
 
         expect(didDocumentWithEmbeddedAuth).toMatchSchema(
-          schemas.DidDocumentSchema
+          schemas.DidDocumentSchema,
         )
       })
 
@@ -354,8 +355,8 @@ describe("did", () => {
           {
             "@context": "https://www.w3.org/ns/did/v1",
             id: "did:example:123",
-            verificationMethod: "not-an-array" // Wrong type
-          }
+            verificationMethod: "not-an-array", // Wrong type
+          },
         ]
 
         for (const doc of invalidDidDocuments) {

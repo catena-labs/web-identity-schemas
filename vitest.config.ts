@@ -4,6 +4,6 @@ export default defineConfig({
   test: {
     setupFiles: ["./test/setup.ts"],
     passWithNoTests: true,
-    watch: false
-  }
+    watch: false,
+  },
 })

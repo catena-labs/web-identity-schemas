@@ -1,3 +1,12 @@
+import * as v from "valibot"
+
+import {
+  verificationMethodTypes,
+  didRegex,
+  didUrlRegex,
+  didMethodRegex,
+  legacyVerificationMethodTypes,
+} from "../../constants/did"
 import type {
   Did,
   DidUrl,
@@ -9,19 +18,11 @@ import type {
   LegacyVerificationMethodType,
   VerificationMethodMultikey,
   VerificationMethodJsonWebKey,
-  VerificationMethodLegacy
+  VerificationMethodLegacy,
 } from "../../types/did"
-import type { Shape } from "../shared/shape"
-import * as v from "valibot"
-import {
-  verificationMethodTypes,
-  didRegex,
-  didUrlRegex,
-  didMethodRegex,
-  legacyVerificationMethodTypes
-} from "../../constants/did"
 import { JsonWebKeySchema } from "../jose/jwk"
 import { jsonLdContextSchema } from "../shared/json-ld"
+import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 
 /**
@@ -32,7 +33,7 @@ export const DidSchema = v.pipe(
   UriSchema,
   v.startsWith("did:"),
   v.regex(didRegex, "Must be a valid DID"),
-  v.custom<Did>(() => true)
+  v.custom<Did>(() => true),
 )
 
 /**
@@ -53,7 +54,7 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
   return v.pipe(
     DidSchema,
     v.startsWith(`did:${method}:`),
-    v.custom<Did<T>>(() => true)
+    v.custom<Did<T>>(() => true),
   )
 }
 
@@ -65,7 +66,7 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
  */
 export function isDidWithMethod<T extends DidMethod>(
   method: T,
-  value: unknown
+  value: unknown,
 ): value is Did<T> {
   return v.is(createDidSchema(method), value)
 }
@@ -77,7 +78,7 @@ export function isDidWithMethod<T extends DidMethod>(
 export const DidUrlSchema = v.pipe(
   v.string(),
   v.regex(didUrlRegex, "Must be a valid DID URL"),
-  v.custom<DidUrl>(() => true)
+  v.custom<DidUrl>(() => true),
 )
 
 /**
@@ -87,7 +88,7 @@ export const DidUrlSchema = v.pipe(
 export const DidMethodSchema = v.pipe(
   v.string(),
   v.regex(didMethodRegex, "Must be a valid DID method"),
-  v.custom<DidMethod>(() => true)
+  v.custom<DidMethod>(() => true),
 )
 
 /**
@@ -96,7 +97,7 @@ export const DidMethodSchema = v.pipe(
  */
 export const VerificationMethodTypeSchema = v.pipe(
   v.picklist(verificationMethodTypes),
-  v.custom<VerificationMethodType>(() => true)
+  v.custom<VerificationMethodType>(() => true),
 )
 
 /**
@@ -105,7 +106,7 @@ export const VerificationMethodTypeSchema = v.pipe(
  */
 export const LegacyVerificationMethodTypeSchema = v.pipe(
   v.picklist(legacyVerificationMethodTypes),
-  v.custom<LegacyVerificationMethodType>(() => true)
+  v.custom<LegacyVerificationMethodType>(() => true),
 )
 
 /**
@@ -116,7 +117,7 @@ const VerificationMethodBaseSchema = v.object({
   id: DidUrlSchema,
 
   /** The DID that controls this verification method */
-  controller: DidSchema
+  controller: DidSchema,
 })
 
 /**
@@ -128,7 +129,7 @@ export const VerificationMethodJsonWebKeySchema = v.object({
   type: v.literal("JsonWebKey"),
 
   /** JSON Web Key */
-  publicKeyJwk: JsonWebKeySchema
+  publicKeyJwk: JsonWebKeySchema,
 } satisfies Shape<VerificationMethodJsonWebKey>)
 
 /**
@@ -140,7 +141,7 @@ export const VerificationMethodMultikeySchema = v.object({
   type: v.literal("Multikey"),
 
   /** Multibase-encoded public key */
-  publicKeyMultibase: v.string()
+  publicKeyMultibase: v.string(),
 } satisfies Shape<VerificationMethodMultikey>)
 
 /**
@@ -158,7 +159,7 @@ export const VerificationMethodLegacySchema = v.object({
   publicKeyJwk: v.optional(JsonWebKeySchema),
 
   /** Base58-encoded public key (deprecated, use publicKeyJwk) */
-  publicKeyBase58: v.optional(v.string())
+  publicKeyBase58: v.optional(v.string()),
 } satisfies Shape<VerificationMethodLegacy>)
 
 /**
@@ -168,7 +169,7 @@ export const VerificationMethodLegacySchema = v.object({
 export const VerificationMethodSchema = v.variant("type", [
   VerificationMethodJsonWebKeySchema,
   VerificationMethodMultikeySchema,
-  VerificationMethodLegacySchema
+  VerificationMethodLegacySchema,
 ])
 
 /**
@@ -180,9 +181,9 @@ export const ServiceEndpointSchema = v.pipe(
   v.union([
     UriSchema,
     v.record(v.string(), v.unknown()),
-    v.array(v.union([UriSchema, v.record(v.string(), v.unknown())]))
+    v.array(v.union([UriSchema, v.record(v.string(), v.unknown())])),
   ]),
-  v.custom<ServiceEndpoint>(() => true)
+  v.custom<ServiceEndpoint>(() => true),
 )
 
 /**
@@ -197,7 +198,7 @@ export const ServiceSchema = v.object({
   type: v.union([v.string(), v.array(v.string())]),
 
   /** The service endpoint */
-  serviceEndpoint: ServiceEndpointSchema
+  serviceEndpoint: ServiceEndpointSchema,
 } satisfies Shape<Service>)
 
 /**
@@ -222,29 +223,29 @@ export const DidDocumentSchema = v.object({
 
   /** Authentication verification methods */
   authentication: v.optional(
-    v.array(v.union([DidUrlSchema, VerificationMethodSchema]))
+    v.array(v.union([DidUrlSchema, VerificationMethodSchema])),
   ),
 
   /** Assertion method verification methods */
   assertionMethod: v.optional(
-    v.array(v.union([DidUrlSchema, VerificationMethodSchema]))
+    v.array(v.union([DidUrlSchema, VerificationMethodSchema])),
   ),
 
   /** Key agreement verification methods */
   keyAgreement: v.optional(
-    v.array(v.union([DidUrlSchema, VerificationMethodSchema]))
+    v.array(v.union([DidUrlSchema, VerificationMethodSchema])),
   ),
 
   /** Capability invocation verification methods */
   capabilityInvocation: v.optional(
-    v.array(v.union([DidUrlSchema, VerificationMethodSchema]))
+    v.array(v.union([DidUrlSchema, VerificationMethodSchema])),
   ),
 
   /** Capability delegation verification methods */
   capabilityDelegation: v.optional(
-    v.array(v.union([DidUrlSchema, VerificationMethodSchema]))
+    v.array(v.union([DidUrlSchema, VerificationMethodSchema])),
   ),
 
   /** Services */
-  service: v.optional(v.array(ServiceSchema))
+  service: v.optional(v.array(ServiceSchema)),
 } satisfies Shape<DidDocument>)

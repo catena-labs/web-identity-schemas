@@ -1,17 +1,18 @@
-import type {
-  StatusList2021CredentialSubject,
-  StatusList2021Credential
-} from "../../../types/vc/status/statuslist2021"
-import type { Shape } from "../../shared/shape"
 import * as v from "valibot"
+
 import {
   statusList2021Context,
   statusPurposes,
-  vcV1CoreContext
+  vcV1CoreContext,
 } from "../../../constants/vc"
+import type {
+  StatusList2021CredentialSubject,
+  StatusList2021Credential,
+} from "../../../types/vc/status/statuslist2021"
 import { DidSchema } from "../../did"
 import { Base64UrlSchema } from "../../shared/base-64"
 import { jsonLdContextSchema } from "../../shared/json-ld"
+import type { Shape } from "../../shared/shape"
 import { BaseCredentialSchema, credentialTypeSchema } from "../core"
 
 /**
@@ -35,7 +36,7 @@ export const StatusList2021CredentialSubjectSchema = v.object({
   statusPurpose: v.picklist(statusPurposes),
 
   /** Base64url-encoded status list */
-  encodedList: Base64UrlSchema
+  encodedList: Base64UrlSchema,
 } satisfies Shape<StatusList2021CredentialSubject>)
 
 /**
@@ -50,7 +51,7 @@ export const StatusList2021CredentialSchema = v.strictObject({
   /** Credential types */
   type: v.pipe(
     credentialTypeSchema("StatusList2021Credential"),
-    v.custom<["VerifiableCredential", "StatusList2021Credential"]>(() => true)
+    v.custom<["VerifiableCredential", "StatusList2021Credential"]>(() => true),
   ),
 
   /** Issuance date (V1) */
@@ -60,5 +61,5 @@ export const StatusList2021CredentialSchema = v.strictObject({
   expirationDate: v.optional(v.pipe(v.string(), v.isoTimestamp())),
 
   /** Credential subject */
-  credentialSubject: StatusList2021CredentialSubjectSchema
+  credentialSubject: StatusList2021CredentialSubjectSchema,
 } satisfies Shape<StatusList2021Credential>)

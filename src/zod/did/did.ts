@@ -1,3 +1,12 @@
+import * as z from "zod"
+
+import {
+  didMethodRegex,
+  didRegex,
+  didUrlRegex,
+  legacyVerificationMethodTypes,
+  verificationMethodTypes,
+} from "../../constants/did"
 import type {
   ServiceEndpoint,
   VerificationMethod,
@@ -8,19 +17,11 @@ import type {
   VerificationMethodType,
   ServiceEndpointMap,
   DidMethod,
-  LegacyVerificationMethodType
+  LegacyVerificationMethodType,
 } from "../../types/did"
-import type { Shape } from "../shared/shape"
-import * as z from "zod"
-import {
-  didMethodRegex,
-  didRegex,
-  didUrlRegex,
-  legacyVerificationMethodTypes,
-  verificationMethodTypes
-} from "../../constants/did"
 import { JsonWebKeySchema } from "../jose/jwk"
 import { jsonLdContextSchema } from "../shared/json-ld"
+import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
 
 /**
@@ -71,7 +72,7 @@ export const createDidSchema = <T extends DidMethod>(method: T) => {
  */
 export function isDidWithMethod<T extends DidMethod>(
   method: T,
-  value: unknown
+  value: unknown,
 ): value is Did<T> {
   return createDidSchema(method).safeParse(value).success
 }
@@ -103,7 +104,7 @@ const VerificationMethodBaseSchema = z.object({
   id: DidUrlSchema,
 
   /** The DID that controls this verification method */
-  controller: DidSchema
+  controller: DidSchema,
 })
 
 /**
@@ -115,7 +116,7 @@ export const VerificationMethodJsonWebKeySchema = z.object({
   type: z.literal("JsonWebKey"),
 
   /** JSON Web Key */
-  publicKeyJwk: JsonWebKeySchema
+  publicKeyJwk: JsonWebKeySchema,
 })
 
 export const VerificationMethodMultikeySchema = z.object({
@@ -124,7 +125,7 @@ export const VerificationMethodMultikeySchema = z.object({
   type: z.literal("Multikey"),
 
   /** Multibase-encoded public key */
-  publicKeyMultibase: z.string()
+  publicKeyMultibase: z.string(),
 })
 
 export const VerificationMethodLegacySchema = z.object({
@@ -139,7 +140,7 @@ export const VerificationMethodLegacySchema = z.object({
   publicKeyJwk: JsonWebKeySchema.optional(),
 
   /** Base58-encoded public key (deprecated, use publicKeyJwk) */
-  publicKeyBase58: z.string().optional()
+  publicKeyBase58: z.string().optional(),
 })
 
 /**
@@ -150,7 +151,7 @@ export const VerificationMethodSchema: Shape<VerificationMethod> =
   z.discriminatedUnion("type", [
     VerificationMethodJsonWebKeySchema,
     VerificationMethodMultikeySchema,
-    VerificationMethodLegacySchema
+    VerificationMethodLegacySchema,
   ])
 
 export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
@@ -160,8 +161,8 @@ export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
     z.array(z.string()),
     UriSchema,
     z.array(UriSchema),
-    z.lazy(() => ServiceEndpointMapSchema)
-  ])
+    z.lazy(() => ServiceEndpointMapSchema),
+  ]),
 )
 
 /**
@@ -172,7 +173,7 @@ export const ServiceEndpointMapSchema: Shape<ServiceEndpointMap> = z.record(
 export const ServiceEndpointSchema: Shape<ServiceEndpoint> = z.union([
   UriSchema,
   ServiceEndpointMapSchema,
-  z.array(z.union([UriSchema, ServiceEndpointMapSchema]))
+  z.array(z.union([UriSchema, ServiceEndpointMapSchema])),
 ])
 
 /**
@@ -187,7 +188,7 @@ export const ServiceSchema: Shape<Service> = z.object({
   type: z.union([z.string(), z.array(z.string())]),
 
   /** The service endpoint */
-  serviceEndpoint: ServiceEndpointSchema
+  serviceEndpoint: ServiceEndpointSchema,
 })
 
 /**
@@ -236,5 +237,5 @@ export const DidDocumentSchema: Shape<DidDocument> = z.object({
     .optional(),
 
   /** Services */
-  service: z.array(ServiceSchema).optional()
+  service: z.array(ServiceSchema).optional(),
 })

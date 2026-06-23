@@ -1,3 +1,6 @@
+import * as v from "valibot"
+
+import { keyUses, keyOperations } from "../../constants/jwk"
 import type {
   KeyUse,
   KeyOperation,
@@ -6,13 +9,11 @@ import type {
   EcJwk,
   OctJwk,
   OkpJwk,
-  JsonWebKey
+  JsonWebKey,
 } from "../../types/jose/jwk"
-import type { Shape } from "../shared/shape"
-import * as v from "valibot"
-import { keyUses, keyOperations } from "../../constants/jwk"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
+import type { Shape } from "../shared/shape"
 import { JoseAlgorithmSchema } from "./jwa"
 
 /**
@@ -25,7 +26,7 @@ import { JoseAlgorithmSchema } from "./jwa"
  */
 export const KeyUseSchema = v.pipe(
   v.picklist(keyUses),
-  v.custom<KeyUse>(() => true)
+  v.custom<KeyUse>(() => true),
 )
 
 /**
@@ -38,7 +39,7 @@ export const KeyUseSchema = v.pipe(
  */
 export const KeyOperationSchema = v.pipe(
   v.picklist(keyOperations),
-  v.custom<KeyOperation>(() => true)
+  v.custom<KeyOperation>(() => true),
 )
 
 /**
@@ -80,7 +81,7 @@ export const BaseJwkSchema = v.object({
   "x5t#S256": v.optional(Base64UrlSchema),
 
   /** URL pointing to X.509 certificate */
-  x5u: v.optional(v.pipe(v.string(), v.url()))
+  x5u: v.optional(v.pipe(v.string(), v.url())),
 } satisfies Shape<BaseJwk>)
 
 /**
@@ -135,10 +136,10 @@ export const RsaJwkSchema = v.object({
         d: Base64UrlSchema,
 
         /** Additional factor CRT coefficient (base64url-encoded) */
-        t: v.optional(Base64UrlSchema)
-      })
-    )
-  )
+        t: v.optional(Base64UrlSchema),
+      }),
+    ),
+  ),
 } satisfies Shape<RsaJwk>)
 
 /**
@@ -169,7 +170,7 @@ export const EcJwkSchema = v.object({
   y: Base64UrlSchema,
 
   /** EC private key (base64url-encoded) */
-  d: v.optional(Base64UrlSchema)
+  d: v.optional(Base64UrlSchema),
 } satisfies Shape<EcJwk>)
 
 /**
@@ -189,7 +190,7 @@ export const OctJwkSchema = v.object({
   kty: v.literal("oct"),
 
   /** Symmetric key material (base64url-encoded) */
-  k: Base64UrlSchema
+  k: Base64UrlSchema,
 } satisfies Shape<OctJwk>)
 
 /**
@@ -216,7 +217,7 @@ export const OkpJwkSchema = v.object({
   x: Base64UrlSchema,
 
   /** Private key (base64url-encoded) */
-  d: v.optional(Base64UrlSchema)
+  d: v.optional(Base64UrlSchema),
 } satisfies Shape<OkpJwk>)
 
 /**
@@ -228,5 +229,5 @@ export const OkpJwkSchema = v.object({
  */
 export const JsonWebKeySchema = v.pipe(
   v.variant("kty", [RsaJwkSchema, EcJwkSchema, OctJwkSchema, OkpJwkSchema]),
-  v.custom<JsonWebKey>(() => true)
+  v.custom<JsonWebKey>(() => true),
 )

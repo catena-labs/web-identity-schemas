@@ -1,3 +1,5 @@
+import * as z from "zod"
+
 import type {
   UnixTimestamp,
   JwtHeader,
@@ -6,14 +8,13 @@ import type {
   JwtPayload,
   JwtObject,
   JwtObjectUnsecured,
-  JwtObjectSigned
+  JwtObjectSigned,
 } from "../../types/jose/jwt"
-import type { Shape } from "../shared/shape"
-import * as z from "zod"
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
+import type { Shape } from "../shared/shape"
 import {
   JoseSignatureAlgorithmSchema,
-  JoseUnsecuredAlgorithmSchema
+  JoseUnsecuredAlgorithmSchema,
 } from "./jwa"
 import { JsonWebKeySchema } from "./jwk"
 
@@ -56,7 +57,7 @@ const JwtHeaderBaseSchema = z.object({
   "x5t#S256": Base64UrlSchema.optional(),
 
   /** Critical header parameter (optional) */
-  crit: z.array(z.string()).optional()
+  crit: z.array(z.string()).optional(),
 })
 
 /**
@@ -66,7 +67,7 @@ const JwtHeaderBaseSchema = z.object({
 const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
-  alg: JoseUnsecuredAlgorithmSchema
+  alg: JoseUnsecuredAlgorithmSchema,
 })
 
 /**
@@ -76,7 +77,7 @@ const JwtHeaderUnsecuredSchema: Shape<JwtHeaderUnsecured> = z.object({
 export const JwtHeaderSignedSchema: Shape<JwtHeaderSigned> = z.object({
   ...JwtHeaderBaseSchema.shape,
   /** Algorithm used to sign the JWT */
-  alg: JoseSignatureAlgorithmSchema
+  alg: JoseSignatureAlgorithmSchema,
 }) satisfies Shape<JwtHeaderSigned>
 
 /**
@@ -86,7 +87,7 @@ export const JwtHeaderSignedSchema: Shape<JwtHeaderSigned> = z.object({
  */
 export const JwtHeaderSchema: Shape<JwtHeader> = z.union([
   JwtHeaderUnsecuredSchema,
-  JwtHeaderSignedSchema
+  JwtHeaderSignedSchema,
 ])
 
 /**
@@ -115,7 +116,7 @@ export const JwtPayloadSchema: Shape<JwtPayload> = z
     iat: UnixTimestampSchema.optional(),
 
     /** JWT ID - provides a unique identifier for the JWT */
-    jti: z.string().optional()
+    jti: z.string().optional(),
   })
   .loose() // Allow additional custom claims
 
@@ -132,7 +133,7 @@ const JwtObjectUnsecuredSchema: Shape<JwtObjectUnsecured> = z.object({
   payload: JwtPayloadSchema,
 
   /** JWT signature (empty string for Unsecured JWS/JWT) */
-  signature: z.literal("")
+  signature: z.literal(""),
 })
 
 /**
@@ -148,7 +149,7 @@ const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
   payload: JwtPayloadSchema,
 
   /** JWT signature (base64url encoded) */
-  signature: Base64UrlSchema
+  signature: Base64UrlSchema,
 })
 
 /**
@@ -159,5 +160,5 @@ const JwtObjectSignedSchema: Shape<JwtObjectSigned> = z.object({
  */
 export const JwtObjectSchema: Shape<JwtObject> = z.union([
   JwtObjectUnsecuredSchema,
-  JwtObjectSignedSchema
+  JwtObjectSignedSchema,
 ])

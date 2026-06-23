@@ -1,4 +1,5 @@
 import * as v from "valibot"
+
 import { JsonWebKeySchema } from "./jwk"
 
 /**
@@ -13,5 +14,5 @@ import { JsonWebKeySchema } from "./jwk"
  * }
  */
 export const JsonWebKeySetSchema = v.object({
-  keys: v.array(JsonWebKeySchema)
+  keys: v.array(JsonWebKeySchema),
 })

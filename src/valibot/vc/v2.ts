@@ -1,12 +1,13 @@
-import type { CredentialV2, Uri } from "../../types"
 import * as v from "valibot"
+
 import { vcV2CoreContext } from "../../constants/vc"
+import type { CredentialV2, Uri } from "../../types"
 import { jsonLdContextSchema } from "../shared/json-ld"
 import {
   BaseCredentialSchema,
   credentialTypeSchema,
   CredentialSubjectSchema,
-  makeVerifiable
+  makeVerifiable,
 } from "./core"
 
 /**
@@ -25,9 +26,9 @@ export const VcV2ContextSchema = v.union([
     v.tupleWithRest([VcV2CoreContextSchema], v.string()),
     v.check(
       (contexts) => contexts.includes(vcV2CoreContext),
-      "Array must contain V2 core context"
-    )
-  )
+      "Array must contain V2 core context",
+    ),
+  ),
 ])
 
 /**
@@ -37,7 +38,7 @@ export const VcV2ContextSchema = v.union([
 export const createCredentialV2Schema = (
   credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   v.pipe(
     v.looseObject({
@@ -47,7 +48,7 @@ export const createCredentialV2Schema = (
       "@context": jsonLdContextSchema(
         contextSchema
           ? [vcV2CoreContext, ...[contextSchema].flat()]
-          : vcV2CoreContext
+          : vcV2CoreContext,
       ),
 
       /** Credential types */
@@ -62,10 +63,10 @@ export const createCredentialV2Schema = (
       /** Credential subject */
       credentialSubject: v.union([
         credentialSubjectSchema,
-        v.array(credentialSubjectSchema)
-      ])
+        v.array(credentialSubjectSchema),
+      ]),
     }),
-    v.custom<CredentialV2>(() => true)
+    v.custom<CredentialV2>(() => true),
   )
 
 /**
@@ -75,14 +76,14 @@ export const createCredentialV2Schema = (
 export const createVerifiableCredentialV2Schema = (
   credentialSubjectSchema: v.GenericSchema = CredentialSubjectSchema,
   additionalTypes?: string | string[],
-  contextSchema?: Uri | Uri[]
+  contextSchema?: Uri | Uri[],
 ) =>
   makeVerifiable(
     createCredentialV2Schema(
       credentialSubjectSchema,
       additionalTypes,
-      contextSchema
-    )
+      contextSchema,
+    ),
   )
 
 /**

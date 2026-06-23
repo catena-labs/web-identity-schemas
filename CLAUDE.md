@@ -63,8 +63,10 @@ interface BaseCredential<TSubject, TType> {
 }
 
 // V1/V2 unsigned credentials
-interface CredentialV1<TSubject, TType>
-  extends BaseCredential<TSubject, TType> {
+interface CredentialV1<TSubject, TType> extends BaseCredential<
+  TSubject,
+  TType
+> {
   issuanceDate: DateTimeStamp
 }
 
@@ -107,7 +109,7 @@ type VerifiableCredential<TSubject, TType> =
 import {
   CredentialV1Schema,
   VerifiableCredentialV1Schema,
-  SignedVerifiableCredentialV1Schema
+  SignedVerifiableCredentialV1Schema,
 } from "./valibot/vc"
 
 // 1. Building unsigned credential (before signing)
@@ -116,7 +118,7 @@ const unsignedCredential = {
   type: "VerifiableCredential",
   issuer: "did:example:issuer",
   issuanceDate: "2023-01-01T00:00:00Z",
-  credentialSubject: { name: "Alice" }
+  credentialSubject: { name: "Alice" },
   // No proof field
 }
 
@@ -151,8 +153,8 @@ const relaxedPattern = z.union([
     .min(1)
     .refine(
       (types) => types[0] === "VerifiableCredential",
-      "First type must be VerifiableCredential"
-    )
+      "First type must be VerifiableCredential",
+    ),
 ])
 ```
 
@@ -201,7 +203,7 @@ expect(statusCredential).toMatchSchema(
   schemas.StatusCredentialSchema,
   (parsed: { credentialSubject: { type: string } }) => {
     expect(parsed.credentialSubject.type).toBe("StatusList2021")
-  }
+  },
 )
 ```
 
@@ -272,7 +274,7 @@ For custom types, use `v.custom<ExpectedType>(() => true)`:
 export const UriSchema = v.pipe(
   v.string(),
   v.regex(/^[a-zA-Z][a-zA-Z0-9+.-]*:.+/, "Must be a valid URI with scheme"),
-  v.custom<Uri>(() => true)
+  v.custom<Uri>(() => true),
 )
 ```
 
@@ -282,7 +284,7 @@ For object schemas, use `satisfies Shape<T>` to ensure schema output matches exp
 export const ServiceSchema = v.object({
   id: UriSchema,
   type: v.union([v.string(), v.array(v.string())]),
-  serviceEndpoint: ServiceEndpointSchema
+  serviceEndpoint: ServiceEndpointSchema,
 } satisfies Shape<Service>)
 ```
 
@@ -310,14 +312,14 @@ For object schemas, use `ObjectShape<T>` for schemas that need `.extend()` metho
 // For schemas that need .extend() method
 export const BaseJwkSchema: ObjectShape<BaseJwk> = z.object({
   kty: z.string(),
-  use: z.optional(KeyUseSchema)
+  use: z.optional(KeyUseSchema),
   // ... other fields
 })
 
 export const RsaJwkSchema: ObjectShape<RsaJwk> = BaseJwkSchema.extend({
   kty: z.literal("RSA"),
   n: Base64UrlSchema,
-  e: Base64UrlSchema
+  e: Base64UrlSchema,
   // ... RSA specific fields
 })
 ```
@@ -327,7 +329,7 @@ For non-object schemas or those that don't need `.extend()`, use `Shape<T>`:
 ```ts
 export const UnionSchema: Shape<MyUnion> = z.discriminatedUnion("type", [
   ItemSchema,
-  OtherSchema
+  OtherSchema,
 ])
 ```
 
