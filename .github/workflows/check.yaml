@@ -22,4 +22,4 @@ jobs:
       - run: pnpm run build
       - run: pnpm run check
       - run: pnpm run publint
-      - run: pnpm dlx @arethetypeswrong/cli --pack --profile node16
+      - run: pnpm dlx @arethetypeswrong/cli --pack --profile esm-only
