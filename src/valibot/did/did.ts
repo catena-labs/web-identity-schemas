@@ -26,6 +26,7 @@ import { JsonWebKeySchema } from "../jose/jwk"
 import { DidContextSchema } from "../shared/json-ld"
 import type { Shape } from "../shared/shape"
 import { UriSchema } from "../shared/uri"
+import { plainRecord } from "../shared/utils"
 
 /**
  * DID URL scheme. DIDs are a subset of URIs with specific format requirements.
@@ -193,8 +194,7 @@ export const VerificationMethodSchema = v.variant("type", [
  * @see {@link https://www.w3.org/TR/did-core/#services}
  */
 export const ServiceEndpointMapSchema: v.GenericSchema<ServiceEndpointMap> =
-  v.record(
-    v.string(),
+  plainRecord(
     v.union([
       v.string(),
       v.array(v.string()),

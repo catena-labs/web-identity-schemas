@@ -7,13 +7,14 @@ import type {
   VcContext,
 } from "../../types/shared/json-ld"
 import { UriSchema } from "./uri"
+import { plainRecord } from "./utils"
 
 /**
  * Inline JSON-LD context object. Term definitions are open-ended, so values are
  * intentionally unconstrained.
  * @see {@link https://www.w3.org/TR/json-ld/#context-definitions}
  */
-const JsonLdContextObjectSchema = v.record(v.string(), v.unknown())
+const JsonLdContextObjectSchema = plainRecord(v.unknown())
 
 /**
  * Generic JSON-LD context schema matching the `JsonLdContext` type.
@@ -23,8 +24,9 @@ const JsonLdContextObjectSchema = v.record(v.string(), v.unknown())
 export const JsonLdContextSchema = v.pipe(
   v.union([
     UriSchema,
-    // Array before the bare object branch: v.record matches arrays (they are
-    // objects) and would coerce them to plain objects, dropping array-ness.
+    // Arrays are handled by this branch alone: JsonLdContextObjectSchema
+    // rejects them, so an array can never fall through to the bare object
+    // branch below and be rebuilt as a plain object.
     v.array(v.union([UriSchema, JsonLdContextObjectSchema])),
     JsonLdContextObjectSchema,
   ]),
