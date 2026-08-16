@@ -25,6 +25,32 @@ export function oneOrMany<T>(schema: v.GenericSchema<T>) {
 }
 
 /**
+ * Create a record schema that rejects arrays.
+ *
+ * Valibot's `v.record()` accepts arrays, because an array is an object: the
+ * array is rebuilt as a plain object with numeric string keys, silently
+ * dropping its array-ness. Zod's `z.record()` rejects arrays outright, so an
+ * unguarded `v.record()` makes the two implementations disagree.
+ * @example
+ * ```ts
+ * const schema = plainRecord(v.string())
+ * schema.parse({ a: "b" }) // { a: "b" }
+ * schema.parse(["a"]) // Error (a bare v.record() would return { "0": "a" })
+ * ```
+ * @param value - The schema for the record's values.
+ * @returns A record schema that accepts objects but not arrays.
+ */
+export function plainRecord<T>(value: v.GenericSchema<T>) {
+  return v.pipe(
+    v.custom<Record<string, T>>(
+      (input) => !Array.isArray(input),
+      "Expected an object but received an array",
+    ),
+    v.record(v.string(), value),
+  )
+}
+
+/**
  * Create a schema that checks if the value includes all of the given values.
  * @example
  * ```ts

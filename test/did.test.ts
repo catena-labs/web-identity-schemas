@@ -309,7 +309,38 @@ describe("did", () => {
           ],
         }
 
-        expect(serviceWithArrayEndpoint).toMatchSchema(schemas.ServiceSchema)
+        expect(serviceWithArrayEndpoint).toMatchSchema(
+          schemas.ServiceSchema,
+          (parsed) => {
+            // The endpoint set must survive parsing as an array, not be
+            // rebuilt as a map keyed by "0", "1", ...
+            expect(Array.isArray(parsed.serviceEndpoint)).toBe(true)
+            expect(parsed.serviceEndpoint).toStrictEqual(
+              serviceWithArrayEndpoint.serviceEndpoint,
+            )
+          },
+        )
+      })
+
+      test("rejects an array endpoint containing a nested array", () => {
+        const serviceWithNestedArrayEndpoint = {
+          id: "did:example:123456789abcdefghi#messaging",
+          type: "MessagingService",
+          serviceEndpoint: [["https://example.com/messaging/1"]],
+        }
+
+        expect(serviceWithNestedArrayEndpoint).not.toMatchSchema(
+          schemas.ServiceSchema,
+        )
+        expect([["https://example.com/messaging/1"]]).not.toMatchSchema(
+          schemas.ServiceEndpointSchema,
+        )
+      })
+
+      test("rejects an array as a service endpoint map", () => {
+        expect(["https://example.com/messaging/1"]).not.toMatchSchema(
+          schemas.ServiceEndpointMapSchema,
+        )
       })
 
       test("service with object endpoint", () => {
@@ -364,6 +395,31 @@ describe("did", () => {
         )
         expect(mapWithBooleanValue).not.toMatchSchema(
           schemas.ServiceEndpointMapSchema,
+        )
+      })
+    })
+
+    describe("JsonLdContextSchema", () => {
+      test("preserves a context array as an array", () => {
+        const contexts = [
+          "https://www.w3.org/ns/did/v1",
+          "https://w3id.org/security/v2",
+        ]
+
+        expect(contexts).toMatchSchema(
+          schemas.JsonLdContextSchema,
+          (parsed) => {
+            expect(Array.isArray(parsed)).toBe(true)
+            expect(parsed).toStrictEqual(contexts)
+          },
+        )
+      })
+
+      test("rejects a context array containing an invalid member", () => {
+        expect(["not a uri"]).not.toMatchSchema(schemas.JsonLdContextSchema)
+        expect([null]).not.toMatchSchema(schemas.JsonLdContextSchema)
+        expect([["https://www.w3.org/ns/did/v1"]]).not.toMatchSchema(
+          schemas.JsonLdContextSchema,
         )
       })
     })
