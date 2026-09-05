@@ -154,6 +154,22 @@ export const CredentialStatusSchema: Shape<CredentialStatus> = z.object({
     .union([z.enum(statusPurposes), z.string()])
     .pipe(z.custom<StatusPurpose>())
     .optional(),
+
+  /** Size of the status entry in bits (processed as 1 when absent) */
+  statusSize: z.number().optional(),
+
+  /** Status messages mapping status values to human-readable meanings */
+  statusMessage: z
+    .array(
+      z.object({
+        status: z.string(),
+        message: z.string(),
+      }),
+    )
+    .optional(),
+
+  /** URL or URLs dereferencing to status documentation */
+  statusReference: z.union([UriSchema, z.array(UriSchema)]).optional(),
 })
 
 /**

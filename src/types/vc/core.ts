@@ -73,6 +73,24 @@ export interface CredentialStatus {
 
   /** Status purpose */
   statusPurpose?: StatusPurpose
+
+  /** Size of the status entry in bits; processed as 1 when absent */
+  statusSize?: number
+
+  /** Status messages mapping status values to human-readable meanings */
+  statusMessage?: StatusMessage[]
+
+  /** URL or URLs dereferencing to status documentation */
+  statusReference?: Uri | Uri[]
+}
+
+/** A single status message entry in a status list. */
+export interface StatusMessage {
+  /** Status value as a hexadecimal string prefixed with 0x */
+  status: string
+
+  /** Human-readable meaning of the status value */
+  message: string
 }
 
 /**

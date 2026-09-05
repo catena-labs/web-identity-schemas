@@ -193,6 +193,62 @@ describe("vc", () => {
           },
         )
       })
+
+      test("BitstringStatusListEntry with statusSize, statusMessage, and statusReference (spec Example 2)", () => {
+        const specExampleEntry = {
+          id: "https://example.com/credentials/status/8#492847",
+          type: "BitstringStatusListEntry",
+          statusPurpose: "message",
+          statusListIndex: "492847",
+          statusSize: 2,
+          statusListCredential: "https://example.com/credentials/status/8",
+          statusMessage: [
+            { status: "0x0", message: "pending_review" },
+            { status: "0x1", message: "accepted" },
+            { status: "0x2", message: "rejected" },
+          ],
+          statusReference: "https://example.org/status-dictionary/",
+        }
+
+        expect(specExampleEntry).toMatchSchema(
+          schemas.CredentialStatusSchema,
+          (parsed) => {
+            expect(parsed.statusSize).toBe(2)
+            expect(parsed.statusMessage?.[0]?.message).toBe("pending_review")
+            expect(parsed.statusMessage?.length).toBe(3)
+            expect(parsed.statusReference).toBe(
+              "https://example.org/status-dictionary/",
+            )
+          },
+        )
+      })
+
+      test("statusMessage and statusSize survive parsing (no silent data loss)", () => {
+        const entry = {
+          type: "BitstringStatusListEntry",
+          statusPurpose: "message",
+          statusListIndex: "42",
+          statusListCredential: "https://example.com/status/8",
+          statusSize: 1,
+          statusMessage: [
+            { status: "0x0", message: "unset" },
+            { status: "0x1", message: "set" },
+          ],
+          statusReference: ["https://example.org/status-dictionary/"],
+        }
+
+        expect(entry).toMatchSchema(
+          schemas.CredentialStatusSchema,
+          (parsed) => {
+            expect(parsed.statusSize).toBe(1)
+            expect(parsed.statusMessage?.length).toBe(2)
+            expect(parsed.statusMessage?.[1]?.message).toBe("set")
+            expect(parsed.statusReference?.[0]).toBe(
+              "https://example.org/status-dictionary/",
+            )
+          },
+        )
+      })
     })
 
     describe("VerifiableCredentialSchema", () => {
