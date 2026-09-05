@@ -156,6 +156,22 @@ export const CredentialStatusSchema = v.object({
       v.custom<StatusPurpose>(() => true),
     ),
   ),
+
+  /** Size of the status entry in bits (processed as 1 when absent) */
+  statusSize: v.optional(v.number()),
+
+  /** Status messages mapping status values to human-readable meanings */
+  statusMessage: v.optional(
+    v.array(
+      v.object({
+        status: v.string(),
+        message: v.string(),
+      }),
+    ),
+  ),
+
+  /** URL or URLs dereferencing to status documentation */
+  statusReference: v.optional(v.union([UriSchema, v.array(UriSchema)])),
 } satisfies Shape<CredentialStatus>)
 
 /**
