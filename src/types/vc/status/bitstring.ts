@@ -10,13 +10,13 @@ export interface BitstringStatusListCredentialSubject extends CredentialSubject 
   /** Type of the credential subject */
   type: "BitstringStatusList"
 
-  /** Purpose of the status list (revocation or suspension) */
-  statusPurpose: StatusPurpose
+  /** Purpose of the status list; one or more per the spec */
+  statusPurpose: StatusPurpose | StatusPurpose[]
 
   /** Base64url-encoded status list */
   encodedList: Base64Url
 
-  /** Time to live for the status list in seconds (optional) */
+  /** Time to live for the status list in milliseconds (optional) */
   ttl?: number
 }
 

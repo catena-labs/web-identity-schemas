@@ -34,13 +34,16 @@ export const BitstringStatusListCredentialSubjectSchema = v.object({
   /** Type of the credential subject */
   type: v.literal("BitstringStatusList"),
 
-  /** Purpose of the status list (revocation or suspension) */
-  statusPurpose: v.picklist(statusPurposes),
+  /** Purpose of the status list; one or more per the spec */
+  statusPurpose: v.union([
+    v.picklist(statusPurposes),
+    v.array(v.picklist(statusPurposes)),
+  ]),
 
   /** Base64url-encoded status list */
   encodedList: Base64UrlSchema,
 
-  /** Time to live for the status list in seconds */
+  /** Time to live for the status list in milliseconds */
   ttl: v.optional(v.number()),
 } satisfies Shape<BitstringStatusListCredentialSubject>)
 

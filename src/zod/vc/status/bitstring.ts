@@ -35,13 +35,16 @@ export const BitstringStatusListCredentialSubjectSchema: Shape<BitstringStatusLi
     /** Type of the credential subject */
     type: z.literal("BitstringStatusList"),
 
-    /** Purpose of the status list (revocation or suspension) */
-    statusPurpose: z.enum(statusPurposes),
+    /** Purpose of the status list; one or more per the spec */
+    statusPurpose: z.union([
+      z.enum(statusPurposes),
+      z.array(z.enum(statusPurposes)),
+    ]),
 
     /** Base64url-encoded status list */
     encodedList: Base64UrlSchema,
 
-    /** Time to live for the status list in seconds */
+    /** Time to live for the status list in milliseconds */
     ttl: z.number().optional(),
   })
 
