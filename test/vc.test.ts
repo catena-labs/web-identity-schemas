@@ -525,6 +525,48 @@ describe("vc", () => {
       )
     })
 
+    test("BitstringStatusListCredentialSubjectSchema - message purpose (spec Example 2)", () => {
+      const messageSubject = {
+        id: "https://example.com/status/8#list",
+        type: "BitstringStatusList",
+        statusPurpose: "message",
+        encodedList:
+          "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+      }
+
+      expect(messageSubject).toMatchSchema(
+        schemas.BitstringStatusListCredentialSubjectSchema,
+      )
+    })
+
+    test("BitstringStatusListCredentialSubjectSchema - refresh purpose", () => {
+      const refreshSubject = {
+        id: "https://example.com/status/9#list",
+        type: "BitstringStatusList",
+        statusPurpose: "refresh",
+        encodedList:
+          "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+      }
+
+      expect(refreshSubject).toMatchSchema(
+        schemas.BitstringStatusListCredentialSubjectSchema,
+      )
+    })
+
+    test("BitstringStatusListCredentialSubjectSchema - array statusPurpose (spec: one or more strings)", () => {
+      const multiPurposeSubject = {
+        id: "https://example.com/status/3#list",
+        type: "BitstringStatusList",
+        statusPurpose: ["revocation", "suspension"],
+        encodedList:
+          "H4sIAAAAAAAAAKtWyk1VslIyNjPQM7Q01ivOVLI30os3AAAczJJKNQAAAA",
+      }
+
+      expect(multiPurposeSubject).toMatchSchema(
+        schemas.BitstringStatusListCredentialSubjectSchema,
+      )
+    })
+
     test("BitstringStatusListCredentialSchema - complete bitstring credential", () => {
       const bitstringCredential = {
         "@context": [

@@ -51,8 +51,14 @@ export type CredentialStatusType =
 
 /**
  * Status purposes for credential status.
+ * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/#statuspurpose}
  */
-export type StatusPurpose = "revocation" | "suspension" | string
+export type StatusPurpose =
+  | "revocation"
+  | "suspension"
+  | "refresh"
+  | "message"
+  | string
 
 /**
  * Credential status.

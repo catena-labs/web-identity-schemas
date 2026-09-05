@@ -53,5 +53,11 @@ export const credentialStatusTypes = [
 
 /**
  * Status purposes for credential status.
+ * @see {@link https://www.w3.org/TR/vc-bitstring-status-list/#statuspurpose}
  */
-export const statusPurposes = ["revocation", "suspension"] as const
+export const statusPurposes = [
+  "revocation",
+  "suspension",
+  "refresh",
+  "message",
+] as const
