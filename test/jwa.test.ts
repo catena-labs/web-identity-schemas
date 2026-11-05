@@ -5,6 +5,7 @@ import {
   jweContentEncryptionAlgorithms,
   jweKeyManagementAlgorithms,
   joseCompressionAlgorithms,
+  jwkAlgorithms,
 } from "../src/constants/algorithms"
 import * as valibot from "../src/valibot"
 import * as zod from "../src/zod"
@@ -112,6 +113,34 @@ describe("jwa", () => {
 
         for (const alg of invalidAlgorithms) {
           expect(alg).not.toMatchSchema(schemas.JoseCompressionAlgorithmSchema)
+        }
+      })
+    })
+
+    describe("JwkAlgorithmSchema", () => {
+      test("valid algorithms", () => {
+        const validAlgorithms = [
+          ...jwkAlgorithms,
+          ...joseAlgorithms,
+          ...jweKeyManagementAlgorithms,
+          ...jweContentEncryptionAlgorithms,
+        ]
+
+        for (const alg of validAlgorithms) {
+          expect(alg).toMatchSchema(schemas.JwkAlgorithmSchema)
+        }
+      })
+
+      test("invalid algorithms", () => {
+        const invalidAlgorithms = [
+          "INVALID",
+          "rsa-oaep", // Wrong case
+          "DEF", // Compression algorithm
+          "",
+        ]
+
+        for (const alg of invalidAlgorithms) {
+          expect(alg).not.toMatchSchema(schemas.JwkAlgorithmSchema)
         }
       })
     })

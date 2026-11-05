@@ -240,6 +240,8 @@ This library exports comprehensive schemas for Web Identity and JOSE standards. 
   - [Types](./src/types/shared/algorithms.ts) | [Valibot](./src/valibot/jose/jwa.ts) | [Zod](./src/zod/jose/jwa.ts)
 - **`JweKeyManagementAlgorithmSchema`** - Key management algorithms
   - [Types](./src/types/shared/algorithms.ts) | [Valibot](./src/valibot/jose/jwa.ts) | [Zod](./src/zod/jose/jwa.ts)
+- **`JwkAlgorithmSchema`** - Algorithms a JWK may name in `alg` (JWS and JWE algorithms)
+  - [Types](./src/types/shared/algorithms.ts) | [Valibot](./src/valibot/jose/jwa.ts) | [Zod](./src/zod/jose/jwa.ts)
 
 ### Status and Proof Schemas
 

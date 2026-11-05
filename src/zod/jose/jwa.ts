@@ -7,6 +7,7 @@ import {
   jweContentEncryptionAlgorithms,
   jweKeyManagementAlgorithms,
   joseCompressionAlgorithms,
+  jwkAlgorithms,
 } from "../../constants/algorithms"
 import type {
   JoseSignatureAlgorithm,
@@ -15,6 +16,7 @@ import type {
   JweContentEncryptionAlgorithm,
   JweKeyManagementAlgorithm,
   JoseCompressionAlgorithm,
+  JwkAlgorithm,
 } from "../../types/shared/algorithms"
 
 /**
@@ -87,3 +89,16 @@ export const JweKeyManagementAlgorithmSchema = z
 export const JoseCompressionAlgorithmSchema = z
   .enum(joseCompressionAlgorithms)
   .pipe(z.custom<JoseCompressionAlgorithm>())
+
+/**
+ * Algorithms a JSON Web Key may name in its `alg` member: JWS algorithms and
+ * JWE algorithms.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7517#section-4.4}
+ *
+ * @example
+ * "ES256" // A signing key
+ * "RSA-OAEP" // An encryption key
+ */
+export const JwkAlgorithmSchema = z
+  .enum(jwkAlgorithms)
+  .pipe(z.custom<JwkAlgorithm>())

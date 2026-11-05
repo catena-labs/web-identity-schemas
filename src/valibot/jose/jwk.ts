@@ -14,7 +14,7 @@ import type {
 import { Base64Schema, Base64UrlSchema } from "../shared/base-64"
 import { EllipticCurveSchema, OctetKeyPairCurveSchema } from "../shared/curves"
 import type { Shape } from "../shared/shape"
-import { JoseAlgorithmSchema } from "./jwa"
+import { JwkAlgorithmSchema } from "./jwa"
 
 /**
  * Intended key use.
@@ -56,8 +56,8 @@ export const KeyOpsSchema = v.array(KeyOperationSchema)
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7517}
  */
 export const BaseJwkSchema = v.object({
-  /** Algorithm intended for use with the key (e.g., "RS256") */
-  alg: v.optional(JoseAlgorithmSchema),
+  /** Algorithm intended for use with the key (e.g., "RS256", "RSA-OAEP") */
+  alg: v.optional(JwkAlgorithmSchema),
 
   /** Whether the key is extractable (for Web Crypto API) */
   ext: v.optional(v.boolean()),

@@ -111,3 +111,15 @@ export const joseCompressionAlgorithms = [
   // DEFLATE Compression Algorithm
   "DEF",
 ] as const
+
+/**
+ * Algorithms a JSON Web Key may name in its `alg` member: every JWS algorithm
+ * (including `none`), every JWE key management algorithm, and every JWE
+ * content encryption algorithm.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7517#section-4.4}
+ */
+export const jwkAlgorithms = [
+  ...joseAlgorithms,
+  ...jweKeyManagementAlgorithms,
+  ...jweContentEncryptionAlgorithms,
+] as const
