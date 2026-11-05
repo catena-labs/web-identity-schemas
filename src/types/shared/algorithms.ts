@@ -99,3 +99,13 @@ export type JweKeyManagementAlgorithm =
 export type JoseCompressionAlgorithm =
   // DEFLATE Compression Algorithm
   "DEF"
+
+/**
+ * Algorithms a JSON Web Key may name in its `alg` member: JWS algorithms and
+ * JWE algorithms.
+ * @see {@link https://datatracker.ietf.org/doc/html/rfc7517#section-4.4}
+ */
+export type JwkAlgorithm =
+  | JoseAlgorithm
+  | JweKeyManagementAlgorithm
+  | JweContentEncryptionAlgorithm

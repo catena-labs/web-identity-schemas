@@ -181,6 +181,56 @@ describe("jwk", () => {
         }
       })
 
+      // RFC 7517 section 4.4: `alg` may name any JWS or JWE algorithm.
+      test("accepts JWE algorithms in alg", () => {
+        const keys = [
+          {
+            kty: "RSA",
+            use: "enc",
+            alg: "RSA-OAEP",
+            n: "0vx7agoebGcQSuuPiLJXZptN9nndrQmbXEps2aiAFbWhM78LhWx4cbbfAAtVT86zwu1RK7aPFFxuhDR1L6tSoc_BJECPebWKRXjBZCiFV4n3oknjhMstn64tZ_2W-5JsGY4Hc5n9yBXArwl93lqt7_RN5w6Cf0h4QyQ5v-65YGjQR0_FDW2QvzqY368QQMicAtaSqzs8KJZgnYb9c7d0zgdAZHzu6qMQvRL5hajrn1n91CbOpbISD08qNLyrdkt-bFTWhAI4vMQFh6WeZu0fM4lFd2NcRwr3XPksINHaQ-G_xBniIqbw0Ls1jF44-csFCur-kEgU8awapJzKnqDKgw",
+            e: "AQAB",
+          },
+          {
+            kty: "EC",
+            use: "enc",
+            alg: "ECDH-ES",
+            crv: "P-256",
+            x: "MKBCTNIcKUSDii11ySs3526iDZ8AiTo7Tu6KPAqv7D4",
+            y: "4Etl6SRW2YiLUrN5vfvVHuhp7x8PxltmWWlbbM4IFyM",
+          },
+          {
+            kty: "OKP",
+            use: "enc",
+            alg: "ECDH-ES+A256KW",
+            crv: "X25519",
+            x: "hSDwCYkwp1R0i33ctD73Wg2_Og0mOBr066SpjqqbTmo",
+          },
+          {
+            kty: "oct",
+            alg: "A256GCM",
+            k: "AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow",
+          },
+        ]
+
+        for (const key of keys) {
+          expect(key).toMatchSchema(schemas.JsonWebKeySchema)
+        }
+
+        // A key set that publishes a signing key and encryption keys.
+        expect({ keys: [rsaPublicValid, ...keys] }).toMatchSchema(
+          schemas.JsonWebKeySetSchema,
+        )
+      })
+
+      test("rejects an unknown alg", () => {
+        for (const alg of ["INVALID", "rsa-oaep", "DEF", ""]) {
+          expect({ ...rsaPublicValid, alg }).not.toMatchSchema(
+            schemas.JsonWebKeySchema,
+          )
+        }
+      })
+
       test("invalid key types", () => {
         const invalidKeys = [
           { kty: "UNKNOWN" }, // Invalid key type

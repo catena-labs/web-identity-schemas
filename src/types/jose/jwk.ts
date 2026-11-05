@@ -1,4 +1,4 @@
-import type { JoseAlgorithm } from "../shared/algorithms"
+import type { JwkAlgorithm } from "../shared/algorithms"
 import type { Base64, Base64Url } from "../shared/base-64"
 import type { EllipticCurve, OctetKeyPairCurve } from "../shared/curves"
 
@@ -27,8 +27,8 @@ export type KeyOperation =
  * @see {@link https://datatracker.ietf.org/doc/html/rfc7517}
  */
 export interface BaseJwk {
-  /** Algorithm intended for use with the key (e.g., "RS256") */
-  alg?: JoseAlgorithm
+  /** Algorithm intended for use with the key (e.g., "RS256", "RSA-OAEP") */
+  alg?: JwkAlgorithm
 
   /** Whether the key is extractable (for Web Crypto API) */
   ext?: boolean
