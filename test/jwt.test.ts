@@ -270,7 +270,8 @@ describe("jwt", () => {
       test("payload with invalid timestamp claims", () => {
         const invalidTimestampClaims = [
           { exp: -1 }, // Negative timestamp
-          { nbf: 1.5 }, // Non-integer timestamp
+          { nbf: -0.5 }, // Negative fractional timestamp
+          { exp: Infinity }, // Not a finite number
           { iat: "not-a-number" }, // String instead of number
           { exp: null }, // Null timestamp
         ]
@@ -284,6 +285,22 @@ describe("jwt", () => {
 
           expect(jwtObject).not.toMatchSchema(schemas.JwtObjectSchema)
         }
+      })
+
+      // RFC 7519 section 2: a NumericDate may be a non-integer value.
+      test("payload with fractional timestamp claims", () => {
+        const payload = {
+          iat: 1516239022.25,
+          nbf: 1516239022.5,
+          exp: 1516242622.75,
+        }
+
+        expect(payload).toMatchSchema(schemas.JwtPayloadSchema)
+        expect({
+          header: { alg: "HS256" },
+          payload,
+          signature: "test",
+        }).toMatchSchema(schemas.JwtObjectSchema)
       })
     })
   })
