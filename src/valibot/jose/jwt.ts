@@ -16,7 +16,7 @@ import { JsonWebKeySchema } from "./jwk"
 
 const UnixTimestampSchema = v.pipe(
   v.number(),
-  v.integer("Unix timestamp must be an integer"),
+  v.finite("Unix timestamp must be a finite number"),
   v.minValue(0, "Unix timestamp must be non-negative"),
 )
 

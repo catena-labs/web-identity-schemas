@@ -20,7 +20,6 @@ import { JsonWebKeySchema } from "./jwk"
 
 const UnixTimestampSchema = z
   .number()
-  .int("Unix timestamp must be an integer")
   .min(0, "Unix timestamp must be non-negative")
   .pipe(z.custom<UnixTimestamp>())
 
